@@ -26,11 +26,7 @@ private fun Pair<Stacks, Instructions>.restack(name: String, takeContainers: Con
     println("[$name] At Top: ${result.joinToString("") { it.last().toString() }}")
 }
 
-private fun List<List<Char>>.move(
-    origin: Int,
-    destination: Int,
-    takeContainers: ContainerTaker
-): Stacks {
+private fun Stacks.move(origin: Int, destination: Int, takeContainers: ContainerTaker): Stacks {
     val originStack = this[origin]
     val destinationStack = this[destination]
 
