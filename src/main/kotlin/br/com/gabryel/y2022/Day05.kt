@@ -1,8 +1,5 @@
 package br.com.gabryel.y2022
 
-import java.util.Scanner
-
-private val scanner = Scanner(System.`in`)
 private val numberRegex = "\\d+".toRegex()
 
 typealias ContainerQuantityTaker = List<Char>.(Int) -> List<Char>
@@ -57,5 +54,3 @@ private fun Sequence<String>.getInstructions() = map { line ->
     val (quantity, origin, destination) = numberRegex.findAll(line).map { number -> number.value.toInt() }.toList()
     Triple(quantity, origin - 1, destination - 1)
 }.toList()
-
-private fun getLines() = generateSequence { if (scanner.hasNextLine()) scanner.nextLine().ifEmpty { null } else null }

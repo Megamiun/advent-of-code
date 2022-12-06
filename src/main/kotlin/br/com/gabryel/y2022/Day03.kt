@@ -1,9 +1,5 @@
 package br.com.gabryel.y2022
 
-import java.util.Scanner
-
-private val scanner = Scanner(System.`in`)
-
 fun main() {
     val rucksacks = getAllRucksacks()
 
@@ -18,10 +14,7 @@ fun main() {
     println("Sum of Rucksacks Priorities in Groups of Three: $groupPrioritySum")
 }
 
-private fun getAllRucksacks() =
-    generateSequence { if (scanner.hasNextLine()) scanner.nextLine().ifEmpty { null } else null }
-        .map(::Rucksack)
-        .toList()
+private fun getAllRucksacks() = getLines(::Rucksack).toList()
 
 private class Rucksack(val content: String) {
     private val halfPoint = content.length / 2

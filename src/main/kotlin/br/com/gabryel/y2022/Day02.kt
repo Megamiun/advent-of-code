@@ -1,24 +1,15 @@
 package br.com.gabryel.y2022
 
-import java.util.Scanner
-
-private val scanner = Scanner(System.`in`)
-
 fun main() {
     val matches = getAllMatches()
     println("Total Hand Stance Points: ${matches.sumOf { it.handStacePoints }}")
     println("Total Win Stance Points: ${matches.sumOf { it.winStacePoints }}")
 }
 
-private fun getAllMatches() = generateSequence(::getNextMatch).toList()
-
-private fun getNextMatch(): Match? {
-    val line = (if (scanner.hasNextLine()) scanner.nextLine().ifEmpty { null } else null)
-        ?: return null
-
+private fun getAllMatches() = getLines { line ->
     val (opponent, you) = line.split(" ")
-    return Match(opponent, you)
-}
+    Match(opponent, you)
+}.toList()
 
 private data class Match(val opponent: String, val you: String) {
     private val youChar = you.first()
