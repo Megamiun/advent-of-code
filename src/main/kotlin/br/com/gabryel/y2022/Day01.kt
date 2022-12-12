@@ -18,4 +18,3 @@ private fun parseCalories2() = generateSequence {
 }.toList()
 
 private fun getAllLines() = getLines(String::toIntOrNull).toList()
-

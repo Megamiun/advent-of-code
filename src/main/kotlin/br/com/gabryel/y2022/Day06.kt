@@ -19,4 +19,3 @@ private fun extractPositionAndMarker(line: String, size: Int): Pair<Int, String>
     val marker = line.substring(markerIndex, markerIndexEnd)
     return markerIndexEnd to marker
 }
-

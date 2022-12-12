@@ -18,4 +18,3 @@ private fun getAllElfPairs() = getLines { line ->
 
     first to second
 }.toList()
-
