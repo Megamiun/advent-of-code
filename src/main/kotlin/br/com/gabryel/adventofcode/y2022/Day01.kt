@@ -1,4 +1,4 @@
-package br.com.gabryel.y2022
+package br.com.gabryel.adventofcode.y2022
 
 fun main() {
     val elfCalories = parseCalories()
