@@ -9,10 +9,10 @@ fun main() {
         val limits = readLines(2, "$it-limits")
 
         val sumValid = games.sumValid(limits)
-        println("[Sum of Valid Games   ][$it]: $sumValid")
+        println("[Valid Games   ][$it]: $sumValid")
 
         val sumMinimum = games.sumMinimumPower()
-        println("[Sum of Minimum Values][$it]: $sumMinimum")
+        println("[Minimum Values][$it]: $sumMinimum")
     }
 }
 
