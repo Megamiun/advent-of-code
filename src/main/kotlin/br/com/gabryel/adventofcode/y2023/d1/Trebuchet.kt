@@ -7,7 +7,7 @@ fun main() {
         val lines = readLines(1, it)
 
         val result = lines.sumCalibrations()
-        println("$it: $result")
+        println("[$it]: $result")
     }
 }
 
