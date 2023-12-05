@@ -2,10 +2,10 @@ package br.com.gabryel.adventofcode.y2023
 
 object ResourceReader
 
-fun readLines(day: Int, file: String) =
+fun readLines(day: Int, file: String, keepBlanks: Boolean = false) =
     readFile(day, file)
         .lines()
-        .filter { it.isNotBlank() }
+        .filter { keepBlanks || it.isNotBlank() }
 
 fun readFile(day: Int, file: String) =
     ResourceReader.javaClass.getResourceAsStream("d$day/$file")
