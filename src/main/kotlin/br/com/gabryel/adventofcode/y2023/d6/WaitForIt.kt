@@ -14,8 +14,8 @@ fun main() {
     }
 }
 
-private fun List<Pair<String, String>>.getKerningMistakePossibilities() = reversed()
-    .reduce { (time, record), (timePrefix, recordPrefix) -> (timePrefix + time) to (recordPrefix + record) }
+private fun List<Pair<String, String>>.getKerningMistakePossibilities() =
+    reduce { (timeAcc, recordAcc), (timeSuffix, recordSuffix) -> (timeAcc + timeSuffix) to (recordAcc + recordSuffix) }
     .let { (time, record) -> calculateWinPossibilities(time.toLong(), record.toLong()) }
 
 
@@ -27,10 +27,13 @@ private fun calculateWinPossibilities(time: Long, record: Long): Long {
     val timeFrame = (1 until time)
 
     val firstWin = timeFrame
-        .first { accelerationTime -> (time - accelerationTime) * accelerationTime > record }
+        .first { accelerationTime -> beatsRecord(time, accelerationTime, record) }
 
     val lastWin = timeFrame
-        .last { accelerationTime -> (time - accelerationTime) * accelerationTime > record }
+        .last { accelerationTime -> beatsRecord(time, accelerationTime, record) }
 
     return (lastWin - firstWin) + 1
 }
+
+private fun beatsRecord(time: Long, accelerationTime: Long, record: Long) =
+    (time - accelerationTime) * accelerationTime > record
