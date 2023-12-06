@@ -58,20 +58,19 @@ private fun findPointsOfDisplacement(
     displacers: Layer,
     baseRange: LongRange
 ): List<PointWithDisplacement> {
-    val pointsOfDisplacement = displacers
+    val rangeStarts = displacers.map { (range) -> range.first }
+
+    val distinctPointsOfDisplacement = displacers
         .filter { (range) -> range.last in baseRange || range.first in baseRange }
         .flatMap { (range, displacement) ->
             val start = max(baseRange.first, range.first)
             val end = min(baseRange.last, range.last) + 1
-            listOf(start to displacement, end to 0L)
-        }
 
-    // Drops entries where the end of a range conflicts with the start of another
-    val distinctPointsOfDisplacement = pointsOfDisplacement
-        .toMap()
-        .entries
-        .map { (start, end) -> start to end }
-        .toMutableList()
+            val startDisplacement = listOf(start to displacement)
+
+            if (end in rangeStarts) startDisplacement
+            else startDisplacement + (end to 0L)
+        }.toMutableList()
 
     val firstPoint = distinctPointsOfDisplacement.minOfOrNull { it.first }
     if (firstPoint != baseRange.first)
