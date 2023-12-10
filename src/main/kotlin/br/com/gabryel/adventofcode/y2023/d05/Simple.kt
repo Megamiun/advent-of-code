@@ -1,4 +1,4 @@
-package br.com.gabryel.adventofcode.y2023.d5
+package br.com.gabryel.adventofcode.y2023.d05
 
 fun generateSourceToDestination(lines: List<String>): Long {
     val iterator = lines.listIterator()

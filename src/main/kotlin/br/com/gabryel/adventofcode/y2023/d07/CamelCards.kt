@@ -1,4 +1,4 @@
-package br.com.gabryel.adventofcode.y2023.d7
+package br.com.gabryel.adventofcode.y2023.d07
 
 import br.com.gabryel.adventofcode.y2023.readLines
 

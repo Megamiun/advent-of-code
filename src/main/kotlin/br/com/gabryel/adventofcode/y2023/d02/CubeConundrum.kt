@@ -1,6 +1,6 @@
-package br.com.gabryel.adventofcode.y2023.d2
+package br.com.gabryel.adventofcode.y2023.d02
 
-import br.com.gabryel.adventofcode.y2023.d2.Color.*
+import br.com.gabryel.adventofcode.y2023.d02.Color.*
 import br.com.gabryel.adventofcode.y2023.readLines
 
 fun main() {

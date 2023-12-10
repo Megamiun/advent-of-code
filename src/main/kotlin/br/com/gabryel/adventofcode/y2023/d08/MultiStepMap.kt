@@ -1,9 +1,9 @@
-package br.com.gabryel.adventofcode.y2023.d8
+package br.com.gabryel.adventofcode.y2023.d08
 
 data class NodeStep(val node: String, val step: Long)
 data class NodePosition(val node: String, val step: Int)
 
-class MultiStep(
+class MultiStepMap(
     private val directions: String,
     private val mappings: Map<String, Pair<String, String>>
 ) {

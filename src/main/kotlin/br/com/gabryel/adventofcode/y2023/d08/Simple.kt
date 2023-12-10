@@ -1,4 +1,4 @@
-package br.com.gabryel.adventofcode.y2023.d8
+package br.com.gabryel.adventofcode.y2023.d08
 
 tailrec fun findStepsToArrive(
     directions: String,

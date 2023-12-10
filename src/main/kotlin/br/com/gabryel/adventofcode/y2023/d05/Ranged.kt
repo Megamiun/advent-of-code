@@ -1,4 +1,4 @@
-package br.com.gabryel.adventofcode.y2023.d5
+package br.com.gabryel.adventofcode.y2023.d05
 
 import kotlin.math.max
 import kotlin.math.min

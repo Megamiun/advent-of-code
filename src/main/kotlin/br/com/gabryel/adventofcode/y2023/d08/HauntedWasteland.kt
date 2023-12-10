@@ -1,6 +1,7 @@
-package br.com.gabryel.adventofcode.y2023.d8
+package br.com.gabryel.adventofcode.y2023.d08
 
 import br.com.gabryel.adventofcode.y2023.readLines
+import kotlin.time.measureTimedValue
 
 private val directionRegex = """[0-9A-Z]+""".toRegex()
 
@@ -15,10 +16,12 @@ fun main() {
         }
 
         if (file != "sample3")
-            println("[Steps To Arrive                    ][$file] ${findStepsToArrive(directions, mappings)}")
+            println("[Steps To Arrive                          ][$file] ${findStepsToArrive(directions, mappings)}")
 
         // Very, very slow
-        val multiStep = MultiStep(directions, mappings)
-        println("[Ghostly Steps To Arrive - MultiStep][$file] ${multiStep.findStepsToArrive()}")
+        val (multiStepResult, time) = measureTimedValue {
+            MultiStepMap(directions, mappings).findStepsToArrive()
+        }
+        println("[Ghostly Steps To Arrive - MultiStep Map  ][$file] $multiStepResult [${time.inWholeMilliseconds} ms]")
     }
 }

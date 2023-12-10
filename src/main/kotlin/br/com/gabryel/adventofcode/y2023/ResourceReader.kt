@@ -8,6 +8,6 @@ fun readLines(day: Int, file: String, keepBlanks: Boolean = false) =
         .filter { keepBlanks || it.isNotBlank() }
 
 fun readFile(day: Int, file: String) =
-    ResourceReader.javaClass.getResourceAsStream("d$day/$file")
+    ResourceReader.javaClass.getResourceAsStream("d${day.toString().padStart(2, '0')}/$file")
         ?.bufferedReader()?.readText()
         ?: throw IllegalStateException("""¨d$day/$file¨ not found""")

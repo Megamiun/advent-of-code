@@ -1,4 +1,4 @@
-package br.com.gabryel.adventofcode.y2023.d4
+package br.com.gabryel.adventofcode.y2023.d04
 
 import br.com.gabryel.adventofcode.y2023.readLines
 import kotlin.math.pow
