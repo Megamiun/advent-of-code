@@ -21,6 +21,7 @@ fun countInternalPositions(baseMap: CoordMap): Int {
         }
     }
 }
+
 private fun CoordMap.getInflatedMap() = toList().flatMap {
     val inflatedLine = it.map { inflated[it]!! }
 
