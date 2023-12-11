@@ -1,15 +1,15 @@
 package br.com.gabryel.adventofcode.y2023.d10
 
 private val inflated = mapOf(
-    'F' to listOf(' ', ' ', ' ',/**/ ' ', 'F', '-',/**/ ' ', '|', ' ').chunked(3),
-    'L' to listOf(' ', '|', ' ',/**/ ' ', 'L', '-',/**/ ' ', ' ', ' ').chunked(3),
-    '7' to listOf(' ', ' ', ' ',/**/ '-', '7', ' ',/**/ ' ', '|', ' ').chunked(3),
-    'J' to listOf(' ', '|', ' ',/**/ '-', 'J', ' ',/**/ ' ', ' ', ' ').chunked(3),
-    '-' to listOf(' ', ' ', ' ',/**/ '-', '-', '-',/**/ ' ', ' ', ' ').chunked(3),
-    '|' to listOf(' ', '|', ' ',/**/ ' ', '|', ' ',/**/ ' ', '|', ' ').chunked(3),
-    'S' to listOf(' ', 'S', ' ',/**/ 'S', 'S', 'S',/**/ ' ', 'S', ' ').chunked(3),
-    '.' to (0 until 9).map { '.' }.chunked(3),
-)
+    'F' to listOf("   ", " F-", " | "),
+    'L' to listOf(" | ", " L-", "   "),
+    '7' to listOf("   ", "-7 ", " | "),
+    'J' to listOf(" | ", "-J ", "   "),
+    '-' to listOf("   ", "---", "   "),
+    '|' to listOf(" | ", " | ", " | "),
+    'S' to listOf(" S ", "SSS", " S "),
+    '.' to listOf("...", "...", "..."),
+).mapValues { it.value.map { it.toList() } }
 
 fun countInternalPositions(baseMap: CoordMap): Int {
     val inflatedMap = baseMap.getInflatedMap()

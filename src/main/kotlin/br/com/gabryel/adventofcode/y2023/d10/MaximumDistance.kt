@@ -1,7 +1,7 @@
 package br.com.gabryel.adventofcode.y2023.d10
 
-private val leftToRight = setOf('S', 'F', 'L', '-') to setOf('S', '7', 'J', '-')
-private val topToBottom = setOf('S', 'F', '7', '|') to setOf('S', 'L', 'J', '|')
+private val leftToRight = "SFL-".toSet() to "S7J-".toSet()
+private val topToBottom = "SF7|".toSet() to "SLJ|".toSet()
 
 private val rightToLeft = leftToRight.let { (first, second) -> second to first }
 private val bottomToTop = topToBottom.let { (first, second) -> second to first }
