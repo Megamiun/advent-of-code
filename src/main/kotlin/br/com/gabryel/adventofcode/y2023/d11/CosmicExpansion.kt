@@ -36,9 +36,9 @@ private fun Array<CharArray>.calculateMinimumDistanceOfPairs(scale: Long = 2): L
     return result
 }
 
-private fun calculateDistance(left: Int, right: Int, filled: Set<Int>, scale: Long): Long {
-    val sorted = listOf(left, right).sorted()
+private fun calculateDistance(galaxyA: Int, galaxyB: Int, filled: Set<Int>, scale: Long): Long {
+    val sorted = listOf(galaxyA, galaxyB).sorted()
     val (first, second) = sorted
 
-    return (second - first) + ((first..second).count { it !in filled } * (scale - 1))
+    return (second - first) + (first..second).count { it !in filled } * (scale - 1)
 }
