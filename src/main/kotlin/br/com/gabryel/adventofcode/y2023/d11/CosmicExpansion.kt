@@ -25,12 +25,12 @@ private fun Array<CharArray>.calculateMinimumDistanceOfPairs(scale: Long = 2): L
     val filledCols = galaxies.map { it.second }.toSet()
 
     val result = galaxies.indices.sumOf { aIndex ->
-        val (aX, aY) = galaxies[aIndex]
+        val (aRow, aCol) = galaxies[aIndex]
         (aIndex + 1..galaxies.lastIndex).sumOf { bIndex ->
-            val (bX, bY) = galaxies[bIndex]
+            val (bRow, bCol) = galaxies[bIndex]
 
-            calculateDistance(aY, bY, filledCols, scale) +
-                    calculateDistance(aX, bX, filledRows, scale)
+            calculateDistance(aCol, bCol, filledCols, scale) +
+                    calculateDistance(aRow, bRow, filledRows, scale)
         }
     }
     return result
