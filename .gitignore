@@ -21,6 +21,7 @@ derby.log
 *.iml
 *.ipr
 out/
+.profileconfig.json
 
 ### NetBeans ###
 /nbproject/private/
