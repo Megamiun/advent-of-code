@@ -5,3 +5,8 @@ Those are my solutions to the [Advent of Code 2023](https://adventofcode.com/202
 # Finding yourself
 
 To see the answers, just go to the desired day in the current folder. To get the inputs, just visit the equivalent in the [resources folder](../../../../../../resources/br/com/gabryel/adventofcode/y2023).
+
+# What is missing
+
+[ ] Make day 1 solve for both part 1 and 2\
+[ ] Beautify day 12
