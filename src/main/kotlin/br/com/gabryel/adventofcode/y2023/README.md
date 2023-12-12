@@ -9,4 +9,5 @@ To see the answers, just go to the desired day in the current folder. To get the
 # What is missing
 
 [ ] Make day 1 solve for both part 1 and 2\
+[ ] Solve day 8 efficiently(Using cycle lengths)\
 [ ] Beautify day 12
