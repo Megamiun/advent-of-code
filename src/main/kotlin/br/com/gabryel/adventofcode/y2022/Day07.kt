@@ -46,7 +46,7 @@ private fun Accumulator.executeCommand(current: String, iterator: ListIterator<S
     }.fold(this) { acc, line -> acc.with(line) }
 }
 
-fun <T> ListIterator<T>.nextIfMatches(predicate: (T) -> Boolean) =
+private fun <T> ListIterator<T>.nextIfMatches(predicate: (T) -> Boolean) =
     if (hasNext()) {
         val next = next()
         if (!predicate(next)) {
