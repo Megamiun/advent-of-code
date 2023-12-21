@@ -13,7 +13,7 @@ fun main() {
     }
 }
 
-class MinimumHeatLoss(
+private class MinimumHeatLoss(
     private val map: List<List<Int>>,
     private val minConsecutive: Int, 
     private val maxConsecutive: Int
