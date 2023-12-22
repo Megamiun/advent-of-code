@@ -20,6 +20,7 @@ derby.log
 *.iws
 *.iml
 *.ipr
+*.jfr
 out/
 .profileconfig.json
 
@@ -35,3 +36,6 @@ out/
 
 ## .ENV ##
 .env
+
+### temp ###
+*.temp
