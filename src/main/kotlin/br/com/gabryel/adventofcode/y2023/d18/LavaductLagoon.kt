@@ -1,10 +1,10 @@
 package br.com.gabryel.adventofcode.y2023.d18
 
+import br.com.gabryel.adventofcode.y2023.*
+import br.com.gabryel.adventofcode.y2023.d10.Coordinate
 import br.com.gabryel.adventofcode.y2023.d18.Direction.*
-import br.com.gabryel.adventofcode.y2023.logTimed
-import br.com.gabryel.adventofcode.y2023.readLines
-import br.com.gabryel.adventofcode.y2023.size
-import java.util.HexFormat.fromHexDigitsToLong
+import java.util.EnumMap
+import java.util.HexFormat.fromHexDigits
 
 private enum class Direction {
     RIGHT, DOWN, LEFT, UP;
@@ -14,13 +14,6 @@ private enum class Direction {
         fun findByCode(code: Int) = entries[code]
     }
 }
-
-private val directionMap = mapOf(
-    LEFT to (-1L to 0L),
-    RIGHT to (1L to 0L),
-    UP to (0L to -1L),
-    DOWN to (0L to 1L)
-)
 
 private val extractor = """(.) (\d+) \(#(.*)\)""".toRegex()
 
@@ -38,26 +31,33 @@ fun main() {
 }
 
 private fun List<Triple<Direction, Int, String>>.findDefaultLagoonArea() =
-    map { (direction, steps) -> steps.toLong() to direction }
+    map { (direction, steps) -> steps to direction }
         .findLagoonSpace()
 
 private fun List<Triple<Direction, Int, String>>.findColorLagoonArea() =
     map { (_, _, color) ->
-        val distanceHex = fromHexDigitsToLong(color.substring(0, 5))
+        val distanceHex = fromHexDigits(color.substring(0, 5))
         val direction = Direction.findByCode(color.last().digitToInt())
 
         distanceHex to direction
     }.findLagoonSpace()
 
-private fun List<Pair<Long, Direction>>.findLagoonSpace(): Long {
+private fun List<Pair<Int, Direction>>.findLagoonSpace(): Long {
     return EnclosedSpacesFinder(this).countLagoonSpaces()
 }
 
-private class EnclosedSpacesFinder(instructions: List<Pair<Long, Direction>>) {
-    private data class LineReport(val inside: List<LongRange> = emptyList(), val border: List<LongRange> = emptyList())
+private class EnclosedSpacesFinder(instructions: List<Pair<Int, Direction>>) {
+    private data class LineReport(val inside: List<IntRange> = emptyList(), val border: List<IntRange> = emptyList())
+
+    private val directionMap = EnumMap<Direction, Coordinate>(Direction::class.java).also {
+        it[LEFT] = -1 to 0
+        it[RIGHT] = 1 to 0
+        it[UP] = 0 to -1
+        it[DOWN] = 0 to 1
+    }
 
     private val borders = instructions.getBorders()
-    private val sequenceStep = 3000000
+    private val sequenceStep = 2000000
 
     fun countLagoonSpaces() = borders.fold(LineReport() to 0L) { (previous, total), rowBorders ->
         val inside = rowBorders
@@ -70,13 +70,13 @@ private class EnclosedSpacesFinder(instructions: List<Pair<Long, Direction>>) {
         LineReport(inside, nonClosingBorders) to (total + newPoints)
     }.second
 
-    private fun List<LongRange>.clearOutside(previous: LineReport) =
+    private fun List<IntRange>.clearOutside(previous: LineReport) =
         filter { xs -> previous.border.any { it.intersects(xs) } || previous.inside.any { it.intersects(xs) } }
 
-    private fun excludeClosingBorders(border: List<LongRange>, previous: LineReport) =
+    private fun excludeClosingBorders(border: List<IntRange>, previous: LineReport) =
         border.filter { maybeClosing -> previous.inside.none { it.intersects(maybeClosing) } }
 
-    private fun List<Pair<Long, Direction>>.getBorders(): Sequence<List<LongRange>> {
+    private fun List<Pair<Int, Direction>>.getBorders(): Sequence<List<IntRange>> {
         val (min, max) = getMinMax()
 
         return generateSequence(min) { it + sequenceStep }
@@ -85,45 +85,46 @@ private class EnclosedSpacesFinder(instructions: List<Pair<Long, Direction>>) {
                 val range = start until start + sequenceStep
                 logTimed("Starting [${range.first}, ${range.last}]")
 
-                val byRow = drawMap()
-                    .filter { it.second in range }
-                    .groupBy({ it.second }) { it.first }
-                    .mapValues { (_, values) -> values.findSequentialRanges() }
+                val steps = Array<MutableList<Int>>(sequenceStep) { mutableListOf() }
 
-                byRow.toSortedMap().values
+                getMapBorderCoordinates()
+                    .filter { it[1] in range }
+                    .forEach { (x, y) -> steps[y - start].add(x) }
+
+                steps
+                    .asSequence()
+                    .takeWhile { it.isNotEmpty() }
+                    .map { it.findSequentialRanges() }
         }
     }
 
-    private fun List<Pair<Long, Direction>>.getMinMax(): Pair<Long, Long> {
-        var min = Long.MAX_VALUE
-        var max = Long.MIN_VALUE
+    private fun List<Pair<Int, Direction>>.getMinMax(): Pair<Int, Int> {
+        var min = Int.MAX_VALUE
+        var max = Int.MIN_VALUE
 
-        drawMap().forEach {
-            min = minOf(min, it.second)
-            max = maxOf(max, it.second)
+        getMapBorderCoordinates().forEach {
+            min = minOf(min, it[1])
+            max = maxOf(max, it[1])
         }
         return min to max
     }
 
-    private fun List<Pair<Long, Direction>>.drawMap() = asSequence()
+    private fun List<Pair<Int, Direction>>.getMapBorderCoordinates() = asSequence()
         .flatMap { (steps, direction) ->
             val diff = directionMap[direction]!!
             (0 until steps).map { diff }
-        }.runningFold(0L to 0L) { (x, y), (xDiff, yDiff) -> (x + xDiff) to (y + yDiff) }
+        }.runningFold(intArrayOf(0, 0)) { (x, y), (xDiff, yDiff) -> intArrayOf(x + xDiff, y + yDiff) }
 
-    private fun List<Long>.findSequentialRanges(): List<LongRange> {
+    private fun List<Int>.findSequentialRanges(): List<IntRange> {
         val sorted = sorted().distinct()
         val sequenceStartingIndices = sorted.windowed(2).mapIndexed { index, (previous, current) ->
             if (previous != current - 1) index + 1
             else null
         }.filterNotNull()
 
-        val rangesIndices = (listOf(0) + sequenceStartingIndices + size)
+        val rangesIndices = (listOf(0) + sequenceStartingIndices + sorted.size)
             .windowed(2) { (l, r) -> l to r }
 
-        return rangesIndices.map { (start, end) -> this[start] .. this[end - 1] }
+        return rangesIndices.map { (start, end) -> sorted[start] .. sorted[end - 1] }
     }
-
-    private fun LongRange.intersects(other: LongRange) =
-        first in other || last in other || other.first in this || other.last in this
 }
