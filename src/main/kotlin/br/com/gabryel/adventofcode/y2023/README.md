@@ -10,5 +10,4 @@ To see the answers, just go to the desired day in the current folder. To get the
 
 [ ] Make day 1 solve for both part 1 and 2\
 [ ] Solve day 8 efficiently(Using cycle lengths)\
-[ ] Beautify day 12\
-[ ] Get a better solution to day 18(or get it under a minute)
+[ ] Beautify day 12

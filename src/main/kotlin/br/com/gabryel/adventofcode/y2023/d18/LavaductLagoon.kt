@@ -5,6 +5,7 @@ import br.com.gabryel.adventofcode.y2023.d10.Coordinate
 import br.com.gabryel.adventofcode.y2023.d18.Direction.*
 import java.util.EnumMap
 import java.util.HexFormat.fromHexDigits
+import kotlin.math.pow
 
 private enum class Direction {
     RIGHT, DOWN, LEFT, UP;
@@ -46,7 +47,7 @@ private fun List<Pair<Int, Direction>>.findLagoonSpace(): Long {
     return EnclosedSpacesFinder(this).countLagoonSpaces()
 }
 
-private class EnclosedSpacesFinder(instructions: List<Pair<Int, Direction>>) {
+private class EnclosedSpacesFinder(private val instructions: List<Pair<Int, Direction>>) {
     private data class LineReport(val inside: List<IntRange> = emptyList(), val border: List<IntRange> = emptyList())
 
     private val directionMap = EnumMap<Direction, Coordinate>(Direction::class.java).also {
@@ -56,28 +57,33 @@ private class EnclosedSpacesFinder(instructions: List<Pair<Int, Direction>>) {
         it[DOWN] = 0 to 1
     }
 
-    private val borders = instructions.getBorders()
     private val sequenceStep = 2000000
+    private val coordinatesPerChunk = 2.0.pow(19).toInt()
+    private val chunkArraySize = coordinatesPerChunk * 2
 
-    fun countLagoonSpaces() = borders.fold(LineReport() to 0L) { (previous, total), rowBorders ->
-        val inside = rowBorders
-            .windowed(2) { (l, r) -> l.last + 1 until r.first }
-            .clearOutside(previous)
+    fun countLagoonSpaces() = instructions
+        .getBordersPerRow()
+        .fold(LineReport() to 0L) { (previous, total), rowBorders ->
+            val inside = rowBorders
+                .windowed(2) { (l, r) -> l.last + 1 until r.first }
+                .clearOutside(previous)
 
-        val nonClosingBorders = excludeClosingBorders(rowBorders, previous)
-        val newPoints = inside.sumOf { it.size() } + rowBorders.sumOf { it.size() }
+            val nonClosingBorders = rowBorders.excludeClosing(previous)
+            val newPoints = inside.sumOf { it.size() } + rowBorders.sumOf { it.size() }
 
-        LineReport(inside, nonClosingBorders) to (total + newPoints)
-    }.second
+            LineReport(inside, nonClosingBorders) to (total + newPoints)
+        }.second
 
     private fun List<IntRange>.clearOutside(previous: LineReport) =
         filter { xs -> previous.border.any { it.intersects(xs) } || previous.inside.any { it.intersects(xs) } }
 
-    private fun excludeClosingBorders(border: List<IntRange>, previous: LineReport) =
-        border.filter { maybeClosing -> previous.inside.none { it.intersects(maybeClosing) } }
+    private fun List<IntRange>.excludeClosing(previous: LineReport) =
+        filter { border -> previous.inside.none { it.intersects(border) } }
 
-    private fun List<Pair<Int, Direction>>.getBorders(): Sequence<List<IntRange>> {
-        val (min, max) = getMinMax()
+    private fun List<Pair<Int, Direction>>.getBordersPerRow(): Sequence<List<IntRange>> {
+        logTimed("Loading Map of Coordinates")
+        val coordinateChunks = getMapBorderCoordinates()
+        val (min, max) = coordinateChunks.getMinMax()
 
         return generateSequence(min) { it + sequenceStep }
             .takeWhile { it <= max }
@@ -86,23 +92,24 @@ private class EnclosedSpacesFinder(instructions: List<Pair<Int, Direction>>) {
                 logTimed("Starting [${range.first}, ${range.last}]")
 
                 val steps = Array<MutableList<Int>>(sequenceStep) { mutableListOf() }
-
-                getMapBorderCoordinates()
-                    .filter { it[1] in range }
-                    .forEach { (x, y) -> steps[y - start].add(x) }
+                coordinateChunks.forEach { chunk ->
+                    (0 until  coordinatesPerChunk)
+                        .filter { chunk[(it * 2) + 1] in range }
+                        .forEach { steps[chunk[(it * 2) + 1] - start].add(chunk[it * 2]) }
+                }
 
                 steps
                     .asSequence()
                     .takeWhile { it.isNotEmpty() }
                     .map { it.findSequentialRanges() }
-        }
+            }
     }
 
-    private fun List<Pair<Int, Direction>>.getMinMax(): Pair<Int, Int> {
+    private fun List<IntArray>.getMinMax(): Pair<Int, Int> {
         var min = Int.MAX_VALUE
         var max = Int.MIN_VALUE
 
-        getMapBorderCoordinates().forEach {
+        forEach {
             min = minOf(min, it[1])
             max = maxOf(max, it[1])
         }
@@ -114,6 +121,9 @@ private class EnclosedSpacesFinder(instructions: List<Pair<Int, Direction>>) {
             val diff = directionMap[direction]!!
             (0 until steps).map { diff }
         }.runningFold(intArrayOf(0, 0)) { (x, y), (xDiff, yDiff) -> intArrayOf(x + xDiff, y + yDiff) }
+        .chunked(coordinatesPerChunk) { chunked ->
+            IntArray(chunkArraySize) { chunked.getOrNull(it / 2)?.get(it % 2) ?: 0 }
+        }.toList()
 
     private fun List<Int>.findSequentialRanges(): List<IntRange> {
         val sorted = sorted().distinct()
@@ -122,9 +132,7 @@ private class EnclosedSpacesFinder(instructions: List<Pair<Int, Direction>>) {
             else null
         }.filterNotNull()
 
-        val rangesIndices = (listOf(0) + sequenceStartingIndices + sorted.size)
-            .windowed(2) { (l, r) -> l to r }
-
-        return rangesIndices.map { (start, end) -> sorted[start] .. sorted[end - 1] }
+        return (listOf(0) + sequenceStartingIndices + sorted.size)
+            .windowed(2) { (start, end) -> sorted[start] .. sorted[end - 1] }
     }
 }
