@@ -1,11 +1,13 @@
 extern crate core;
 extern crate once_cell;
 
+use std::fmt::Display;
 use std::fs::read_to_string;
 
 pub mod y2023;
+pub mod y2024;
 
-pub fn run_for_files(year: u32, day: u32, files: &[&str], exec: &dyn Fn(Vec<String>) -> u32) {
+pub fn run_for_files<T: Display>(year: u32, day: u32, files: &[&str], exec: &dyn Fn(Vec<String>) -> T) {
     let padded_day = pad_left(day);
 
     println!("Running for {}-{}:", year, padded_day);
@@ -24,12 +26,12 @@ pub fn run_for_files(year: u32, day: u32, files: &[&str], exec: &dyn Fn(Vec<Stri
     })
 }
 
-pub fn run_for_files_with_postfix(
+pub fn run_for_files_with_postfix<T: Display>(
     year: u32,
     day: u32,
     files: &[&str],
     postfix: &str,
-    exec: &dyn Fn(Vec<String>, Vec<String>) -> u32,
+    exec: &dyn Fn(Vec<String>, Vec<String>) -> T,
 ) {
     let padded_day = pad_left(day);
 
