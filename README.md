@@ -61,12 +61,12 @@ Possibly out of date at the moment you look at it, but at the best effort basis:
 - ★★ d17 - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2023/d17)
 - ★★ d18 - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2023/d18)
 - ★★ d19 - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2023/d19)
-- ★☆ d20
-- ★☆ d21
+- ★☆ d20 - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2023/d20)
+- ★☆ d21 - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2023/d21)
 - ★★ d22 - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2023/d22)
 - ★★ d23 - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2023/d23)
-- ★☆ d24
-- ★☆ d25
+- ★☆ d24 - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2023/d24)
+- ★☆ d25 - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2023/d25)
 
 Missing files for some, will be commited at a later date, they are in my old computer.
 
