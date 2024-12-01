@@ -10,60 +10,60 @@ Just visit the folder equivalent to the day in the [resources folder](resources)
 Possibly out of date at the moment you look at it, but at the best effort basis:
 
 ### 2023
-- d01 ** - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2023/d01) / [Rust](rust/src/y2023/d01)
-- d02 ** - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2023/d02) / [Rust](rust/src/y2023/d02)
-- d03 ** - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2023/d03)
-- d04 ** - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2023/d04)
-- d05 ** - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2023/d05)
-- d06 ** - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2023/d06)
-- d07 ** - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2023/d07)
-- d08 ** - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2023/d08)
-- d09 ** - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2023/d09)
-- d10 ** - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2023/d10)
-- d11 ** - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2023/d11)
-- d12 ** - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2023/d12)
-- d13 ** - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2023/d13)
-- d14 ** - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2023/d14)
-- d15 ** - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2023/d15)
-- d16 ** - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2023/d16)
-- d17 ** - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2023/d17)
-- d18 ** - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2023/d18)
-- d19 ** - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2023/d19)
-- d20 *
-- d21 *
-- d22 ** - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2023/d22)
-- d23 ** - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2023/d23)
-- d24 *
-- d25 *
+- ★★ d01 - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2023/d01) / [Rust](rust/src/y2023/d01)
+- ★★ d02 - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2023/d02) / [Rust](rust/src/y2023/d02)
+- ★★ d03 - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2023/d03)
+- ★★ d04 - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2023/d04)
+- ★★ d05 - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2023/d05)
+- ★★ d06 - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2023/d06)
+- ★★ d07 - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2023/d07)
+- ★★ d08 - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2023/d08)
+- ★★ d09 - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2023/d09)
+- ★★ d10 - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2023/d10)
+- ★★ d11 - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2023/d11)
+- ★★ d12 - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2023/d12)
+- ★★ d13 - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2023/d13)
+- ★★ d14 - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2023/d14)
+- ★★ d15 - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2023/d15)
+- ★★ d16 - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2023/d16)
+- ★★ d17 - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2023/d17)
+- ★★ d18 - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2023/d18)
+- ★★ d19 - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2023/d19)
+- ★☆  d20 
+- ★☆  d21 
+- ★★ d22 - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2023/d22)
+- ★★ d23 - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2023/d23)
+- ★☆  d24 
+- ★☆  d25 
 
 Missing files for some, will be commited at a later date, they are in my old computer.
 
 ### 2022
-- d01 ** - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2022/Day01.kt)
-- d02 ** - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2022/Day02.kt)
-- d03 ** - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2022/Day03.kt)
-- d04 ** - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2022/Day04.kt)
-- d05 ** - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2022/Day05.kt)
-- d06 ** - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2022/Day06.kt)
-- d07 ** - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2022/Day07.kt)
-- d08 ** - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2022/Day08.kt)
-- d09 ** - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2022/Day09.kt)
-- d10 ** - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2022/Day10.kt)
-- d11 ** - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2022/Day11.kt)
-- d12
-- d13
-- d14
-- d15
-- d16
-- d17
-- d18
-- d19
-- d20
-- d21
-- d22
-- d23
-- d24
-- d25
+- ★★ d01 - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2022/Day01.kt)
+- ★★ d02 - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2022/Day02.kt)
+- ★★ d03 - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2022/Day03.kt)
+- ★★ d04 - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2022/Day04.kt)
+- ★★ d05 - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2022/Day05.kt)
+- ★★ d06 - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2022/Day06.kt)
+- ★★ d07 - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2022/Day07.kt)
+- ★★ d08 - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2022/Day08.kt)
+- ★★ d09 - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2022/Day09.kt)
+- ★★ d10 - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2022/Day10.kt)
+- ★★ d11 - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2022/Day11.kt)
+- ☆☆ d12
+- ☆☆ d13
+- ☆☆ d14
+- ☆☆ d15
+- ☆☆ d16
+- ☆☆ d17
+- ☆☆ d18
+- ☆☆ d19
+- ☆☆ d20
+- ☆☆ d21
+- ☆☆ d22
+- ☆☆ d23
+- ☆☆ d24
+- ☆☆ d25
 
 
 # What is missing
