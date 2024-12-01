@@ -68,8 +68,6 @@ Possibly out of date at the moment you look at it, but at the best effort basis:
 - ★☆ d24 - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2023/d24)
 - ★☆ d25 - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2023/d25)
 
-Missing files for some, will be commited at a later date, they are in my old computer.
-
 ### 2022
 
 - ★★ d01 - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2022/Day01.kt)
