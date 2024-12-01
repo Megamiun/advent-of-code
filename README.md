@@ -71,11 +71,11 @@ Missing files for some, will be commited at a later date, they are in my old com
 ### Kotlin
 [ ] Make day 1 solve for both part 1 and 2\
 [ ] Solve day 8 efficiently(Using cycle lengths)\
-[ ] Beautify day 12
+[ ] Beautify day 12\
 [ ] Finish missing days
 
 ### Rust
-[ ] Port from Kotlin to study language
+[ ] Port from Kotlin to study language\
 [ ] Beautify everything. This is my first experience with Rust
 
 ## 2022
