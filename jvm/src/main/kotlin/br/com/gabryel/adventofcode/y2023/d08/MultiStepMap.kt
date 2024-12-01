@@ -5,13 +5,13 @@ data class NodePosition(val node: String, val step: Int)
 
 class MultiStepMap(
     private val directions: String,
-    private val mappings: Map<String, Pair<String, String>>
+    private val MAPPINGS: Map<String, Pair<String, String>>
 ) {
 
     private val toZCache = HashMap<String, Array<NodePosition?>>()
 
     fun findStepsToArrive(): Long {
-        val startingPoints = mappings.entries
+        val startingPoints = MAPPINGS.entries
             .filter { it.key.endsWith('A') }
             .map { NodeStep(it.key, 0L) }
 
@@ -56,7 +56,7 @@ class MultiStepMap(
             return
         }
 
-        val nextDestination = getNextDestinationByPosition(directions, mappings, current, position)
+        val nextDestination = getNextDestinationByPosition(directions, MAPPINGS, current, position)
 
         if (nextDestination.endsWith('Z')) {
             previousSteps.add(NodePosition(nextDestination, 1))

@@ -2,18 +2,18 @@ package br.com.gabryel.adventofcode.y2023.d08
 
 fun getNextDestination(
     directions: String,
-    mappings: Map<String, Pair<String, String>>,
+    MAPPINGS: Map<String, Pair<String, String>>,
     current: String,
     steps: Int
-) = getNextDestinationByPosition(directions, mappings, current, steps % directions.length)
+) = getNextDestinationByPosition(directions, MAPPINGS, current, steps % directions.length)
 
 fun getNextDestinationByPosition(
     directions: String,
-    mappings: Map<String, Pair<String, String>>,
+    MAPPINGS: Map<String, Pair<String, String>>,
     current: String,
     position: Int
 ): String {
-    val nextChoice = mappings[current]
+    val nextChoice = MAPPINGS[current]
         ?: throw IllegalStateException("No step to take")
     val nextDirection = directions[position]
 

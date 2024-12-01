@@ -24,9 +24,9 @@ private val substitutions = listOf(
 )
 
 private fun List<String>.sumCalibrations() =
-    map(String::getCalibrationValue).sum()
+    map(String::get_calibration_value).sum()
 
-private fun String.getCalibrationValue(): Int {
+private fun String.get_calibration_value(): Int {
     val numbers = windowed(5, partialWindows = true) { window ->
         window.first().digitToIntOrNull() ?:
             substitutions.firstOrNull { (key) -> window.startsWith(key) }?.second
