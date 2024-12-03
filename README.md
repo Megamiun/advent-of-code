@@ -15,8 +15,8 @@ Possibly out of date at the moment you look at it, but at the best effort basis:
 ### 2024
 
 - ★★ d01 - [Rust](rust/src/y2024/d01)
-- ☆☆ d02
-- ☆☆ d03
+- ★★ d02 - [Rust](rust/src/y2024/d02)
+- ★★ d03 - [Rust](rust/src/y2024/d03)
 - ☆☆ d04
 - ☆☆ d05
 - ☆☆ d06
