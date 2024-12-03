@@ -13,7 +13,7 @@ pub fn get_sum_of_distances(lines: Vec<String>) -> i32 {
 }
 
 pub fn get_similarity_score(lines: Vec<String>) -> i32 {
-    let (mut left, right) = get_columns(lines);
+    let (left, right) = get_columns(lines);
 
     let counter = count_occurrences(right);
 
