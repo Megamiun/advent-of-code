@@ -1,5 +1,5 @@
 extern crate core;
-extern crate once_cell;
+extern crate regex;
 
 use std::fmt::Display;
 use std::fs::read_to_string;
