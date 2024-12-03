@@ -52,7 +52,7 @@ pub fn run_for_files_with_postfix<T: Display>(
     })
 }
 
-fn read_lines(year: u32, day: &String, file: String) -> Vec<String> {
+pub fn read_lines(year: u32, day: &String, file: String) -> Vec<String> {
     let mut lines = Vec::new();
 
     let path = "./resources/y".to_string() + &year.to_string() + "/d" + day + "/" + &file;
