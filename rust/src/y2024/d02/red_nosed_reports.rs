@@ -15,23 +15,19 @@ pub fn count_safe_with_tolerance(levels: Vec<String>) -> usize {
 }
 
 fn is_safe_with_tolerance(level: &[i32], increasing: bool) -> bool {
-    if level.len() < 2 {
-        return true;
-    }
-
-    for higher in 1..level.len() - 1 {
-        let lower = higher - 1;
-
-        if !is_within_bounds(level, lower, higher, increasing) {
-            let remove_lower = (lower == 0 || is_within_bounds(level, lower - 1, higher, increasing))
-                && is_safe(&level[higher..], increasing);
-            let remove_higher = is_within_bounds(level, lower, higher + 1, increasing)
-                && is_safe(&level[higher + 1..], increasing);
-            return remove_lower || remove_higher;
+    for current in 1..level.len() - 1 {
+        if !is_within_bounds(level, current - 1, current, increasing) {
+            return is_safe_if_removed(level, current - 1, increasing)
+                || is_safe_if_removed(level, current, increasing);
         }
     }
 
     true
+}
+
+fn is_safe_if_removed(level: &[i32], removed: usize, increasing: bool) -> bool {
+    (removed == 0 || is_within_bounds(level, (removed) - 1, removed + 1, increasing))
+        && is_safe(&level[removed + 1..], increasing)
 }
 
 fn is_safe(level: &[i32], increasing: bool) -> bool {
