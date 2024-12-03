@@ -22,10 +22,10 @@ fn is_safe_with_tolerance(level: &[i32], increasing: bool) -> bool {
     for higher in 1..level.len() - 1 {
         let lower = higher - 1;
 
-        if !is_within_bounds(&level[lower..=higher], increasing) {
-            let remove_lower = (lower == 0 || is_within_bounds_indexed(level, lower - 1, higher, increasing))
+        if !is_within_bounds(level, lower, higher, increasing) {
+            let remove_lower = (lower == 0 || is_within_bounds(level, lower - 1, higher, increasing))
                 && is_safe(&level[higher..], increasing);
-            let remove_higher = is_within_bounds_indexed(level, lower, higher + 1, increasing)
+            let remove_higher = is_within_bounds(level, lower, higher + 1, increasing)
                 && is_safe(&level[higher + 1..], increasing);
             return remove_lower || remove_higher;
         }
@@ -37,14 +37,10 @@ fn is_safe_with_tolerance(level: &[i32], increasing: bool) -> bool {
 fn is_safe(level: &[i32], increasing: bool) -> bool {
     level
         .windows(2)
-        .all(|distance| is_within_bounds(distance, increasing))
+        .all(|distance| is_within_bounds(distance, 0, 1, increasing))
 }
 
-fn is_within_bounds(sub_level: &[i32], positive: bool) -> bool {
-    is_within_bounds_indexed(sub_level, 0, 1, positive)
-}
-
-fn is_within_bounds_indexed(level: &[i32], left: usize, right: usize, positive: bool) -> bool {
+fn is_within_bounds(level: &[i32], left: usize, right: usize, positive: bool) -> bool {
     let diff = level[left] - level[right];
 
     let on_bound = diff != 0 && diff.abs() <= 3;
