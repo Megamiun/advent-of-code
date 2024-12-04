@@ -4,6 +4,8 @@ import java.util.Scanner
 
 private val scanner = Scanner(System.`in`)
 
+fun getGroupsOfLines() = generateSequence { getLines().toList().ifEmpty { null } }
+
 fun getLines() = getLines { it }
 
 fun <T> getLines(transform: (line: String) -> T) =
