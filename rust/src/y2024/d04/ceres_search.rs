@@ -1,6 +1,5 @@
 use std::convert::TryFrom;
 
-static DIRECTIONS: &[(i32, i32)] = &[(1, 1), (0, 1), (1, 0), (0, -1)];
 static XMAS: &[char] = &['X', 'M', 'A', 'S'];
 static SAMX: &[char] = &['S', 'A', 'M', 'X'];
 
