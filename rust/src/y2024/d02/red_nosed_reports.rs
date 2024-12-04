@@ -1,4 +1,4 @@
-pub fn count_safe(levels: Vec<String>) -> usize {
+pub fn count_safe(levels: &Vec<String>) -> usize {
     levels
         .iter()
         .map(|level| level.split(" ").map(&to_i32).collect::<Vec<i32>>())
@@ -6,7 +6,7 @@ pub fn count_safe(levels: Vec<String>) -> usize {
         .count()
 }
 
-pub fn count_safe_with_tolerance(levels: Vec<String>) -> usize {
+pub fn count_safe_with_tolerance(levels: &Vec<String>) -> usize {
     levels
         .iter()
         .map(|level| level.split(" ").map(&to_i32).collect::<Vec<i32>>())

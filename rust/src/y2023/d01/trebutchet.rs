@@ -10,7 +10,7 @@ static MAPPINGS: [(&str, u32); 9] = [
     ("nine", 9),
 ];
 
-pub fn get_calibration_value_for(words: Vec<String>) -> u32 {
+pub fn get_calibration_value_for(words: &Vec<String>) -> u32 {
     let points = words
         .iter()
         .map(|word| get_calibration_value(word))

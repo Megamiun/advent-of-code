@@ -5,7 +5,7 @@ static MUL_FINDER: LazyLock<Regex> = LazyLock::new(|| Regex::new("mul\\((\\d+),(
 
 static DO_FINDER: LazyLock<Regex> = LazyLock::new(|| Regex::new("(^|do\\(\\))(.+?)(don't\\(\\)|$)").unwrap());
 
-pub fn sum_muls(lines: Vec<String>) -> u32 {
+pub fn sum_muls(lines: &Vec<String>) -> u32 {
     let content = lines.iter()
         .as_slice()
         .join("\n");
@@ -13,7 +13,7 @@ pub fn sum_muls(lines: Vec<String>) -> u32 {
     calculate_muls(&content)
 }
 
-pub fn sum_muls_in_do(lines: Vec<String>) -> u32 {
+pub fn sum_muls_in_do(lines: &Vec<String>) -> u32 {
     let content = lines.iter()
         .as_slice()
         .join(" ");
