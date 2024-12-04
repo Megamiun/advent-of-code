@@ -1,7 +1,7 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="[2022] Day 17" type="JetRunConfigurationType">
     <option name="MAIN_CLASS_NAME" value="br.com.gabryel.adventofcode.y2022.Day17Kt" />
-    <module name="advent-of-code.main" />
+    <module name="advent-of-code.jvm.main" />
     <option name="REDIRECT_INPUT" value="true" />
     <option name="INPUT_FILE" value="src/main/resources/br/com/gabryel/adventofcode/2022/day17" />
     <shortenClasspath name="NONE" />
