@@ -3,7 +3,7 @@ use std::convert::TryFrom;
 static XMAS: &[char] = &['X', 'M', 'A', 'S'];
 static SAMX: &[char] = &['S', 'A', 'M', 'X'];
 
-pub fn find_all_xmas(lines: &Vec<String>) -> usize {
+pub fn find_all_xmas_collecting(lines: &Vec<String>) -> usize {
     let all_lines = [
         collect_lines(lines),
         collect_columns(lines).as_ref(),
@@ -63,13 +63,17 @@ fn collect_until_end(lines: &[String], start: &(usize, usize), diff: &(i32, i32)
     std::iter::successors(
         Option::from(*start),
         |prev| add(prev, diff)
-    ).map_while(|(x, y)| lines.get(x).map(|line| line.chars().nth(y)).flatten())
+    ).map_while(|pos| get_char_at(lines, &pos))
         .collect()
 }
 
-fn add((x, y): &(usize, usize), (xDiff, yDiff): &(i32, i32)) -> Option<(usize, usize)> {
-    let new_x = usize::try_from(*x as i32 + xDiff);
-    let new_y = usize::try_from(*y as i32 + yDiff);
+fn get_char_at(lines: &[String], (x, y): &(usize, usize)) -> Option<char> {
+    lines.get(*x).map(|line| line.as_bytes().get(*y).map(|c| char::from(*c))).flatten()
+}
+
+fn add((x, y): &(usize, usize), (x_diff, y_diff): &(i32, i32)) -> Option<(usize, usize)> {
+    let new_x = usize::try_from(*x as i32 + x_diff);
+    let new_y = usize::try_from(*y as i32 + y_diff);
 
     match (new_x, new_y) {
         (Ok(new_x_val), Ok(new_y_val)) => Some((new_x_val, new_y_val)),
