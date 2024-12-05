@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-pub fn get_sum_of_distances(lines: &Vec<String>) -> i32 {
+pub fn get_sum_of_distances(lines: &[String]) -> i32 {
     let (mut left, mut right) = get_columns(lines);
 
     // TODO Find a non mutable way to do this
@@ -12,7 +12,7 @@ pub fn get_sum_of_distances(lines: &Vec<String>) -> i32 {
         .sum()
 }
 
-pub fn get_similarity_score(lines: &Vec<String>) -> i32 {
+pub fn get_similarity_score(lines: &[String]) -> i32 {
     let (left, right) = get_columns(lines);
 
     let counter = count_occurrences(&right);
@@ -22,7 +22,7 @@ pub fn get_similarity_score(lines: &Vec<String>) -> i32 {
         .sum()
 }
 
-fn count_occurrences(right: &Vec<i32>) -> HashMap<i32, i32> {
+fn count_occurrences(right: &[i32]) -> HashMap<i32, i32> {
     let mut counter: HashMap<i32, i32> = HashMap::new();
 
     right.iter().for_each(|num| {
@@ -35,7 +35,7 @@ fn count_occurrences(right: &Vec<i32>) -> HashMap<i32, i32> {
     counter
 }
 
-fn get_columns(lines: &Vec<String>) -> (Vec<i32>, Vec<i32>) {
+fn get_columns(lines: &[String]) -> (Vec<i32>, Vec<i32>) {
     lines
         .iter()
         .map(|line| {

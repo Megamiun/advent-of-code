@@ -7,7 +7,7 @@ use std::fs::read_to_string;
 pub mod y2023;
 pub mod y2024;
 
-pub fn run_for_files<T: Display>(year: u32, day: u32, files: &[&str], exec: &dyn Fn(&Vec<String>) -> T) {
+pub fn run_for_files<T: Display>(year: u32, day: u32, files: &[&str], exec: &dyn Fn(&[String]) -> T) {
     let padded_day = pad_left(day);
 
     println!("Running for {}-{}:", year, padded_day);
@@ -31,7 +31,7 @@ pub fn run_for_files_with_postfix<T: Display>(
     day: u32,
     files: &[&str],
     postfix: &str,
-    exec: &dyn Fn(&Vec<String>, &Vec<String>) -> T,
+    exec: &dyn Fn(&[String], &[String]) -> T,
 ) {
     let padded_day = pad_left(day);
 

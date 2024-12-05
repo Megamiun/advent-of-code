@@ -26,7 +26,7 @@ impl Color {
     }
 }
 
-pub fn sum_minimum_power(rounds: &Vec<String>) -> u32 {
+pub fn sum_minimum_power(rounds: &[String]) -> u32 {
     rounds
         .iter()
         .map(|round| get_game_summary(round))
@@ -51,7 +51,7 @@ fn get_minimum_for_colors(rounds: Vec<HashMap<&Color, u32>>) -> HashMap<&Color, 
     })
 }
 
-pub fn sum_valid(original: &Vec<String>, limits: &Vec<String>) -> u32 {
+pub fn sum_valid(original: &[String], limits: &[String]) -> u32 {
     let mut limits_num = limits.iter().map(|t| u32::from_str_radix(t, 10).unwrap());
 
     let limit_per_color = HashMap::from([
@@ -68,7 +68,7 @@ pub fn sum_valid(original: &Vec<String>, limits: &Vec<String>) -> u32 {
         .sum()
 }
 
-fn is_within_limit(maps: &Vec<HashMap<&Color, u32>>, limits: &HashMap<&Color, u32>) -> bool {
+fn is_within_limit(maps: &[HashMap<&Color, u32>], limits: &HashMap<&Color, u32>) -> bool {
     maps.iter()
         .all(|round| round.iter().all(|(color, number)| number <= &limits[color]))
 }

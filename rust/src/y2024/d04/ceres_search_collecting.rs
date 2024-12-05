@@ -3,7 +3,7 @@ use std::convert::TryFrom;
 static XMAS: &[char] = &['X', 'M', 'A', 'S'];
 static SAMX: &[char] = &['S', 'A', 'M', 'X'];
 
-pub fn find_all_xmas_collecting(lines: &Vec<String>) -> usize {
+pub fn find_all_xmas_collecting(lines: &[String]) -> usize {
     let all_lines = [
         collect_lines(lines),
         collect_columns(lines).as_ref(),
@@ -20,11 +20,11 @@ pub fn find_all_xmas_collecting(lines: &Vec<String>) -> usize {
         }).sum()
 }
 
-fn collect_lines(lines: &Vec<String>) -> &[String] {
+fn collect_lines(lines: &[String]) -> &[String] {
     lines
 }
 
-fn collect_columns(lines: &Vec<String>) -> Box<[String]> {
+fn collect_columns(lines: &[String]) -> Box<[String]> {
     let diff = &(1, 0);
 
     (0..lines.get(0).unwrap().len())
@@ -33,7 +33,7 @@ fn collect_columns(lines: &Vec<String>) -> Box<[String]> {
         .into_boxed_slice()
 }
 
-fn collect_diagonals(lines: &Vec<String>) -> Box<[String]> {
+fn collect_diagonals(lines: &[String]) -> Box<[String]> {
     let diff_right = &(1, 1);
     let diff_left = &(-1, 1);
 
