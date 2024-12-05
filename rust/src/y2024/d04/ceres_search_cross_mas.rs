@@ -19,7 +19,7 @@ static PERMUTATIONS: &[[(char, [(i32, i32); 2]); 2]] = &[
     ],
 ];
 
-pub fn find_all_cross_mas(lines: &Vec<String>) -> usize {
+pub fn find_all_cross_mas(lines: &[String]) -> usize {
     let height = lines.len() - 1;
     let width = lines[0].len() - 1;
 

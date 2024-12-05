@@ -1,4 +1,4 @@
-pub fn get_sum_of_correct_middle_points(lines: &Vec<String>) -> usize {
+pub fn get_sum_of_correct_middle_points(lines: &[String]) -> usize {
     let (rules, instructions) = parse_inputs(lines);
 
     instructions
@@ -8,7 +8,7 @@ pub fn get_sum_of_correct_middle_points(lines: &Vec<String>) -> usize {
         .sum()
 }
 
-pub fn get_sum_of_incorrect_middle_points(lines: &Vec<String>) -> usize {
+pub fn get_sum_of_incorrect_middle_points(lines: &[String]) -> usize {
     let (rules, instructions) = parse_inputs(lines);
 
     instructions

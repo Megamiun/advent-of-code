@@ -5,7 +5,7 @@ static DIRECTIONS: &[(i32, i32)] = &[(1, 1), (0, 1), (1, 0), (0, -1)];
 static MAS: &[char] = &['M', 'A', 'S'];
 static XAM: &[char] = &['X', 'A', 'M'];
 
-pub fn find_all_xmas_simple(lines: &Vec<String>) -> usize {
+pub fn find_all_xmas_simple(lines: &[String]) -> usize {
     let height = lines.len();
     let width = lines[0].len();
 
