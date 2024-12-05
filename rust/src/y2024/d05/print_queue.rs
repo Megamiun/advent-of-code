@@ -19,7 +19,7 @@ pub fn get_sum_of_incorrect_middle_points(lines: &Vec<String>) -> usize {
         .sum()
 }
 
-fn fix_instruction(rules: &Vec<(usize, usize)>, instruction: &Vec<usize>) -> Vec<usize> {
+fn fix_instruction(rules: &[(usize, usize)], instruction: &[usize]) -> Vec<usize> {
     let mut copy = instruction.iter().copied().collect::<Vec<_>>();
     let mut has_changes = true;
 
@@ -41,16 +41,16 @@ fn fix_instruction(rules: &Vec<(usize, usize)>, instruction: &Vec<usize>) -> Vec
     copy
 }
 
-fn satisfies_rules(rules: &Vec<(usize, usize)>, instruction: &Vec<usize>) -> bool {
+fn satisfies_rules(rules: &[(usize, usize)], instruction: &[usize]) -> bool {
     rules.iter().all(|rule| is_valid(instruction, rule))
 }
 
-fn is_valid(instruction: &Vec<usize>, rule: &(usize, usize)) -> bool {
+fn is_valid(instruction: &[usize], rule: &(usize, usize)) -> bool {
     let positions = get_positions(instruction, rule);
     positions.is_none() || positions.is_some_and(|(f, s)| f < s)
 }
 
-fn get_positions(instruction: &Vec<usize>, (pre, pos): &(usize, usize)) -> Option<(usize, usize)> {
+fn get_positions(instruction: &[usize], (pre, pos): &(usize, usize)) -> Option<(usize, usize)> {
     let pre_position = instruction.iter().position(|v| v == pre);
     let post_position = instruction.iter().position(|v| v == pos);
 
@@ -60,7 +60,7 @@ fn get_positions(instruction: &Vec<usize>, (pre, pos): &(usize, usize)) -> Optio
     }
 }
 
-fn parse_inputs(lines: &Vec<String>) -> (Vec<(usize, usize)>, Vec<Vec<usize>>) {
+fn parse_inputs(lines: &[String]) -> (Vec<(usize, usize)>, Vec<Vec<usize>>) {
     let grouped = lines
         .split(|line| line.is_empty())
         .take(2)
