@@ -1,11 +1,13 @@
 extern crate core;
 extern crate regex;
+extern crate derive_more;
 
 use std::fmt::Display;
 use std::fs::read_to_string;
 
 pub mod y2023;
 pub mod y2024;
+mod util;
 
 pub fn run_for_files<T: Display>(year: u32, day: u32, files: &[&str], exec: &dyn Fn(&[String]) -> T) {
     let padded_day = pad_left(day);
