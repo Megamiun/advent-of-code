@@ -1,58 +1,30 @@
-use crate::y2024::d06::gallivant_guard::Direction::{E, N, S, W};
-use std::collections::HashSet;
-use std::panic::panic_any;
+use std::collections::{HashMap, HashSet};
+use std::sync::LazyLock;
 
-enum Direction {
-    N,
-    E,
-    S,
-    W,
+struct Direction {
+    dir: (i32, i32),
+    next: fn() -> &'static Direction,
 }
 
 impl Direction {
-    const DIRECTIONS: &'static [(i32, i32)] = &[(0, -1), (1, 0), (0, 1), (-1, 0)];
+    const N: &'static Direction = &Direction { dir: (0, -1), next: || Direction::E };
+    const E: &'static Direction = &Direction { dir: (1, 0), next: || Direction::S };
+    const S: &'static Direction = &Direction { dir: (0, 1), next: || Direction::W };
+    const W: &'static Direction = &Direction { dir: (-1, 0), next: || Direction::N };
 
-    fn get_dir(&self) -> &(i32, i32) {
-        match self {
-            N => &Self::DIRECTIONS[0],
-            E => &Self::DIRECTIONS[1],
-            S => &Self::DIRECTIONS[2],
-            W => &Self::DIRECTIONS[3],
-        }
-    }
+    const VALUES: LazyLock<HashMap<char, &'static Direction>> = LazyLock::new(|| {
+        HashMap::from([('^', Direction::N), ('>', Direction::E), ('V', Direction::S), ('<', Direction::W) ])
+    });
 
     fn from(char: char) -> &'static Direction {
-        match char {
-            '^' => &N,
-            '>' => &E,
-            'V' => &S,
-            '<' => &W,
-            _ => panic_any(format!("Direction unknown: {char}")),
-        }
-    }
-
-    fn next(&self) -> &'static Direction {
-        match self {
-            N => &E,
-            E => &S,
-            S => &W,
-            W => &N,
-        }
+        Self::VALUES.get(&char).unwrap()
     }
 }
 
 pub fn get_visited_count(lines: &[String]) -> usize {
     let maze = as_maze(lines);
 
-    let (guard_pos, guard_dir) = (0..maze.len())
-        .flat_map(|y| {
-            (0..maze[y].len())
-                .filter(|&x| !['.', '#'].contains(&maze[y][x]))
-                .map(|x| ((x, y), Direction::from(maze[y][x])))
-                .nth(0)
-        })
-        .nth(0)
-        .unwrap();
+    let (guard_pos, guard_dir) = find_initial_guard_position(&maze);
 
     std::iter::successors(
         Option::from((guard_pos, guard_dir)),
@@ -63,16 +35,27 @@ pub fn get_visited_count(lines: &[String]) -> usize {
     .len()
 }
 
+fn find_initial_guard_position(maze: &Vec<Vec<char>>) -> ((usize, usize), &'static Direction) {
+    (0..maze.len()).flat_map(|y| {
+        (0..maze[y].len())
+            .filter(|&x| !['.', '#'].contains(&maze[y][x]))
+            .map(|x| ((x, y), Direction::from(maze[y][x])))
+            .nth(0)
+    })
+    .nth(0)
+    .unwrap()
+}
+
 fn visit_next(
     maze: &Vec<Vec<char>>,
     pos: &(usize, usize),
     direction: &'static Direction,
 ) -> Option<((usize, usize), &'static Direction)> {
-    let (x, y) = add(pos, direction.get_dir())?;
+    let (x, y) = add(pos, &direction.dir)?;
     let new_char = maze.get(y)?.get(x)?;
 
     match new_char {
-        '#' => visit_next(maze, pos, &direction.next()),
+        '#' => visit_next(maze, pos, (direction.next)()),
         _ => Option::from(((x, y), direction)),
     }
 }
