@@ -1,7 +1,7 @@
 use std::cmp::max;
 use std::collections::HashMap;
 use std::hash::Hash;
-use y2023::d02::cube_conumdrum::Color::{B, G, R};
+use crate::y2023::d02::cube_conumdrum::Color::{B, G, R};
 
 #[derive(PartialEq, Eq, Hash)]
 enum Color {
