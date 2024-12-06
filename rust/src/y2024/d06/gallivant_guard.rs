@@ -102,7 +102,7 @@ fn visit_next(
     pos: &Index2D,
     direction: &'static Direction,
 ) -> Option<(Index2D, &'static Direction)> {
-    let Index2D(x, y) = add(pos, &direction.dir)?;
+    let Index2D(x, y) = pos.add(direction.dir)?;
     let new_char = maze.get(y)?.get(x)?;
 
     match new_char {
@@ -116,14 +116,4 @@ fn as_maze(lines: &[String]) -> Vec<Vec<char>> {
         .iter()
         .map(|line| line.chars().map(|char| char).collect::<Vec<_>>())
         .collect::<Vec<_>>()
-}
-
-fn add(Index2D(x, y): &Index2D, Diff(x_diff, y_diff): &Diff) -> Option<Index2D> {
-    let new_x = usize::try_from(*x as i32 + x_diff);
-    let new_y = usize::try_from(*y as i32 + y_diff);
-
-    match (new_x, new_y) {
-        (Ok(new_x_val), Ok(new_y_val)) => Some(Index2D(new_x_val, new_y_val)),
-        _ => None,
-    }
 }
