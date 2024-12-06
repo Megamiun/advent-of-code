@@ -1,6 +1,7 @@
 extern crate core;
 extern crate regex;
 extern crate derive_more;
+extern crate rustc_hash;
 
 use std::fmt::Display;
 use std::fs::read_to_string;
