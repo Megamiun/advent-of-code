@@ -81,8 +81,8 @@ Possibly out of date at the moment you look at it, but at the best effort basis:
 - ★★ d09 - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2022/Day09.kt)
 - ★★ d10 - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2022/Day10.kt)
 - ★★ d11 - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2022/Day11.kt)
-- ★★ d12 - Kotlin [Missing]
-- ★☆ d13 - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2022/Day13.kt)
+- ★★ d12 - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2022/Day12.kt)
+- ★★ d13 - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2022/Day13.kt)
 - ☆☆ d14
 - ☆☆ d15
 - ☆☆ d16

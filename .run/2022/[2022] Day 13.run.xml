@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="[2022] Day 12" type="JetRunConfigurationType">
+  <configuration default="false" name="[2022] Day 13" type="JetRunConfigurationType">
     <option name="MAIN_CLASS_NAME" value="br.com.gabryel.adventofcode.y2022.Day13Kt" />
     <module name="advent-of-code.jvm.main" />
     <option name="REDIRECT_INPUT" value="true" />

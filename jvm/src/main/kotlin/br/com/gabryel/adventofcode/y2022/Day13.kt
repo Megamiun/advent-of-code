@@ -5,13 +5,29 @@ import br.com.gabryel.adventofcode.y2022.Packet.PacketArray
 import java.util.*
 
 fun main() {
-    val inOrder = getPacketPairs()
-        .withIndex()
-        .filter { (_, content) -> content.first <= content.second }
-        .map { it.index + 1 }
-        .sum()
+    val pairs = getPacketPairs().toList()
+    pairs.findPairsInOrder()
+    pairs.findDecoderKey()
+}
 
-    println("In order: $inOrder")
+private fun List<Pair<Packet, Packet>>.findDecoderKey() {
+    val dividers = listOf(
+        PacketArray(PacketArray(Num(2))),
+        PacketArray(PacketArray(Num(6))),
+    )
+
+    val sorted = flatMap { (f, s) -> listOf(f, s) }.plus(dividers).sorted()
+    val decoderKey = dividers.map { sorted.indexOf(it) + 1 }.reduce(Int::times)
+
+    println("Multiplication of position of Divider Packets: $decoderKey")
+}
+
+private fun List<Pair<Packet, Packet>>.findPairsInOrder() {
+    val inOrder = withIndex()
+        .filter { (_, content) -> content.first <= content.second }
+        .sumOf { it.index + 1 }
+
+    println("Sum of packets in order: $inOrder")
 }
 
 private sealed interface Packet : Comparable<Packet> {
@@ -20,9 +36,13 @@ private sealed interface Packet : Comparable<Packet> {
             is Num -> value.compareTo(other.value)
             is PacketArray -> PacketArray(listOf(this)).compareTo(other)
         }
+
+        override fun toString() = value.toString()
     }
 
     data class PacketArray(val values: List<Packet>) : Packet {
+        constructor(vararg values: Packet): this(values.toList())
+
         override fun compareTo(other: Packet): Int = when (other) {
             is Num -> compareTo(PacketArray(listOf(other)))
             is PacketArray -> {
@@ -32,6 +52,8 @@ private sealed interface Packet : Comparable<Packet> {
                     ?: values.size.compareTo(other.values.size)
             }
         }
+
+        override fun toString() = values.joinToString(",", "[", "]")
     }
 }
 
