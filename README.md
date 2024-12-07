@@ -19,7 +19,7 @@ Possibly out of date at the moment you look at it, but at the best effort basis:
 - ★★ d03 - [Rust](rust/src/y2024/d03)
 - ★★ d04 - [Rust](rust/src/y2024/d04)
 - ★★ d05 - [Rust](rust/src/y2024/d05)
-- ★★ d06 - [Rust](rust/src/y2024/d06)
+- ★★ d06 - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2024/d06)/[Rust](rust/src/y2024/d06)
 - ☆☆ d07
 - ☆☆ d08
 - ☆☆ d09
