@@ -1,10 +1,10 @@
 package br.com.gabryel.adventofcode.y2023.d12
 
-import br.com.gabryel.adventofcode.y2023.readLines
+import br.com.gabryel.adventofcode.readLines
 
 fun main() {
     listOf("sample", "input").forEach { file ->
-        val lines = readLines(12, file)
+        val lines = readLines(2023, 12, file)
 
         listOf(1, 5).forEach {
             val padded = it.toString().padEnd(3)

@@ -1,6 +1,6 @@
 package br.com.gabryel.adventofcode.y2023.d07
 
-import br.com.gabryel.adventofcode.y2023.readLines
+import br.com.gabryel.adventofcode.readLines
 
 private val order = (listOf('A', 'K', 'Q', 'J', 'T') + ('9' downTo '2'))
     .mapIndexed { index, card -> card to index }
@@ -12,7 +12,7 @@ private val orderWithJoker = (listOf('A', 'K', 'Q', 'T') + ('9' downTo '2') + 'J
 
 fun main() {
     listOf("sample", "input").forEach { file ->
-        val games = readLines(7, file)
+        val games = readLines(2023, 7, file)
             .map { it.split(" ") }
             .map { (cards, bet) -> cards to bet.toInt() }
 

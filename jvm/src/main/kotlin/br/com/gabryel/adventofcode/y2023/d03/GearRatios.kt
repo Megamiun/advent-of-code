@@ -1,10 +1,10 @@
 package br.com.gabryel.adventofcode.y2023.d03
 
-import br.com.gabryel.adventofcode.y2023.readLines
+import br.com.gabryel.adventofcode.readLines
 
 fun main() {
     listOf("sample1", "input").forEach { file ->
-        val schema = readLines(3, file)
+        val schema = readLines(2023, 3, file)
 
         println("[Adjacent To Symbols][$file] ${schema.getSumOfAdjacentToSymbols()}")
         println("[Gear Ratios        ][$file] ${schema.getSumOfGearRatios()}")

@@ -2,7 +2,7 @@ package br.com.gabryel.adventofcode.y2023.d24
 
 import br.com.gabryel.adventofcode.y2023.d24.Vector3D.Dimension
 import br.com.gabryel.adventofcode.y2023.d24.Vector3D.Dimension.*
-import br.com.gabryel.adventofcode.y2023.readLines
+import br.com.gabryel.adventofcode.readLines
 import java.math.BigDecimal
 import java.math.BigInteger
 import java.math.MathContext
@@ -12,7 +12,7 @@ import java.util.PriorityQueue
 
 fun main() {
     listOf("sample"/*, "input"*/).forEach { file ->
-        val hailstones = readLines(24, file).map { it.toHailStone() }
+        val hailstones = readLines(2023, 24, file).map { it.toHailStone() }
 
         listOf(
             7.0..27.0,

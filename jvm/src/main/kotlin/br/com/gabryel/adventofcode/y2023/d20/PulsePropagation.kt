@@ -1,11 +1,11 @@
 package br.com.gabryel.adventofcode.y2023.d20
 
-import br.com.gabryel.adventofcode.y2023.readLines
+import br.com.gabryel.adventofcode.readLines
 import java.util.concurrent.atomic.AtomicInteger
 
 fun main() {
     listOf("sample", "sample2", "input").forEach { file ->
-        val spec = readLines(20, file)
+        val spec = readLines(2023, 20, file)
 
         println("[Signal Multiplication][$file] ${spec.getSignalMultiplication()}")
         println("[RX Button Press      ][$file] ${spec.getFirstCallToRx()}")

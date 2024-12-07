@@ -1,10 +1,10 @@
 package br.com.gabryel.adventofcode.y2023.d14
 
-import br.com.gabryel.adventofcode.y2023.readLines
+import br.com.gabryel.adventofcode.readLines
 
 fun main() {
     listOf("sample", "input").forEach { file ->
-        val terrain = readLines(14, file)
+        val terrain = readLines(2023, 14, file)
 
         val calculator = StressCalculator(terrain)
 

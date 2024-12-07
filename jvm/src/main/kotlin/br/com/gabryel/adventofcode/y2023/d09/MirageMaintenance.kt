@@ -1,10 +1,10 @@
 package br.com.gabryel.adventofcode.y2023.d09
 
-import br.com.gabryel.adventofcode.y2023.readLines
+import br.com.gabryel.adventofcode.readLines
 
 fun main() {
     listOf("sample", "input").forEach { file ->
-        val lines = readLines(9, file)
+        val lines = readLines(2023, 9, file)
             .map { it.split(" ").map { it.toInt() } }
 
         println("[Forward ][$file] ${lines.sumOf(::findNextNumberInNextLayer)}")

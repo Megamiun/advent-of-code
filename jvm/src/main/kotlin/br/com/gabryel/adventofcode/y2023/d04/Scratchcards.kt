@@ -1,13 +1,13 @@
 package br.com.gabryel.adventofcode.y2023.d04
 
-import br.com.gabryel.adventofcode.y2023.readLines
+import br.com.gabryel.adventofcode.readLines
 import kotlin.math.pow
 
 typealias Card = Triple<Int, List<Int>, List<Int>>
 
 fun main() {
     listOf("sample1", "input").forEach { file ->
-        val cards = readLines(4, file)
+        val cards = readLines(2023, 4, file)
 
         println("[Card Power    ][$file] ${sumCardsValues(cards)}")
         println("[Card Recursive][$file] ${sumCardsRecursive(cards)}")

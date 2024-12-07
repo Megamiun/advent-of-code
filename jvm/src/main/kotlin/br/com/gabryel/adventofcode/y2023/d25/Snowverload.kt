@@ -1,15 +1,15 @@
 package br.com.gabryel.adventofcode.y2023.d25
 
 import br.com.gabryel.adventofcode.y2023.logTimed
-import br.com.gabryel.adventofcode.y2023.readLines
+import br.com.gabryel.adventofcode.readLines
 import kotlin.math.max
 import kotlin.math.min
 
-private val EDGES_TO_CHECK_PER_ITERATION = 15
+private const val EDGES_TO_CHECK_PER_ITERATION = 15
 
 fun main() {
     listOf("sample", "input").forEach { file ->
-        val lines = readLines(25, file)
+        val lines = readLines(2023, 25, file)
 
         val nodes = lines.flatMap { "\\w+".toRegex().findAll(it).map { it.value } }
             .distinct()

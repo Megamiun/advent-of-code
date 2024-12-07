@@ -1,10 +1,10 @@
 package br.com.gabryel.adventofcode.y2023.d11
 
-import br.com.gabryel.adventofcode.y2023.readLines
+import br.com.gabryel.adventofcode.readLines
 
 fun main() {
     listOf("sample", "input").forEach { file ->
-        val map = readLines(11, file).map { it.toCharArray() }.toTypedArray()
+        val map = readLines(2023, 11, file).map { it.toCharArray() }.toTypedArray()
 
         listOf<Long>(2, 10, 100, 1000000).forEach {
             val padded = it.toString().padEnd(10)

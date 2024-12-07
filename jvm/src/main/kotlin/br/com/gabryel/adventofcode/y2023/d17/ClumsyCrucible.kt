@@ -1,12 +1,12 @@
 package br.com.gabryel.adventofcode.y2023.d17
 
 import br.com.gabryel.adventofcode.y2023.d17.Direction.*
-import br.com.gabryel.adventofcode.y2023.readLines
+import br.com.gabryel.adventofcode.readLines
 import java.util.PriorityQueue
 
 fun main() {
     listOf("sample", "input").forEach { file ->
-        val lines = readLines(17, file).map { it.map { it.digitToInt() } }
+        val lines = readLines(2023, 17, file).map { it.map { it.digitToInt() } }
 
         println("[Minimum Heat Loss - Basic][$file] ${MinimumHeatLoss(lines, 1, 3).minimumHeatLoss}")
         println("[Minimum Heat Loss - Ultra][$file] ${MinimumHeatLoss(lines, 4, 10).minimumHeatLoss}")

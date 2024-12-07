@@ -1,13 +1,13 @@
 package br.com.gabryel.adventofcode.y2023.d08
 
-import br.com.gabryel.adventofcode.y2023.readLines
+import br.com.gabryel.adventofcode.readLines
 import kotlin.time.measureTimedValue
 
 private val directionRegex = """[0-9A-Z]+""".toRegex()
 
 fun main() {
     listOf("sample", "sample2", "sample3", "input").forEach { file ->
-        val lines = readLines(8, file)
+        val lines = readLines(2023, 8, file)
         val directions = lines[0]
 
         val MAPPINGS = lines.drop(1).associate {

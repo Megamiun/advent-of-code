@@ -1,6 +1,6 @@
 package br.com.gabryel.adventofcode.y2023.d05
 
-import br.com.gabryel.adventofcode.y2023.takeUntilNextBlankLine
+import br.com.gabryel.adventofcode.takeUntilNextBlankLine
 
 fun generateSourceToDestination(lines: List<String>): Long {
     val iterator = lines.listIterator()

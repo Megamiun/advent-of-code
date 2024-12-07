@@ -1,10 +1,10 @@
 package br.com.gabryel.adventofcode.y2023.d01
 
-import br.com.gabryel.adventofcode.y2023.readLines
+import br.com.gabryel.adventofcode.readLines
 
 fun main() {
     listOf("sample1", "sample2", "input").forEach {
-        val lines = readLines(1, it)
+        val lines = readLines(2023, 1, it)
 
         val result = lines.sumCalibrations()
         println("[$it]: $result")

@@ -1,5 +1,6 @@
 package br.com.gabryel.adventofcode.y2023.d18
 
+import br.com.gabryel.adventofcode.readLines
 import br.com.gabryel.adventofcode.y2023.*
 import br.com.gabryel.adventofcode.y2023.d10.Coordinate
 import br.com.gabryel.adventofcode.y2023.d18.Direction.*
@@ -20,7 +21,7 @@ private val extractor = """(.) (\d+) \(#(.*)\)""".toRegex()
 
 fun main() {
     listOf("sample", "input").forEach { file ->
-        val lines = readLines(18, file).map {
+        val lines = readLines(2023, 18, file).map {
             val (_, direction, steps, color) = extractor.find(it)!!.groupValues
 
             Triple(Direction.findByInitial(direction), steps.toInt(), color)
