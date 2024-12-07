@@ -83,7 +83,7 @@ Possibly out of date at the moment you look at it, but at the best effort basis:
 - ★★ d11 - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2022/Day11.kt)
 - ★★ d12 - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2022/Day12.kt)
 - ★★ d13 - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2022/Day13.kt)
-- ☆☆ d14
+- ★★ d11 - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2022/Day14.kt)
 - ☆☆ d15
 - ☆☆ d16
 - ☆☆ d17
