@@ -20,25 +20,23 @@ pub fn with_extra_operators(lines: &[String]) -> i64 {
 fn run_with_operators(lines: &[String], ops: &[fn(i64, i64) -> i64]) -> i64 {
     parse_inputs(lines)
         .iter()
-        .filter(|(goal, numbers)| can_achieve_goal(*goal, numbers, ops))
+        .filter(|(goal, numbers)|
+            can_achieve_goal(*goal, numbers[0], &numbers[1..], ops)
+        )
         .map(|(goal, _)| goal)
         .sum()
 }
 
-fn can_achieve_goal(goal: i64, next: &[i64], ops: &[fn(i64, i64) -> i64]) -> bool {
-    can_achieve_goal_acc(goal, next[0], &next[1..], ops)
-}
-
-fn can_achieve_goal_acc(goal: i64, curr: i64, next: &[i64], ops: &[fn(i64, i64) -> i64]) -> bool {
-    if curr > goal {
+fn can_achieve_goal(goal: i64, acc: i64, next: &[i64], ops: &[fn(i64, i64) -> i64]) -> bool {
+    if acc > goal {
         return false
     }
     if next.len() == 0 {
-        return goal == curr
+        return goal == acc
     }
 
     ops.iter().any(|op|
-        can_achieve_goal_acc(goal, op(curr, next[0]), &next[1..], ops))
+        can_achieve_goal(goal, op(acc, next[0]), &next[1..], ops))
 }
 
 fn parse_inputs(lines: &[String]) -> Vec<(i64, Vec<i64>)> {
