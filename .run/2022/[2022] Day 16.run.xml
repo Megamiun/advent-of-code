@@ -3,7 +3,7 @@
     <option name="MAIN_CLASS_NAME" value="br.com.gabryel.adventofcode.y2022.Day16Kt" />
     <module name="advent-of-code.jvm.main" />
     <option name="REDIRECT_INPUT" value="true" />
-    <option name="INPUT_FILE" value="src/main/resources/br/com/gabryel/adventofcode/2022/day16" />
+    <option name="INPUT_FILE" value="$PROJECT_DIR$/resources/y2022/day16" />
     <shortenClasspath name="NONE" />
     <method v="2">
       <option name="Make" enabled="true" />
