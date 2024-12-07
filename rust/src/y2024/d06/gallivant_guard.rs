@@ -1,5 +1,5 @@
 use crate::util::{Diff, Index2D};
-use rustc_hash::{FxHashSet};
+use rustc_hash::FxHashSet;
 use std::collections::{HashMap, HashSet};
 use std::hash::BuildHasher;
 use std::sync::LazyLock;
@@ -17,7 +17,7 @@ impl Direction {
     const W: &'static Direction = &Direction { dir: Diff(-1, 0), next: || Direction::N };
 
     const VALUES: LazyLock<HashMap<char, &'static Direction>> = LazyLock::new(|| {
-        HashMap::from([('^', Direction::N), ('>', Direction::E), ('V', Direction::S), ('<', Direction::W) ])
+        HashMap::from([('^', Direction::N), ('>', Direction::E), ('V', Direction::S), ('<', Direction::W)])
     });
 
     fn from(char: char) -> &'static Direction {
@@ -34,9 +34,9 @@ pub fn get_visited_count(lines: &[String]) -> usize {
         Option::from((guard_pos, guard_dir)),
         |(new_pos, new_dir)| visit_next(&maze, new_pos, new_dir),
     )
-    .map(|(position, _)| position)
-    .collect::<HashSet<_>>()
-    .len()
+        .map(|(position, _)| position)
+        .collect::<HashSet<_>>()
+        .len()
 }
 
 pub fn get_loops_after_obstacle(lines: &[String]) -> usize {
@@ -54,20 +54,21 @@ fn has_loop(maze: &Vec<Vec<char>>, obstacle: Index2D, guard_pos: Index2D, guard_
     let mut curr = (guard_pos, guard_dir);
 
     loop {
-        if visited.contains(&curr) {
-            return true
-        }
-        visited.insert(curr);
-
         let (position, direction) = curr;
-        if position.add(direction.dir).is_some_and(|next| next == obstacle) {
-            curr = (position, (direction.next)());
-            continue
-        }
 
-        match visit_next(&maze, &position, direction) {
-            Some(next) => curr = next,
-            _ => return false
+        let maybe_next = visit_next_with_obstacle(maze, &position, direction, &obstacle);
+
+        if let Some(next) = maybe_next {
+            if next.1 != direction {
+                if visited.contains(&curr) {
+                    return true;
+                }
+                visited.insert(curr);
+            }
+
+            curr = next
+        } else {
+            return false
         };
     }
 }
@@ -87,9 +88,25 @@ fn find_initial_guard_position(maze: &Vec<Vec<char>>) -> (Index2D, &'static Dire
             .filter(|&x| !['.', '#'].contains(&maze[y][x]))
             .map(|x| (Index2D(x, y), Direction::from(maze[y][x])))
             .nth(0)
-    })
-    .nth(0)
-    .unwrap()
+    }).nth(0).unwrap()
+}
+
+fn visit_next_with_obstacle(
+    maze: &Vec<Vec<char>>,
+    pos: &Index2D,
+    direction: &'static Direction,
+    obstacle: &Index2D,
+) -> Option<(Index2D, &'static Direction)> {
+    let next = pos.add(direction.dir)?;
+
+    if *obstacle == next {
+        return Option::from((pos.clone(), (direction.next)()));
+    }
+
+    match maze.get(next.0)?.get(next.1)? {
+        '#' => Option::from((pos.clone(), (direction.next)())),
+        _ => Option::from((next, direction)),
+    }
 }
 
 fn visit_next(
@@ -115,6 +132,7 @@ fn as_maze(lines: &[String]) -> Vec<Vec<char>> {
 
 fn create_hash_set_for(maze: &Vec<Vec<char>>) -> HashSet<(Index2D, &Direction), impl BuildHasher> {
     let capacity = maze.len().pow(2);
+    // Default impl makes this slower (From 11ms to 16ms on my computer) for the complete flow
     // HashSet::<(Index2D, &Direction)>::with_capacity(capacity)
     FxHashSet::<(Index2D, &Direction)>::with_capacity_and_hasher(capacity, Default::default())
 }
