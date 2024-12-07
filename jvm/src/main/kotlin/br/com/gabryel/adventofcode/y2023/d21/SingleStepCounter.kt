@@ -1,11 +1,11 @@
 package br.com.gabryel.adventofcode.y2023.d21
 
 import br.com.gabryel.adventofcode.y2023.d10.Coordinate
-import br.com.gabryel.adventofcode.y2023.readLines
+import br.com.gabryel.adventofcode.readLines
 
 fun main() {
     listOf("sample", "input").forEach { file ->
-        val map = readLines(21, file)
+        val map = readLines(2023, 21, file)
 
         SingleStepCounter(map)
             .printSequenceForSteps(file, "Limited", 6, 64)

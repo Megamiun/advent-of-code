@@ -1,10 +1,10 @@
 package br.com.gabryel.adventofcode.y2023.d06
 
-import br.com.gabryel.adventofcode.y2023.readLines
+import br.com.gabryel.adventofcode.readLines
 
 fun main() {
     listOf("sample", "input").forEach { file ->
-        val (time, record) = readLines(6, file)
+        val (time, record) = readLines(2023, 6, file)
             .map { it.split("\\s+".toRegex()).drop(1) }
 
         val timeWithRecords = time.zip(record)

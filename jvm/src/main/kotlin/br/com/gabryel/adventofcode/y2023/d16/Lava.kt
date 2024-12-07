@@ -1,7 +1,7 @@
 package br.com.gabryel.adventofcode.y2023.d16
 
 import br.com.gabryel.adventofcode.y2023.d16.Direction.*
-import br.com.gabryel.adventofcode.y2023.readLines
+import br.com.gabryel.adventofcode.readLines
 
 private typealias DirectionsMap = Array<Array<MutableSet<Direction>>>
 
@@ -17,7 +17,7 @@ private val movementMap = mapOf(
 
 fun main() {
     listOf("sample", "input").forEach { file ->
-        val instructions = readLines(16, file)
+        val instructions = readLines(2023, 16, file)
 
         println("[Heated Tiles    ][$file] ${instructions.getEnergizedTiles(-1, 0, RIGHT)}")
         println("[Heated Tiles Max][$file] ${instructions.getMaxEnergizedTiles()}")

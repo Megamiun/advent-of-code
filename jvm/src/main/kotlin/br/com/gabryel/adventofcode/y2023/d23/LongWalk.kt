@@ -2,11 +2,11 @@ package br.com.gabryel.adventofcode.y2023.d23
 
 import br.com.gabryel.adventofcode.y2023.d10.Coordinate
 import br.com.gabryel.adventofcode.y2023.d23.Direction.*
-import br.com.gabryel.adventofcode.y2023.readLines
+import br.com.gabryel.adventofcode.readLines
 
 fun main() {
     listOf("sample", "input").forEach { file ->
-        val lines = readLines(23, file)
+        val lines = readLines(2023, 23, file)
 
         println("[Longest Road - Wet][$file] ${LongWalk(lines, false).findLongestPath()}")
         println("[Longest Road - Dry][$file] ${LongWalk(lines, true).findLongestPath()}")

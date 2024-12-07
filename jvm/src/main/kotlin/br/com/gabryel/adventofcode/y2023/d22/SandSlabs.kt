@@ -2,12 +2,12 @@ package br.com.gabryel.adventofcode.y2023.d22
 
 import br.com.gabryel.adventofcode.y2023.displace
 import br.com.gabryel.adventofcode.y2023.intersects
-import br.com.gabryel.adventofcode.y2023.readLines
+import br.com.gabryel.adventofcode.readLines
 
 
 fun main() {
     listOf("sample", "input").forEach { file ->
-        val slabs = readLines(22, file).map { line -> line.toSlab() }
+        val slabs = readLines(2023, 22, file).map { line -> line.toSlab() }
 
         val slabsStats = SandSlab(slabs)
 

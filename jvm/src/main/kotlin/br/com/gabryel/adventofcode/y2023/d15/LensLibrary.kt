@@ -1,12 +1,12 @@
 package br.com.gabryel.adventofcode.y2023.d15
 
-import br.com.gabryel.adventofcode.y2023.readLines
+import br.com.gabryel.adventofcode.readLines
 
 typealias IndexMap = Array<MutableList<Pair<String, Int>>>
 
 fun main() {
     listOf("sample", "input").forEach { file ->
-        val instructions = readLines(15, file).map { it.split(",") }.first()
+        val instructions = readLines(2023, 15, file).map { it.split(",") }.first()
 
         println("[Instruction Hash][$file] ${instructions.sumOf { it.calculateHash() }}")
         println("[Focal Power     ][$file] ${instructions.findFocalPower()}")

@@ -1,12 +1,12 @@
 package br.com.gabryel.adventofcode.y2023.d02
 
 import br.com.gabryel.adventofcode.y2023.d02.Color.*
-import br.com.gabryel.adventofcode.y2023.readLines
+import br.com.gabryel.adventofcode.readLines
 
 fun main() {
     listOf("sample1", "input").forEach {
-        val games = readLines(2, it)
-        val limits = readLines(2, "$it-limits")
+        val games = readLines(2023, 2, it)
+        val limits = readLines(2023, 2, "$it-limits")
 
         val sumValid = games.sumValid(limits)
         println("[Valid Games   ][$it]: $sumValid")

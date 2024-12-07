@@ -1,10 +1,10 @@
 package br.com.gabryel.adventofcode.y2023.d13
 
-import br.com.gabryel.adventofcode.y2023.readGroupsOfLines
+import br.com.gabryel.adventofcode.readGroupsOfLines
 
 fun main() {
     listOf("sample", "input").forEach { file ->
-        val terrains = readGroupsOfLines(13, file)
+        val terrains = readGroupsOfLines(2023, 13, file)
 
         listOf(0, 1).forEach {
             val padded = it.toString().padEnd(3)
