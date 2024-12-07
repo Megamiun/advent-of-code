@@ -3,56 +3,51 @@ const OPERATORS: &[fn(i64, i64) -> i64] = &[
     |a, b| a * b
 ];
 
-const OPERATORS_PT2: &[fn(i64, i64) -> i64] = &[
+const OPERATORS_EXTRA: &[fn(i64, i64) -> i64] = &[
     |a, b| a + b,
     |a, b| a * b,
     |a, b| a * 10_i64.pow(b.ilog10() + 1) + b
 ];
 
-pub fn part1(lines: &[String]) -> i64 {
-    parse_inputs(lines)
-        .iter()
-        .filter(|(goal, numbers)| can_achieve_goal(*goal, numbers, OPERATORS))
-        .map(|(goal, _)| goal)
-        .sum()
+pub fn with_basic_operators(lines: &[String]) -> i64 {
+    run_with_operators(lines, OPERATORS)
 }
 
-pub fn part2(lines: &[String]) -> i64 {
+pub fn with_extra_operators(lines: &[String]) -> i64 {
+    run_with_operators(lines, OPERATORS_EXTRA)
+}
+
+fn run_with_operators(lines: &[String], ops: &[fn(i64, i64) -> i64]) -> i64 {
     parse_inputs(lines)
         .iter()
-        .filter(|(goal, numbers)| can_achieve_goal(*goal, numbers, OPERATORS_PT2))
+        .filter(|(goal, numbers)| can_achieve_goal(*goal, numbers, ops))
         .map(|(goal, _)| goal)
         .sum()
 }
 
 fn can_achieve_goal(goal: i64, next: &[i64], ops: &[fn(i64, i64) -> i64]) -> bool {
-    can_achieve_goal_with_reduce(goal, next[0], &next[1..], ops)
+    can_achieve_goal_acc(goal, next[0], &next[1..], ops)
 }
 
-fn can_achieve_goal_with_reduce(goal: i64, curr: i64, next: &[i64], ops: &[fn(i64, i64) -> i64]) -> bool {
+fn can_achieve_goal_acc(goal: i64, curr: i64, next: &[i64], ops: &[fn(i64, i64) -> i64]) -> bool {
     if curr > goal {
         return false
     }
-
     if next.len() == 0 {
         return goal == curr
     }
 
     ops.iter().any(|op|
-        can_achieve_goal_with_reduce(goal, op(curr, next[0]), &next[1..], ops))
+        can_achieve_goal_acc(goal, op(curr, next[0]), &next[1..], ops))
 }
 
 fn parse_inputs(lines: &[String]) -> Vec<(i64, Vec<i64>)> {
-    lines
-        .iter()
-        .map(|line| {
-            let parts = line.split(": ").collect::<Vec<_>>();
+    lines.iter().map(|line| {
+        let parts = line.split(": ").collect::<Vec<_>>();
+        let numbers = parts[1].split(" ").map(to_i64).collect::<Vec<_>>();
 
-            let numbers = parts[1].split(" ").map(to_i64).collect::<Vec<_>>();
-
-            (to_i64(parts[0]), numbers)
-        })
-        .collect()
+        (to_i64(parts[0]), numbers)
+    }).collect()
 }
 
 fn to_i64(num: &str) -> i64 {
