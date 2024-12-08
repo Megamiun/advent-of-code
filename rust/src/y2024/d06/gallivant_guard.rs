@@ -5,7 +5,7 @@ use std::hash::BuildHasher;
 use std::iter::successors;
 use std::sync::LazyLock;
 
-#[derive(PartialEq, Eq, Hash)]
+#[derive(PartialEq, Eq, Hash, Copy, Clone)]
 struct Direction {
     dir: Diff,
     next: fn() -> &'static Direction,
@@ -31,28 +31,25 @@ pub fn get_visited_count(lines: &[String]) -> usize {
 
     let (guard_pos, guard_dir) = find_initial_guard_position(&maze);
 
+    get_unique_guard_positions(&maze, guard_pos, guard_dir).len()
+}
+
+pub fn get_loops_after_obstacle(lines: &[String]) -> usize {
+    let maze = as_maze(lines);
+    let (guard_pos, guard_dir) = find_initial_guard_position(&maze);
+
+    get_unique_guard_positions(&maze, guard_pos, guard_dir).iter()
+        .filter(|&obstacle| causes_loop(&maze, *obstacle, guard_pos, guard_dir))
+        .count()
+}
+
+fn get_unique_guard_positions(maze: &Vec<Vec<char>>, guard_pos: Index2D, guard_dir: &'static Direction) -> HashSet<Index2D> {
     successors(
         Option::from((guard_pos, guard_dir)),
         |(new_pos, new_dir)| visit_next(&maze, new_pos, new_dir),
     )
         .map(|(position, _)| position)
         .collect::<HashSet<_>>()
-        .len()
-}
-
-pub fn get_loops_after_obstacle(lines: &[String]) -> usize {
-    let maze = as_maze(lines);
-    let (guard_pos, guard_dir) = find_initial_guard_position(&maze);
-    
-    let visitable_by_guard = successors(
-        Option::from((guard_pos, guard_dir)),
-        |(new_pos, new_dir)| visit_next(&maze, new_pos, new_dir),
-    ).map(|movement| movement.0)
-        .collect::<HashSet<_>>();
-
-    visitable_by_guard.iter()
-        .filter(|&obstacle| causes_loop(&maze, *obstacle, guard_pos, guard_dir))
-        .count()
 }
 
 fn causes_loop(maze: &Vec<Vec<char>>, obstacle: Index2D, guard_pos: Index2D, guard_dir: &'static Direction) -> bool {
