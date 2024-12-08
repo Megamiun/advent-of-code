@@ -1,0 +1,1 @@
+pub mod resonant_collinearity;
