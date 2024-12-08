@@ -37,11 +37,14 @@ fun List<List<Char>>.getLoopsAfterObstacle(): Int {
     val guard = Direction.entries
         .firstNotNullOf { dir -> findCharacter(dir.character)?.let { it to dir } }
 
-    return findAll('.')
-        .count { hasLoop(it, guard) }
+    val visitableByGuard = generateSequence(guard) { (position, direction) -> visitNext(position, direction) }
+        .map { (pos) -> pos }
+        .distinct()
+
+    return visitableByGuard.count { causesLoop(it, guard) }
 }
 
-fun List<List<Char>>.hasLoop(obstacle: Coordinate, guard: Pair<Pair<Int, Int>, Direction>): Boolean {
+fun List<List<Char>>.causesLoop(obstacle: Coordinate, guard: Pair<Coordinate, Direction>): Boolean {
     val visited = HashSet<Pair<Coordinate, Direction>>(size * size)
     var curr = guard
 
@@ -83,8 +86,9 @@ private fun List<List<Char>>.findCharacter(searched: Char) =
     findAll(searched).firstOrNull()
 
 private fun List<List<Char>>.findAll(searched: Char) =
-    withIndex().flatMap { (y, line) ->
+    withIndex().asSequence().flatMap { (y, line) ->
         line.withIndex()
+            .asSequence()
             .filter { (_, character) -> character == searched }
             .map { (x) -> x to y }
     }
