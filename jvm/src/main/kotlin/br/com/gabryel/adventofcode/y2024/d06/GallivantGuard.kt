@@ -33,15 +33,16 @@ fun List<List<Char>>.getVisitedCount(): Int {
         .count()
 }
 
-fun List<List<Char>>.getLoopsAfterObstacle() =
-    findAll('.').count { hasLoop(it) }
-
-fun List<List<Char>>.hasLoop(obstacle: Coordinate): Boolean {
-    val visited = HashSet<Pair<Coordinate, Direction>>(size * size)
-
+fun List<List<Char>>.getLoopsAfterObstacle(): Int {
     val guard = Direction.entries
         .firstNotNullOf { dir -> findCharacter(dir.character)?.let { it to dir } }
 
+    return findAll('.')
+        .count { hasLoop(it, guard) }
+}
+
+fun List<List<Char>>.hasLoop(obstacle: Coordinate, guard: Pair<Pair<Int, Int>, Direction>): Boolean {
+    val visited = HashSet<Pair<Coordinate, Direction>>(size * size)
     var curr = guard
 
     while (true) {
