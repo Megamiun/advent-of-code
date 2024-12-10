@@ -4,7 +4,7 @@ use std::fmt::Formatter;
 use std::iter::repeat_with;
 use std::ptr::null_mut;
 
-pub fn fragment(lines: &[String]) -> usize {
+pub fn reorder(lines: &[String]) -> usize {
     let chuncked = &lines[0]
         .chars()
         .map(|c| c.to_digit(10).unwrap() as usize)
@@ -13,28 +13,33 @@ pub fn fragment(lines: &[String]) -> usize {
         .map(|s| (s[0], s.get(1).cloned()))
         .collect::<Vec<_>>();
 
-    let mut numbers = (0..chuncked.len())
-        .flat_map(|index| {
-            repeat_with(|| index)
-                .take(chuncked[index].0)
-                .collect::<Vec<_>>()
+    let files = chuncked
+        .iter()
+        .enumerate()
+        .scan(0usize, |prev_end, (index, (file_size, blank_size))| {
+            let start = *prev_end;
+            *prev_end = start + file_size + blank_size.unwrap_or(0);
+            Some((start, *file_size, *prev_end, index))
         })
-        .collect::<VecDeque<_>>();
+        .map(|(start, size, _, id)| (start, Content { file: id, size }))
+        .collect::<Vec<_>>();
 
-    let mut total = Vec::<usize>::new();
+    // Moving to SortedLinkedList somehow breaks this
+    let mut node = Node {
+        start: 0,
+        file: files[0].1,
+        next: None,
+    };
 
-    chuncked.iter().for_each(|(file, space)| {
-        get_from_front(&mut numbers, &mut total, *file);
-
-        if let Some(amount) = space {
-            get_from_back(&mut numbers, &mut total, *amount);
-        } else {
-            let remaining = numbers.len();
-            get_from_back(&mut numbers, &mut total, remaining);
-        };
+    files.iter().skip(1).for_each(|(start, file)| {
+        node.insert_at(*start, *file);
     });
 
-    (0..total.len()).map(|index| index * total[index]).sum()
+    files.iter().rev().for_each(|(_, file)| {
+        node.relocate(*file);
+    });
+
+    node.get_iter().map(|node| node.get_value()).sum()
 }
 
 struct SortedLinkedList {
@@ -54,21 +59,13 @@ impl SortedLinkedList {
 
     fn insert_at(&mut self, start: usize, file: Content) {
         if self.head.is_null() {
-            self.head = Box::into_raw(Box::new(Node {
-                start,
-                file,
-                next: None,
-            }));
+            self.head = Node::as_raw_ptr(start, file, null_mut());
         } else {
             let head = &mut unsafe { *self.head };
 
             println!("Before head: {}", head);
             if start < head.start {
-                self.head = Box::into_raw(Box::new(Node {
-                    start,
-                    file,
-                    next: Some(self.head),
-                }));
+                self.head = Node::as_raw_ptr(start, file, self.head);
             } else {
                 head.insert_at(start, file);
             }
@@ -92,6 +89,7 @@ struct Content {
     size: usize,
 }
 
+// TODO Check memory leaks and Implement Drop to clean up
 #[derive(PartialEq, Eq, Hash, Clone, Copy, Debug)]
 struct Node {
     start: usize,
