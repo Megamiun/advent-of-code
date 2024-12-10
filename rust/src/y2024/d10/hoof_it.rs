@@ -16,6 +16,7 @@ impl Bounded<char> {
             .map(|position| self.get_reachable(0, position).iter().collect::<HashSet<_>>().len())
             .sum()
     }
+    
     fn get_trails_sum_for(&self) -> usize {
         self.find_all(&'0').iter()
             .flat_map(|position| self.get_reachable(0, position))
