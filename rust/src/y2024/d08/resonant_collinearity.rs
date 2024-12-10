@@ -1,10 +1,11 @@
 use crate::util::Index2D;
+use crate::y2024::util::bounded::Bounded;
 use std::collections::{HashMap, HashSet};
 use std::iter::successors;
 
 pub fn get_antinodes_for_single_jump(lines: &[String]) -> usize {
     let city = Bounded::from(lines);
-    let anthem_positions = get_anthem_indices(lines);
+    let anthem_positions = city.get_anthem_indices();
 
     anthem_positions
         .iter()
@@ -17,7 +18,7 @@ pub fn get_antinodes_for_single_jump(lines: &[String]) -> usize {
 
 pub fn get_antinodes_for_repeated_jumps(lines: &[String]) -> usize {
     let city = Bounded::from(lines);
-    let anthem_positions = get_anthem_indices(lines);
+    let anthem_positions = city.get_anthem_indices();
 
     anthem_positions
         .iter()
@@ -27,19 +28,7 @@ pub fn get_antinodes_for_repeated_jumps(lines: &[String]) -> usize {
         .len()
 }
 
-struct Bounded {
-    height: usize,
-    width: usize,
-}
-
-impl Bounded {
-    fn from(lines: &[String]) -> Bounded {
-        Bounded {
-            height: lines.len(),
-            width: lines[0].len(),
-        }
-    }
-
+impl Bounded<char> {
     fn get_antinodes(&self, positions: &Vec<Index2D>) -> Vec<Vec<Index2D>> {
         let length = positions.len();
 
@@ -67,31 +56,23 @@ impl Bounded {
             .collect()
     }
 
-    fn is_within(&self, Index2D(x, y): &Index2D) -> bool {
-        *x < self.width && *y < self.height
+    fn get_anthem_indices(&self) -> HashMap<char, Vec<Index2D>> {
+        let anthem_positions = (0..self.height).flat_map(|y| {
+            (0..self.width)
+                .filter_map(|x| Some((self.find(Index2D(x, y))?, Index2D(x, y))))
+                .filter(|(&char, _)| char != '.')
+                .collect::<Vec<_>>()
+        });
+
+        let mut grouped_indices = HashMap::<char, Vec<Index2D>>::new();
+        anthem_positions.for_each(|(char, index)| {
+            if !grouped_indices.contains_key(&char) {
+                grouped_indices.insert(*char, Vec::new());
+            };
+
+            grouped_indices.get_mut(&char).unwrap().push(index)
+        });
+
+        grouped_indices
     }
-}
-
-fn get_anthem_indices(city: &[String]) -> HashMap<char, Vec<Index2D>> {
-    let anthem_positions = (0..city.len()).flat_map(|y| {
-        (0..city[y].len())
-            .filter_map(|x| Some((find_char(city, Index2D(x, y))?, Index2D(x, y))))
-            .filter(|(char, _)| *char != '.')
-            .collect::<Vec<_>>()
-    });
-
-    let mut grouped_indices = HashMap::<char, Vec<Index2D>>::new();
-    anthem_positions.for_each(|(char, index)| {
-        if !grouped_indices.contains_key(&char) {
-            grouped_indices.insert(char, Vec::new());
-        };
-
-        grouped_indices.get_mut(&char).unwrap().push(index)
-    });
-
-    grouped_indices
-}
-
-fn find_char(city: &[String], coord: Index2D) -> Option<char> {
-    city.get(coord.0)?.chars().nth(coord.1)
 }
