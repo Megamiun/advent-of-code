@@ -3,13 +3,7 @@ use std::fmt::Formatter;
 use std::ptr::null_mut;
 
 pub fn reorder_linked_list(lines: &[String]) -> usize {
-    let chuncked = &lines[0]
-        .chars()
-        .map(|c| c.to_digit(10).unwrap() as usize)
-        .collect::<Vec<_>>()
-        .chunks(2)
-        .map(|s| (s[0], s.get(1).cloned()))
-        .collect::<Vec<_>>();
+    let chuncked = get_file_space_pair(lines);
 
     let files = chuncked
         .iter()
@@ -170,3 +164,14 @@ impl<'a> Display for Node<'a> {
         }
     }
 }
+
+fn get_file_space_pair(lines: &[String]) -> Vec<(usize, Option<usize>)> {
+    lines[0]
+        .chars()
+        .map(|c| c.to_digit(10).unwrap() as usize)
+        .collect::<Vec<_>>()
+        .chunks(2)
+        .map(|s| (s[0], s.get(1).cloned()))
+        .collect::<Vec<_>>()
+}
+

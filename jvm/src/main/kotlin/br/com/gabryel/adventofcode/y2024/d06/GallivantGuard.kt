@@ -82,7 +82,7 @@ fun List<List<Char>>.visitNext(position: Coordinate, direction: Direction): Pair
     }
 }
 
-private fun List<List<Char>>.findCharacter(searched: Char) =
+private fun List<List<Char>>.findCharacter(searched: Char): Coordinate? =
     findAll(searched).firstOrNull()
 
 private fun List<List<Char>>.findAll(searched: Char) =
