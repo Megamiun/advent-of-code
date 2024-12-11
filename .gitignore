@@ -42,4 +42,4 @@ out/
 
 ### Profiling ###
 flamegraph.svg
-*perf.data
+*perf.data*

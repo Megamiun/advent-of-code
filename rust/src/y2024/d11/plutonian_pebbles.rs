@@ -5,6 +5,7 @@ use std::collections::HashMap;
 use std::hash::BuildHasher;
 use std::ops::Deref;
 use std::sync::LazyLock;
+use ibig::ops::DivRem;
 use num_traits::One;
 
 const TEN: LazyLock<UBig> = LazyLock::new(|| UBig::from(10u8));
@@ -60,8 +61,7 @@ fn calculate(
     let length = number.to_string().len();
     if length % 2 == 0 {
         let separator = TEN.pow(length / 2);
-        let first_half = number / &separator;
-        let second_half = number - (&first_half * &separator);
+        let (first_half, second_half) = number.div_rem(&separator);
         apply_rules(next_times, &first_half, cache) + apply_rules(next_times, &second_half, cache)
     } else {
         apply_rules(next_times, &(number * OTHER_MULT.deref()), cache)
