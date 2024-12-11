@@ -1,1 +1,1 @@
-pub mod plutonian_peebles;
+pub mod plutonian_pebbles;
