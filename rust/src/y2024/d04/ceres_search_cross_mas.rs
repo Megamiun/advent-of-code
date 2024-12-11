@@ -1,56 +1,46 @@
-use std::convert::TryFrom;
+use crate::util::{Diff, Index2D};
+use crate::y2024::util::bounded::Bounded;
 
-static PERMUTATIONS: &[[(char, [(i32, i32); 2]); 2]] = &[
+static PERMUTATIONS: &[[(char, [Diff; 2]); 2]] = &[
     [
-        ('M', [(1, 1), (-1, 1)]),
-        ('S', [(-1, -1), (1, -1)]),
+        ('M', [Diff(1, 1), Diff(-1, 1)]),
+        ('S', [Diff(-1, -1), Diff(1, -1)]),
     ],
     [
-        ('S', [(1, 1), (1, -1)]),
-        ('M', [(-1, 1), (-1, -1)]),
+        ('S', [Diff(1, 1), Diff(1, -1)]),
+        ('M', [Diff(-1, 1), Diff(-1, -1)]),
     ],
     [
-        ('S', [(1, 1), (-1, 1)]),
-        ('M', [(-1, -1), (1, -1)]),
+        ('S', [Diff(1, 1), Diff(-1, 1)]),
+        ('M', [Diff(-1, -1), Diff(1, -1)]),
     ],
     [
-        ('M', [(1, 1), (1, -1)]),
-        ('S', [(-1, 1), (-1, -1)]),
+        ('M', [Diff(1, 1), Diff(1, -1)]),
+        ('S', [Diff(-1, 1), Diff(-1, -1)]),
     ],
 ];
 
 pub fn find_all_cross_mas(lines: &[String]) -> usize {
-    let height = lines.len() - 1;
-    let width = lines[0].len() - 1;
-
-    (1..height).map(|x| {
-        (1..width).filter(|&y| {
-            let position = &(x, y);
-            let char = get_char_at(lines, position);
-
-            char == 'A' && is_xmas(lines, position)
-        }).count()
-    }).sum()
+    Bounded::from(lines).find_all_cross_mas()
 }
 
-fn get_char_at(lines: &[String], (x, y): &(usize, usize)) -> char {
-    char::from(*lines[*x].as_bytes().get(*y).unwrap())
-}
+impl Bounded<char> {
+    fn find_all_cross_mas(&self) -> usize {
+        (1..self.height - 1).map(|y| {
+            (1..self.width - 1).filter(|&x| {
+                let position = Index2D(x, y);
+                let char = self.find_safe(position);
 
-fn is_xmas(lines: &[String], position: &(usize, usize)) -> bool {
-    PERMUTATIONS.iter().any(|permutation|
-        permutation.iter().all(|(char, diff)|
-            get_char_at(lines, &add(position, &diff[0]).unwrap()) == *char &&
-            get_char_at(lines, &add(position, &diff[1]).unwrap()) == *char
-    ))
-}
+                char == 'A' && self.is_xmas(&position)
+            }).count()
+        }).sum()
+    }
 
-fn add((x, y): &(usize, usize), (x_diff, y_diff): &(i32, i32)) -> Option<(usize, usize)> {
-    let new_x = usize::try_from(*x as i32 + x_diff);
-    let new_y = usize::try_from(*y as i32 + y_diff);
-
-    match (new_x, new_y) {
-        (Ok(new_x_val), Ok(new_y_val)) => Some((new_x_val, new_y_val)),
-        _ => None,
+    fn is_xmas(&self, position: &Index2D) -> bool {
+        PERMUTATIONS.iter().any(|permutation|
+            permutation.iter().all(|(char, diff)|
+                self.find_safe(position.add(diff[0]).unwrap()) == *char &&
+                    self.find_safe(position.add(diff[1]).unwrap()) == *char
+            ))
     }
 }

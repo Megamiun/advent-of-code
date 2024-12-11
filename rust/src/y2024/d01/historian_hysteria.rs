@@ -42,7 +42,7 @@ fn get_columns(lines: &[String]) -> (Vec<i32>, Vec<i32>) {
             let mut items = line.split(' ');
             (to_i32(items.next().unwrap()), to_i32(items.last().unwrap()))
         })
-        .unzip::<_, _, Vec<_>, Vec<_>>()
+        .unzip()
 }
 
 fn to_i32(num: &str) -> i32 {

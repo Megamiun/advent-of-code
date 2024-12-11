@@ -1,8 +1,8 @@
 use crate::util::{Diff, Index2D};
 use std::sync::LazyLock;
 
-pub struct Bounded<T: PartialEq> {
-    content: Vec<Vec<T>>,
+pub struct Bounded<T> {
+    pub content: Vec<Vec<T>>,
     pub height: usize,
     pub width: usize,
 }
@@ -46,6 +46,12 @@ impl<T: PartialEq> Bounded<T> {
         Direction::VALUES
             .map(|dir| index.add(dir.dir)).iter().filter_map(|d| *d)
             .collect()
+    }
+}
+
+impl<T: Clone> Bounded<T> {
+    pub fn find_safe(&self, coord: Index2D) -> T {
+        self.content[coord.1][coord.0].clone()
     }
 }
 

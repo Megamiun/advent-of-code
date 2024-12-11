@@ -57,9 +57,9 @@ impl Bounded<char> {
     }
 
     fn get_anthem_indices(&self) -> HashMap<char, Vec<Index2D>> {
-        let anthem_positions = (0..self.height).flat_map(|y| {
-            (0..self.width)
-                .filter_map(|x| Some((self.find(Index2D(x, y))?, Index2D(x, y))))
+        let anthem_positions = self.content.iter().enumerate().flat_map(|(y, line)| {
+            line.iter().enumerate()
+                .filter_map(|(x, char)| Some((char, Index2D(x, y))))
                 .filter(|(&char, _)| char != '.')
                 .collect::<Vec<_>>()
         });

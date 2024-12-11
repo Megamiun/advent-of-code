@@ -1,7 +1,7 @@
 pub fn count_safe(levels: &[String]) -> usize {
     levels
         .iter()
-        .map(|level| level.split(" ").map(&to_i32).collect::<Vec<i32>>())
+        .map(|level| level.split(" ").map(&to_i32).collect::<Vec<_>>())
         .filter(|level| is_safe(level, true) || is_safe(level, false))
         .count()
 }
@@ -9,7 +9,7 @@ pub fn count_safe(levels: &[String]) -> usize {
 pub fn count_safe_with_tolerance(levels: &[String]) -> usize {
     levels
         .iter()
-        .map(|level| level.split(" ").map(&to_i32).collect::<Vec<i32>>())
+        .map(|level| level.split(" ").map(&to_i32).collect::<Vec<_>>())
         .filter(|level| is_safe_with_tolerance(level, true) || is_safe_with_tolerance(level, false))
         .count()
 }
@@ -26,7 +26,7 @@ fn is_safe_with_tolerance(level: &[i32], increasing: bool) -> bool {
 }
 
 fn is_safe_if_removed(level: &[i32], removed: usize, increasing: bool) -> bool {
-    (removed == 0 || is_within_bounds(level, (removed) - 1, removed + 1, increasing))
+    (removed == 0 || is_within_bounds(level, removed - 1, removed + 1, increasing))
         && is_safe(&level[removed + 1..], increasing)
 }
 
