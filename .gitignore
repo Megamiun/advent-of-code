@@ -39,3 +39,7 @@ out/
 
 ### temp ###
 *.temp
+
+### Profiling ###
+flamegraph.svg
+*perf.data
