@@ -74,10 +74,12 @@ impl<T: BuildHasher> Solver<T> {
 // although probably overkill for the 25 steps case
 const CAPACITY: usize = 65000;
 
+#[allow(dead_code)]
 fn get_solver() -> Solver<RandomState> {
     Solver { cache: UnsafeCell::new(HashMap::with_capacity(CAPACITY)) }
 }
 
+#[allow(dead_code)]
 fn get_solver_fx() -> Solver<FxBuildHasher> {
     Solver { cache: UnsafeCell::new(FxHashMap::with_capacity_and_hasher(CAPACITY, Default::default())) }
 }
