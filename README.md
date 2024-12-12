@@ -21,11 +21,11 @@ Possibly out of date at the moment you look at it, but at the best effort basis:
 - ★★ d05 - [Rust](rust/src/y2024/d05)
 - ★★ d06 - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2024/d06)/[Rust](rust/src/y2024/d06)
 - ★★ d07 - [Rust](rust/src/y2024/d07)
-- ☆☆ d08
-- ☆☆ d09
-- ☆☆ d10
-- ☆☆ d11
-- ☆☆ d12
+- ★★ d08 - [Rust](rust/src/y2024/d08)
+- ★★ d09 - [Rust](rust/src/y2024/d09)
+- ★★ d10 - [Rust](rust/src/y2024/d10)
+- ★★ d11 - [Rust](rust/src/y2024/d11)
+- ★★ d12 - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2024/d12)
 - ☆☆ d13
 - ☆☆ d14
 - ☆☆ d15
