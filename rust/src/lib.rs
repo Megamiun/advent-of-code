@@ -3,6 +3,7 @@ extern crate regex;
 extern crate derive_more;
 extern crate rustc_hash;
 extern crate ibig;
+extern crate forward_ref_generic;
 
 use std::fmt::Display;
 use std::fs::read_to_string;

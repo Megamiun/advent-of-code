@@ -32,7 +32,7 @@ impl Bounded<char> {
         let next_char = char::from_digit(next, 10).unwrap();
 
         self.find_adjacent(position)
-            .iter().filter(|&adj| self.find(*adj).is_some_and(|x| *x == next_char))
+            .iter().filter(|&adj| self.find(adj).is_some_and(|x| *x == next_char))
             .flat_map(|adj| self.get_reachable(next, adj))
             .collect()
     }
