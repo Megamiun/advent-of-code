@@ -16,6 +16,7 @@ name = "aoc"
 version = "0.1.0"
 dependencies = [
  "derive_more",
+ "forward_ref_generic",
  "ibig",
  "num-traits",
  "regex",
@@ -54,6 +55,12 @@ dependencies = [
  "syn",
  "unicode-xid",
 ]
+
+[[package]]
+name = "forward_ref_generic"
+version = "0.2.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d39b515240e7f7e94b1c3471425f0778762d2f98de03e846bd4221c856752209"
 
 [[package]]
 name = "ibig"

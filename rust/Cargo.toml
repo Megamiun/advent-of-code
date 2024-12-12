@@ -13,3 +13,4 @@ derive_more = { version = "1.0.0", features = ["display", "from"] }
 rustc-hash = "2.1.0"
 ibig = "0.3.6"
 num-traits = "0.2.19"
+forward_ref_generic = "0.2.1"
