@@ -1,12 +1,14 @@
-use num_traits::identities::Zero;
-use ibig::UBig;
-use rustc_hash::FxHashMap;
-use std::collections::HashMap;
-use std::hash::BuildHasher;
-use std::ops::Deref;
-use std::sync::LazyLock;
 use ibig::ops::DivRem;
+use ibig::UBig;
+use num_traits::identities::Zero;
 use num_traits::One;
+use rustc_hash::{FxBuildHasher, FxHashMap};
+use std::cell::UnsafeCell;
+use std::collections::HashMap;
+use std::hash::{BuildHasher, RandomState};
+use std::ops::Deref;
+use std::rc::Rc;
+use std::sync::LazyLock;
 
 const TEN: LazyLock<UBig> = LazyLock::new(|| UBig::from(10u8));
 const OTHER_MULT: LazyLock<UBig> = LazyLock::new(|| UBig::from(2024u32));
@@ -20,56 +22,62 @@ pub fn after_75_steps(lines: &[String]) -> usize {
 }
 
 fn stones_after_steps(lines: &[String], steps: usize) -> usize {
-    let mut cache = get_cache::<(UBig, usize)>();
+    let cache = get_solver_fx();
+    // fx = ~18ms, std = ~23ms on my machine
+    // let cache = get_cache();
 
     lines[0]
         .split(" ")
-        .map(|number| UBig::from_str_radix(number, 10).unwrap())
-        .map(|number| apply_rules(steps, &number, &mut cache))
+        .map(|number| Rc::new(UBig::from_str_radix(number, 10).unwrap()))
+        .map(|number| cache.apply_rules(steps, &number))
         .sum::<usize>()
 }
 
-fn apply_rules(
-    times: usize,
-    number: &UBig,
-    cache: &mut HashMap<(UBig, usize), usize, impl BuildHasher>,
-) -> usize {
-    if times == 0 {
-        return 1;
-    }
-
-    let key = (number.clone(), times);
-    if let Some(count) = cache.get(&key) {
-        return *count;
-    }
-
-    let result = calculate(times, number, cache);
-    cache.insert(key, result);
-    result
+struct Solver<T: BuildHasher> {
+    cache: UnsafeCell<HashMap<(UBig, usize), usize, T>>
 }
 
-fn calculate(
-    times: usize,
-    number: &UBig,
-    cache: &mut HashMap<(UBig, usize), usize, impl BuildHasher>,
-) -> usize {
-    let next_times = times - 1;
-    if number.is_zero() {
-        return apply_rules(next_times, &UBig::one(), cache);
+impl<T: BuildHasher> Solver<T> {
+    fn apply_rules(&self, times: usize, number: &UBig) -> usize {
+        if times == 0 {
+            return 1;
+        }
+
+        let key = (number.clone(), times);
+
+        *self.get_cache().entry(key)
+            .or_insert_with(|| self.calculate(times, number))
     }
 
-    let length = number.to_string().len();
-    if length % 2 == 0 {
-        let separator = TEN.pow(length / 2);
-        let (first_half, second_half) = number.div_rem(&separator);
-        apply_rules(next_times, &first_half, cache) + apply_rules(next_times, &second_half, cache)
-    } else {
-        apply_rules(next_times, &(number * OTHER_MULT.deref()), cache)
+    fn calculate(&self, times: usize, number: &UBig) -> usize {
+        let next_times = times - 1;
+        if number.is_zero() {
+            return self.apply_rules(next_times, &UBig::one());
+        }
+
+        let length = number.to_string().len();
+        if length % 2 == 0 {
+            let separator = TEN.pow(length / 2);
+            let (first_half, second_half) = number.div_rem(&separator);
+            self.apply_rules(next_times, &first_half) + self.apply_rules(next_times, &second_half)
+        } else {
+            self.apply_rules(next_times, &(number * OTHER_MULT.deref()))
+        }
+    }
+
+    fn get_cache(&self) -> &mut HashMap<(UBig, usize), usize, T> {
+        unsafe { &mut *self.cache.get() }
     }
 }
 
-fn get_cache<T>() -> HashMap<T, usize, impl BuildHasher> {
-    let size = 175000;
-    // HashMap::with_capacity(size)
-    FxHashMap::with_capacity_and_hasher(size, Default::default())
+// This seems to be the capacity that gives the better performance,
+// although probably overkill for the 25 steps case
+const CAPACITY: usize = 65000;
+
+fn get_solver() -> Solver<RandomState> {
+    Solver { cache: UnsafeCell::new(HashMap::with_capacity(CAPACITY)) }
+}
+
+fn get_solver_fx() -> Solver<FxBuildHasher> {
+    Solver { cache: UnsafeCell::new(FxHashMap::with_capacity_and_hasher(CAPACITY, Default::default())) }
 }
