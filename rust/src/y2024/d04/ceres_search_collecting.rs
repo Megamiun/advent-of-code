@@ -61,8 +61,8 @@ impl Bounded<char> {
     fn collect_until_end(&self, start: &Index2D, diff: &Diff) -> Vec<char> {
         std::iter::successors(
             Option::from(*start),
-            |prev| prev.add(*diff),
-        ).map_while(|pos| self.find(pos))
+            |prev| prev + diff,
+        ).map_while(|pos| self.find(&pos))
             .copied().collect()
     }
 }

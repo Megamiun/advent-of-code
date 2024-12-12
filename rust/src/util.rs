@@ -1,4 +1,6 @@
 use derive_more::Display;
+use std::ops::{Add, Sub};
+use forward_ref_generic::forward_ref_binop;
 
 #[derive(PartialEq, Eq, Hash, Clone, Copy, Display, Debug)]
 #[display("[{_0}; {_1}]")]
@@ -7,14 +9,6 @@ pub struct Index2D(pub usize, pub usize);
 impl Index2D {
     pub fn get_distance_to(&self, other: Index2D) -> Diff {
         self.as_diff().sub(other.as_diff())
-    }
-
-    pub fn add(&self, diff: Diff) -> Option<Index2D> {
-        Self::from_diff(self.as_diff().add(diff))
-    }
-
-    pub fn sub(&self, diff: Diff) -> Option<Index2D> {
-        Self::from_diff(self.as_diff().sub(diff))
     }
 
     pub fn as_diff(&self) -> Diff {
@@ -32,16 +26,41 @@ impl Index2D {
     }
 }
 
+impl Add<Diff> for Index2D {
+    type Output = Option<Index2D>;
+    fn add(self, other: Diff) -> Self::Output {
+        Self::from_diff(self.as_diff() + other)
+    }
+}
+
+impl Sub<Diff> for Index2D {
+    type Output = Option<Index2D>;
+    fn sub(self, other: Diff) -> Self::Output {
+        Self::from_diff(self.as_diff() - other)
+    }
+}
+
+
 #[derive(PartialEq, Eq, Hash, Clone, Copy, Display, Debug)]
 #[display("({_0}; {_1})")]
 pub struct Diff(pub i32, pub i32);
 
-impl Diff {
-    pub fn add(&self, other: Diff) -> Diff {
+impl Add<Diff> for Diff {
+    type Output = Diff;
+    fn add(self, other: Diff) -> Self::Output {
         Diff(self.0 + other.0, self.1 + other.1)
     }
+}
 
-    pub fn sub(&self, other: Diff) -> Diff {
+impl Sub<Diff> for Diff {
+    type Output = Diff;
+    fn sub(self, other: Diff) -> Self::Output {
         Diff(self.0 - other.0, self.1 - other.1)
     }
 }
+
+
+forward_ref_binop! { impl Sub for Diff }
+forward_ref_binop! { impl Add for Diff }
+forward_ref_binop! { impl Sub for Index2D, Diff }
+forward_ref_binop! { impl Add for Index2D, Diff }

@@ -45,8 +45,8 @@ impl Bounded<char> {
         let distance = first.get_distance_to(second);
 
         vec![
-            self.get_within_bounds(first, |acc| acc.add(distance)),
-            self.get_within_bounds(second, |acc| acc.sub(distance)),
+            self.get_within_bounds(first, |acc| acc + distance),
+            self.get_within_bounds(second, |acc| acc - distance),
         ]
     }
 

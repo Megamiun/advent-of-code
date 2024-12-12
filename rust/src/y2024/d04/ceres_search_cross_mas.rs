@@ -28,10 +28,10 @@ impl Bounded<char> {
     fn find_all_cross_mas(&self) -> usize {
         (1..self.height - 1).map(|y| {
             (1..self.width - 1).filter(|&x| {
-                let position = Index2D(x, y);
+                let position = &Index2D(x, y);
                 let char = self.find_safe(position);
 
-                char == 'A' && self.is_xmas(&position)
+                char == 'A' && self.is_xmas(position)
             }).count()
         }).sum()
     }
@@ -39,8 +39,8 @@ impl Bounded<char> {
     fn is_xmas(&self, position: &Index2D) -> bool {
         PERMUTATIONS.iter().any(|permutation|
             permutation.iter().all(|(char, diff)|
-                self.find_safe(position.add(diff[0]).unwrap()) == *char &&
-                    self.find_safe(position.add(diff[1]).unwrap()) == *char
+                self.find_safe(&(position + diff[0]).unwrap()) == *char &&
+                    self.find_safe(&(position + diff[1]).unwrap()) == *char
             ))
     }
 }

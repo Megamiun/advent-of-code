@@ -3,6 +3,7 @@ use rustc_hash::FxHashSet;
 use std::collections::{HashMap, HashSet};
 use std::hash::BuildHasher;
 use std::iter::successors;
+use std::ops::Add;
 use std::sync::LazyLock;
 
 #[derive(PartialEq, Eq, Hash, Copy, Clone)]
@@ -107,7 +108,7 @@ fn visit_next(
     pos: &Index2D,
     direction: &'static Direction,
 ) -> Option<(Index2D, &'static Direction)> {
-    let Index2D(x, y) = pos.add(direction.dir)?;
+    let Index2D(x, y) = (pos + direction.dir)?;
     let new_char = maze.get(y)?.get(x)?;
 
     match new_char {

@@ -14,7 +14,7 @@ impl Bounded<char> {
         (0..self.height).map(|y| {
             (0..self.width).map(|x| {
                 let position = Index2D(x, y);
-                let char = self.find_safe(position);
+                let char = self.find_safe(&position);
 
                 match char {
                     'X' => DIRECTIONS.iter().filter(|&dir| self.is_valid(&position, dir, MAS)).count(),
@@ -26,10 +26,10 @@ impl Bounded<char> {
 
     fn is_valid(&self, start: &Index2D, diff: &Diff, word: &[char]) -> bool {
         let value = std::iter::successors(
-            start.add(*diff),
-            |prev| prev.add(*diff)
+            start + diff,
+            |prev| prev + diff
         )
-            .map_while(|pos| self.find(pos))
+            .map_while(|pos| self.find(&pos))
             .take(word.len())
             .copied()
             .collect::<Vec<_>>();

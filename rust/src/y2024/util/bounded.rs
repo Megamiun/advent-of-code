@@ -22,7 +22,7 @@ impl From<&[String]> for Bounded<char> {
 }
 
 impl<T: PartialEq> Bounded<T> {
-    pub fn find(&self, coord: Index2D) -> Option<&T> {
+    pub fn find(&self, coord: &Index2D) -> Option<&T> {
         self.content.get(coord.1)?.get(coord.0)
     }
 
@@ -43,31 +43,39 @@ impl<T: PartialEq> Bounded<T> {
     }
 
     pub fn find_adjacent(&self, index: &Index2D) -> Vec<Index2D> {
-        Direction::VALUES
-            .map(|dir| index.add(dir.dir)).iter().filter_map(|d| *d)
+        Direction::VALUES.iter()
+            .filter_map(|dir| index + dir.dir)
             .collect()
+    }
+    
+    pub fn get_all_coordinates(&self) -> Vec<Index2D> {
+        self.content.iter().enumerate()
+            .flat_map(|(y, line)|
+                line.iter().enumerate()
+                    .map(move |(x, _)| Index2D(x, y))
+            ).collect::<Vec<_>>()
     }
 }
 
 impl<T: Clone> Bounded<T> {
-    pub fn find_safe(&self, coord: Index2D) -> T {
+    pub fn find_safe(&self, coord: &Index2D) -> T {
         self.content[coord.1][coord.0].clone()
     }
 }
 
 
 #[derive(PartialEq, Eq, Hash, Copy, Clone)]
-struct Direction {
-    dir: Diff
+pub struct Direction {
+    pub dir: Diff
 }
 
 impl Direction {
-    const TOP: &'static Direction = &Direction { dir: Diff(0, -1) };
-    const RIGHT: &'static Direction = &Direction { dir: Diff(1, 0) };
-    const BOTTOM: &'static Direction = &Direction { dir: Diff(0, 1) };
-    const LEFT: &'static Direction = &Direction { dir: Diff(-1, 0) };
+    pub const UP: &'static Direction = &Direction { dir: Diff(0, -1) };
+    pub const RIGHT: &'static Direction = &Direction { dir: Diff(1, 0) };
+    pub const DOWN: &'static Direction = &Direction { dir: Diff(0, 1) };
+    pub const LEFT: &'static Direction = &Direction { dir: Diff(-1, 0) };
 
-    const VALUES: LazyLock<[&'static Direction; 4]> = LazyLock::new(|| {
-        [Direction::TOP, Direction::RIGHT, Direction::BOTTOM, Direction::LEFT]
+    pub const VALUES: LazyLock<[&'static Direction; 4]> = LazyLock::new(|| {
+        [Direction::UP, Direction::RIGHT, Direction::DOWN, Direction::LEFT]
     });
 }

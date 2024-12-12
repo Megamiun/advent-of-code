@@ -3,7 +3,6 @@ use std::collections::HashMap;
 pub fn get_sum_of_distances(lines: &[String]) -> i32 {
     let (mut left, mut right) = get_columns(lines);
 
-    // TODO Find a non mutable way to do this
     left.sort();
     right.sort();
 
