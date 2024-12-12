@@ -5,7 +5,6 @@ import br.com.gabryel.adventofcode.y2022.Coordinate
 import br.com.gabryel.adventofcode.y2022.plus
 import br.com.gabryel.adventofcode.y2022.x
 import br.com.gabryel.adventofcode.y2022.y
-import br.com.gabryel.adventofcode.y2024.d12.Direction.*
 import java.util.*
 
 fun main() {
@@ -95,10 +94,7 @@ private data class Region(val contained: Set<Coordinate>, val barriers: Set<Barr
 
 private data class Barrier(val first: Coordinate, val second: Coordinate, val to: Direction) {
     companion object {
-        fun from(from: Coordinate, to: Direction) = when (to) {
-            S, E -> Barrier(from, from + to.diff, to)
-            else -> Barrier(from + to.diff, from, to)
-        }
+        fun from(from: Coordinate, to: Direction) = Barrier(from, from + to.diff, to)
     }
 
     operator fun plus(dir: Direction) = Barrier(first + dir.diff, second + dir.diff, to)
