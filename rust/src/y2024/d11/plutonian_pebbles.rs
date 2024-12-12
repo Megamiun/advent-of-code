@@ -7,7 +7,6 @@ use std::cell::UnsafeCell;
 use std::collections::HashMap;
 use std::hash::{BuildHasher, RandomState};
 use std::ops::Deref;
-use std::rc::Rc;
 use std::sync::LazyLock;
 
 const TEN: LazyLock<UBig> = LazyLock::new(|| UBig::from(10u8));
@@ -28,7 +27,7 @@ fn stones_after_steps(lines: &[String], steps: usize) -> usize {
 
     lines[0]
         .split(" ")
-        .map(|number| Rc::new(UBig::from_str_radix(number, 10).unwrap()))
+        .map(|number| UBig::from_str_radix(number, 10).unwrap())
         .map(|number| cache.apply_rules(steps, &number))
         .sum::<usize>()
 }
@@ -43,9 +42,7 @@ impl<T: BuildHasher> Solver<T> {
             return 1;
         }
 
-        let key = (number.clone(), times);
-
-        *self.get_cache().entry(key)
+        *self.get_cache().entry((number.clone(), times))
             .or_insert_with(|| self.calculate(times, number))
     }
 
