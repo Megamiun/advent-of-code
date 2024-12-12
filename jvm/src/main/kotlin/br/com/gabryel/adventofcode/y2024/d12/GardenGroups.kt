@@ -5,6 +5,7 @@ import br.com.gabryel.adventofcode.y2022.Coordinate
 import br.com.gabryel.adventofcode.y2022.plus
 import br.com.gabryel.adventofcode.y2022.x
 import br.com.gabryel.adventofcode.y2022.y
+import br.com.gabryel.adventofcode.y2024.d12.Direction.*
 import java.util.*
 
 fun main() {
@@ -12,29 +13,31 @@ fun main() {
         val lines = readLines(2024, 12, file)
             .map { it.toCharArray().toList() }
 
-        println("[Price][$file] ${lines.findPrice()}")
-//        println("[Loops  ][$file] ${lines.part2()}")
+        println("[Price per perimeter][$file] ${lines.findPriceByPerimeter()}")
+        println("[Price per side     ][$file] ${lines.findPriceBySides()}")
     }
 }
 
-private fun List<List<Char>>.findPrice(): Int {
-    val groups = mutableListOf<Group>()
+private fun List<List<Char>>.findPriceByPerimeter() =
+    findRegions()
+        .sumOf { (contained, barriers) -> contained.size * barriers.size }
 
+private fun List<List<Char>>.findPriceBySides() =
+    findRegions()
+        .sumOf { (contained, barriers) -> contained.size * barriers.findSides().size }
+
+private fun List<List<Char>>.findRegions(): List<Region> {
+    val regions = mutableListOf<Region>()
     val allCoords = withIndex().flatMap { (y, line) -> line.indices.map { x -> (x to y) } }
 
     allCoords
         .asSequence()
-        .filter { coord -> groups.none { coord in it.contained } }
-        .forEach { coord -> groups += createGroup(coord) }
-
-    return groups.sumOf { (contained, barriers) -> contained.size * barriers.size }
+        .filter { coord -> regions.none { coord in it.contained } }
+        .forEach { coord -> regions += captureRegion(coord) }
+    return regions
 }
 
-private fun List<List<Char>>.part2(): Int {
-    return 0
-}
-
-private fun List<List<Char>>.createGroup(coord: Coordinate): Group {
+private fun List<List<Char>>.captureRegion(coord: Coordinate): Region {
     val contained = mutableSetOf(coord)
     val barriers = mutableSetOf<Barrier>()
 
@@ -46,7 +49,7 @@ private fun List<List<Char>>.createGroup(coord: Coordinate): Group {
         val next = curr + dir.diff
 
         if (first != getAt(next)) {
-            barriers += Barrier(curr, dir)
+            barriers += Barrier.from(curr, dir)
             continue
         }
 
@@ -56,37 +59,47 @@ private fun List<List<Char>>.createGroup(coord: Coordinate): Group {
         toVisit += Direction.entries.map { next to it }
     }
 
-    return Group(contained, barriers)
+    return Region(contained, barriers)
 }
 
 private fun List<List<Char>>.getAt(position: Coordinate) =
     getOrNull(position.y())?.getOrNull(position.x())
 
-enum class Direction(val diff: Coordinate) {
-    N(0 to -1),
-    E(1 to 0),
-    S(0 to 1),
-    W(-1 to 0);
+private fun Set<Barrier>.findSides(): List<Side> {
+    val sides = mutableListOf<Side>()
+
+    asSequence()
+        .filter { side -> sides.none { side in it.barriers } }
+        .forEach { coord -> sides += captureSides(coord) }
+    return sides
 }
 
-private data class Group(val contained: Set<Coordinate>, val barriers: Set<Barrier>)
+private fun Set<Barrier>.captureSides(barrier: Barrier): Side {
+    val inSide = barrier.to.parallel().flatMap { dir ->
+        generateSequence(barrier) { it + dir }.takeWhile { it in this }
+    }.toSet()
 
-private class Barrier(from: Coordinate, to: Direction) {
+    return Side(inSide)
+}
+
+enum class Direction(val diff: Coordinate, val parallel: () -> List<Direction>) {
+    N(0 to -1, { listOf(W, E) }),
+    E(1 to 0, { listOf(N, S) }),
+    S(0 to 1, { listOf(W, E) }),
+    W(-1 to 0, { listOf(N, S) });
+}
+
+private data class Side(val barriers: Set<Barrier>)
+
+private data class Region(val contained: Set<Coordinate>, val barriers: Set<Barrier>)
+
+private data class Barrier(val first: Coordinate, val second: Coordinate, val to: Direction) {
     companion object {
-        private val COMPARATOR = Comparator
-            .comparingInt(Coordinate::first)
-            .thenComparingInt(Coordinate::second)
+        fun from(from: Coordinate, to: Direction) = when (to) {
+            S, E -> Barrier(from, from + to.diff, to)
+            else -> Barrier(from + to.diff, from, to)
+        }
     }
 
-    val first = minOf(from, from + to.diff, COMPARATOR)
-    val second = maxOf(from, from + to.diff, COMPARATOR)
-
-    override fun equals(other: Any?): Boolean {
-        if (other !is Barrier) return false
-        return first == other.first && second == other.second
-    }
-
-    override fun hashCode() = first.hashCode() + second.hashCode()
-
-    override fun toString() = "[$first ~ $second]"
+    operator fun plus(dir: Direction) = Barrier(first + dir.diff, second + dir.diff, to)
 }
