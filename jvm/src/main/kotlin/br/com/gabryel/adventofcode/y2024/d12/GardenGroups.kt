@@ -48,7 +48,7 @@ private fun List<List<Char>>.captureRegion(coord: Coordinate): Region {
         val next = curr + dir.diff
 
         if (first != getAt(next)) {
-            barriers += Barrier.from(curr, dir)
+            barriers += Barrier(curr, dir)
             continue
         }
 
@@ -92,10 +92,6 @@ private data class Side(val barriers: Set<Barrier>)
 
 private data class Region(val contained: Set<Coordinate>, val barriers: Set<Barrier>)
 
-private data class Barrier(val first: Coordinate, val second: Coordinate, val to: Direction) {
-    companion object {
-        fun from(from: Coordinate, to: Direction) = Barrier(from, from + to.diff, to)
-    }
-
-    operator fun plus(dir: Direction) = Barrier(first + dir.diff, second + dir.diff, to)
+private data class Barrier(val first: Coordinate, val to: Direction) {
+    operator fun plus(dir: Direction) = Barrier(first + dir.diff, to)
 }
