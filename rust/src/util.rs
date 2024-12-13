@@ -23,6 +23,20 @@ impl Index2D {
             (Ok(new_x_val), Ok(new_y_val)) => Some(Index2D(new_x_val, new_y_val)),
             _ => None,
         }
+    }    
+}
+
+impl Add<Index2D> for Index2D {
+    type Output = Index2D;
+    fn add(self, other: Index2D) -> Self::Output {
+        Self(self.0 + other.0, self.1 + other.1)
+    }
+}
+
+impl Sub<Index2D> for Index2D {
+    type Output = Option<Index2D>;
+    fn sub(self, other: Index2D) -> Self::Output {
+        Some(Self(self.0.checked_sub(other.0)?, self.1.checked_sub(other.1)?))
     }
 }
 
@@ -39,7 +53,6 @@ impl Sub<Diff> for Index2D {
         Self::from_diff(self.as_diff() - other)
     }
 }
-
 
 #[derive(PartialEq, Eq, Hash, Clone, Copy, Display, Debug)]
 #[display("({_0}; {_1})")]
@@ -62,5 +75,7 @@ impl Sub<Diff> for Diff {
 
 forward_ref_binop! { impl Sub for Diff }
 forward_ref_binop! { impl Add for Diff }
+forward_ref_binop! { impl Sub for Index2D }
+forward_ref_binop! { impl Add for Index2D }
 forward_ref_binop! { impl Sub for Index2D, Diff }
 forward_ref_binop! { impl Add for Index2D, Diff }
