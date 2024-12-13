@@ -12,6 +12,13 @@ pub mod y2023;
 pub mod y2024;
 mod util;
 
+pub fn run_for_groups<T: Display>(year: u32, day: u32, files: &[&str], exec: &dyn Fn(&[&[String]]) -> T) {
+    run_for_files(year, day, files, &|lines| {
+        let groups = lines.split(|line| line.is_empty()).collect::<Vec<_>>();
+        exec(groups.as_slice())
+    })
+}
+
 pub fn run_for_files<T: Display>(year: u32, day: u32, files: &[&str], exec: &dyn Fn(&[String]) -> T) {
     let padded_day = pad_left(day);
 

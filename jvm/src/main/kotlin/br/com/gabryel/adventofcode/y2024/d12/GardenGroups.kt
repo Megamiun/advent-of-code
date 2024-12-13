@@ -23,7 +23,7 @@ private fun List<List<Char>>.findPriceByPerimeter() =
 
 private fun List<List<Char>>.findPriceBySides() =
     findRegions()
-        .sumOf { (contained, barriers) -> contained.size * barriers.findSides().size }
+        .sumOf { region -> region.contained.size * region.findSides().size }
 
 private fun List<List<Char>>.findRegions(): List<Region> {
     val regions = mutableListOf<Region>()
@@ -64,23 +64,6 @@ private fun List<List<Char>>.captureRegion(coord: Coordinate): Region {
 private fun List<List<Char>>.getAt(position: Coordinate) =
     getOrNull(position.y())?.getOrNull(position.x())
 
-private fun Set<Barrier>.findSides(): List<Side> {
-    val sides = mutableListOf<Side>()
-
-    asSequence()
-        .filter { side -> sides.none { side in it.barriers } }
-        .forEach { coord -> sides += captureSides(coord) }
-    return sides
-}
-
-private fun Set<Barrier>.captureSides(barrier: Barrier): Side {
-    val inSide = barrier.to.parallel().flatMap { dir ->
-        generateSequence(barrier) { it + dir }.takeWhile { it in this }
-    }.toSet()
-
-    return Side(inSide)
-}
-
 enum class Direction(val diff: Coordinate, val parallel: () -> List<Direction>) {
     N(0 to -1, { listOf(W, E) }),
     E(1 to 0, { listOf(N, S) }),
@@ -90,7 +73,25 @@ enum class Direction(val diff: Coordinate, val parallel: () -> List<Direction>) 
 
 private data class Side(val barriers: Set<Barrier>)
 
-private data class Region(val contained: Set<Coordinate>, val barriers: Set<Barrier>)
+private data class Region(val contained: Set<Coordinate>, val barriers: Set<Barrier>) {
+    fun findSides(): List<Side> {
+        val sides = mutableListOf<Side>()
+
+        barriers
+            .asSequence()
+            .filter { side -> sides.none { side in it.barriers } }
+            .forEach { coord -> sides += captureSides(coord) }
+        return sides
+    }
+
+    private fun captureSides(barrier: Barrier): Side {
+        val inSide = barrier.to.parallel().flatMap { dir ->
+            generateSequence(barrier) { it + dir }.takeWhile { it in barriers }
+        }.toSet()
+
+        return Side(inSide)
+    }
+}
 
 private data class Barrier(val first: Coordinate, val to: Direction) {
     operator fun plus(dir: Direction) = Barrier(first + dir.diff, to)
