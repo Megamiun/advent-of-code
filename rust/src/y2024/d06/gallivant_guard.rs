@@ -3,7 +3,6 @@ use rustc_hash::FxHashSet;
 use std::collections::{HashMap, HashSet};
 use std::hash::BuildHasher;
 use std::iter::successors;
-use std::ops::Add;
 use std::sync::LazyLock;
 
 #[derive(PartialEq, Eq, Hash, Copy, Clone)]
@@ -91,7 +90,7 @@ fn visit_next_with_obstacle(
     direction: &'static Direction,
     obstacle: &Index2D,
 ) -> Option<(Index2D, &'static Direction)> {
-    let next = pos.add(direction.dir)?;
+    let next = (pos + direction.dir)?;
 
     if *obstacle == next {
         return Option::from((pos.clone(), (direction.next)()));
