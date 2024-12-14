@@ -1,10 +1,11 @@
 use num_traits::{Num, ToPrimitive};
 use regex::Regex;
 use std::sync::LazyLock;
+use derive_more::Display;
 
 type XYPair = (f64, f64);
 
-const EXTRACTOR: LazyLock<Regex> = LazyLock::new(|| Regex::new("(\\d+).*(\\d+)").unwrap());
+const EXTRACTOR: LazyLock<Regex> = LazyLock::new(|| Regex::new("(\\d+).{4}(\\d+)").unwrap());
 
 pub fn calculate(groups: &[&[String]]) -> usize {
     sum_groups(groups, &|a, b, goal|
@@ -66,6 +67,8 @@ fn to_f64(x: &str) -> f64 {
     f64::from_str_radix(x, 10).unwrap()
 }
 
+#[derive(Display)]
+#[display("{goal} = {a}a + {b}b")]
 struct Equation {
     a: f64,
     b: f64,
