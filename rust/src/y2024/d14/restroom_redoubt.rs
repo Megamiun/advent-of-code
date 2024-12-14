@@ -6,6 +6,8 @@ use std::sync::LazyLock;
 use std::thread::sleep;
 use std::time::Duration;
 
+type MovingRobot = (Index2D, Diff);
+
 const EXTRACTOR: LazyLock<Regex> =
     LazyLock::new(|| Regex::new("(\\d+).(\\d+).{3}([-0-9]+).([-0-9]+)").unwrap());
 
@@ -17,13 +19,13 @@ pub fn get_safety_score(lines: &[String]) -> usize {
 
     let after_move = &lines.iter()
         .map(parse)
-        .map(|(initial, diff)| contrains_to(&((diff * seconds) + initial), &bounds))
+        .map(|robot| move_robot(&robot, &bounds, seconds).0)
         .collect::<Vec<_>>();
 
-    count(after_move, &|position| position.0 < half_x && position.1 < half_y) *
-        count(after_move, &|position| position.0 < half_x && position.1 > half_y) *
-        count(after_move, &|position| position.0 > half_x && position.1 < half_y) *
-        count(after_move, &|position| position.0 > half_x && position.1 > half_y)
+    count(after_move, &|robot| robot.0 < half_x && robot.1 < half_y) *
+        count(after_move, &|robot| robot.0 < half_x && robot.1 > half_y) *
+        count(after_move, &|robot| robot.0 > half_x && robot.1 < half_y) *
+        count(after_move, &|robot| robot.0 > half_x && robot.1 > half_y)
 }
 
 pub fn get_similar_to_tree(lines: &[String]) -> usize {
@@ -35,12 +37,16 @@ pub fn get_similar_to_tree(lines: &[String]) -> usize {
 
     successors(Some(initial_position), |robots| {
         Some(robots.iter()
-            .map(|(initial, diff)| (contrains_to(&(diff + initial), &bounds), *diff))
+            .map(|robot| move_robot(robot, &bounds, 1))
             .collect::<Vec<_>>())
     }).enumerate().for_each(|(second, robots)| {
         print_to_terminal(bounds, second, &robots);
     });
     0
+}
+
+fn move_robot((robot, diff): &MovingRobot, bounds: &Index2D, amount: usize) -> MovingRobot {
+    (contrains_to(&((diff * amount) + robot), &bounds), *diff)
 }
 
 fn count<T>(positions: &Vec<T>, matches: &dyn Fn(&&T) -> bool) -> usize {
