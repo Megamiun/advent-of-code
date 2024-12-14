@@ -1,103 +1,87 @@
-use crate::util::Index2D;
+use num_traits::{Num, ToPrimitive};
 use regex::Regex;
 use std::sync::LazyLock;
-use std::usize;
 
-const EXTRACTOR: LazyLock<Regex> = LazyLock::new(|| Regex::new("(\\d+).*?(\\d+)").unwrap());
+type XYPair = (f64, f64);
 
-pub fn pt1(groups: &[&[String]]) -> usize {
-    groups
-        .iter()
-        .filter_map(|group| {
-            let items = group
-                .iter()
-                .map(|line| {
-                    let (_, [x, y]) = EXTRACTOR.captures(line).unwrap().extract();
-                    Index2D(to_usize(x), to_usize(y))
-                })
-                .collect::<Vec<_>>();
+const EXTRACTOR: LazyLock<Regex> = LazyLock::new(|| Regex::new("(\\d+).*(\\d+)").unwrap());
 
-            match items.as_slice() {
-                [a, b, goal] => get_min_tokens(a, b, goal, 100),
-                _ => None,
-            }
-        })
-        .sum()
+pub fn calculate(groups: &[&[String]]) -> usize {
+    sum_groups(groups, &|a, b, goal|
+        get_min_tokens(*a, *b, *goal, 100f64))
 }
 
-pub fn pt2(groups: &[&[String]]) -> usize {
+pub fn calculate_with_error(groups: &[&[String]]) -> usize {
+    let error = &(10000000000000f64, 10000000000000f64);
+
+    sum_groups(groups, &|a, b, goal|
+        get_min_tokens(*a, *b, (goal.0 +  error.0, goal.1 +  error.1), f64::MAX))
+}
+
+fn sum_groups(groups: &[&[String]], calculate: &dyn Fn(&XYPair, &XYPair, &XYPair) -> Option<usize>) -> usize {
     groups
         .iter()
+        .map(parse_group)
         .filter_map(|group| {
-            let items = group
-                .iter()
-                .map(|line| {
-                    let (_, [x, y]) = EXTRACTOR.captures(line).unwrap().extract();
-                    Index2D(to_usize(x), to_usize(y))
-                })
-                .collect::<Vec<_>>();
-
-            match items.as_slice() {
-                [a, b, goal] => get_min_tokens(a, b, &(goal + &Index2D(10000000000000, 10000000000000)), usize::MAX),
+            match group.as_slice() {
+                [a, b, goal] => calculate(a, b, goal),
                 _ => None,
             }
-        })
-        .sum()
+        }).sum()
 }
 
 fn get_min_tokens(
-    button_a: &Index2D,
-    button_b: &Index2D,
-    goal: &Index2D, 
-    limit: usize
+    button_a: XYPair,
+    button_b: XYPair,
+    goal: XYPair,
+    limit: f64,
 ) -> Option<usize> {
-    let max_b = usize::min(usize::min(goal.0 / button_b.0, goal.1 / button_b.1), limit);
+    let x = &Equation { a: button_a.0, b: button_b.0, goal: goal.0 };
+    let y = &Equation { a: button_a.1, b: button_b.1, goal: goal.1 };
+
+    let b_x_div_y = x.b / y.b;
+
+    let a_isolated = x.minus(y, &b_x_div_y);
     
-    println!("Starting to seek {goal} with {button_a} and {button_b}. Maximum B: {max_b}");
+    let a = (a_isolated.goal / a_isolated.a).round();
+    let b = ((x.goal - (x.a * a)) / x.b).round();
+    
+    if a > limit || b > limit || !x.matches(a, b) || !y.matches(a, b) {
+        return None
+    }
 
-    (0..=max_b)
-        .rev()
-        .filter_map(|b| {
-            let b_curr = Index2D(b * button_b.0, b * button_b.1);
-            let remaining = (goal - b_curr).unwrap();
-
-            let a = usize::min(remaining.0 / button_a.0, remaining.1 / button_a.1);
-            let a_curr = Index2D(a * button_a.0, a * button_a.1);
-
-            if a_curr == remaining {
-                Some(b + (a * 3))
-            } else {
-                None
-            }
-        }).min()
+    Some((a.to_usize()? * 3) + b.to_usize()?)
 }
 
-// fn get_min_tokens(curr: &Index2D, button_a: &Index2D, button_b: &Index2D, goal: &Index2D, tokens: usize, limit: usize, max: usize) -> Option<usize> {
-//     if tokens >= max {
-//         return None
-//     }
-//
-//     if curr == goal {
-//         return Some(tokens)
-//     }
-//
-//     if limit == 0 {
-//         return None
-//     }
-//
-//     if curr.0 > goal.0 || curr.1 > goal.0 {
-//         return None
-//     }
-//
-//     let right = get_min_tokens(&(curr + button_a), button_a, button_b, goal, tokens + 5, limit - 1, max)
-//         .unwrap_or(usize::MAX);
-//
-//     let left = get_min_tokens(&(curr + button_a), button_a, button_b, goal, tokens + 5, limit - 1, usize::max(right, max))
-//         .unwrap_or(usize::MAX);
-//
-//     Some(usize::max(left, right))
-// }
+fn parse_group(group: &&[String]) -> Vec<XYPair> {
+    group
+        .iter()
+        .map(|line| {
+            let (_, [x, y]) = EXTRACTOR.captures(line).unwrap().extract();
+            (to_f64(x), to_f64(y))
+        }).collect()
+}
 
-fn to_usize(x: &str) -> usize {
-    usize::from_str_radix(x, 10).unwrap()
+fn to_f64(x: &str) -> f64 {
+    f64::from_str_radix(x, 10).unwrap()
+}
+
+struct Equation {
+    a: f64,
+    b: f64,
+    goal: f64,
+}
+
+impl Equation {
+    fn minus(&self, eq: &Equation, factor: &f64) -> Equation {
+        Equation {
+            a: self.a - (eq.a * factor),
+            b: self.b - (eq.b * factor),
+            goal: self.goal - (eq.goal * factor),
+        }
+    }
+    
+    fn matches(&self, a: f64, b: f64) -> bool {
+        self.goal == (self.a * a) + (self.b * b)
+    }
 }
