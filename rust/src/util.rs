@@ -105,18 +105,18 @@ impl Add<Index2D> for Diff {
 }
 
 impl Mul<usize> for Diff {
-    type Output = Option<Diff>;
+    type Output = Diff;
 
     fn mul(self, rhs: usize) -> Self::Output {
-        Some(Diff(self.0 * rhs.to_i32()?, self.1 * rhs.to_i32()?))
+        Diff(self.0 * rhs.to_i32().unwrap(), self.1 * rhs.to_i32().unwrap())
     }
 }
 
 impl Div<usize> for Diff {
-    type Output = Option<Diff>;
+    type Output = Diff;
 
     fn div(self, rhs: usize) -> Self::Output {
-        Some(Diff(self.0 / rhs.to_i32()?, self.1 / rhs.to_i32()?))
+        Diff(self.0 / rhs.to_i32().unwrap(), self.1 / rhs.to_i32().unwrap())
     }
 }
 

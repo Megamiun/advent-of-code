@@ -13,12 +13,12 @@ pub fn get_safety_score(lines: &[String]) -> usize {
     let bounds = Index2D(101, 103);
     let half_x = bounds.0 / 2;
     let half_y = bounds.1 / 2;
+    let seconds = 100;
 
     let after_move = &lines.iter()
         .map(parse)
-        .map(|(initial, diff)|
-            contrains_to(&((diff * 100).unwrap() + initial), &bounds)
-        ).collect::<Vec<_>>();
+        .map(|(initial, diff)| contrains_to(&((diff * seconds) + initial), &bounds))
+        .collect::<Vec<_>>();
 
     count(after_move, &|position| position.0 < half_x && position.1 < half_y) *
         count(after_move, &|position| position.0 < half_x && position.1 > half_y) *
