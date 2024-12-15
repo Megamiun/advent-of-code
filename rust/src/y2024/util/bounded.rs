@@ -55,6 +55,23 @@ impl<T: PartialEq> Bounded<T> {
                     .map(move |(x, _)| Index2D(x, y))
             ).collect::<Vec<_>>()
     }
+
+    pub fn get_all_coordinates_with_content(&self) -> Vec<(Index2D, &T)> {
+        self.content.iter().enumerate()
+            .flat_map(|(y, line)|
+                line.iter().enumerate()
+                    .map(move |(x, item)| (Index2D(x, y), item))
+            ).collect::<Vec<_>>()
+    }
+
+
+    pub fn print_by(&self, get_content: &dyn for<'b> Fn(&'b Index2D, &'b T) -> &'b str) {
+        self.content.iter().enumerate().for_each(|(y, line)| {
+            line.iter().enumerate()
+                .for_each(move |(x, item)| print!("{}", get_content(&Index2D(x, y), &item)));
+            println!()
+        })
+    }
 }
 
 impl<T: Clone> Bounded<T> {

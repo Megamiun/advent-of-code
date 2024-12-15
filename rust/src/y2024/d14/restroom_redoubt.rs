@@ -1,10 +1,12 @@
 use crate::util::{Diff, Index2D};
+use crate::y2024::util::bounded::Bounded;
 use num_traits::ToPrimitive;
 use regex::Regex;
+use rustc_hash::FxHashSet;
+use std::cell::RefCell;
+use std::collections::LinkedList;
 use std::iter::successors;
 use std::sync::LazyLock;
-use std::thread::sleep;
-use std::time::Duration;
 
 type MovingRobot = (Index2D, Diff);
 
@@ -17,9 +19,11 @@ pub fn get_safety_score(lines: &[String]) -> usize {
     let half_y = bounds.1 / 2;
     let seconds = 100;
 
+    let map = Bounded::from(bounds);
+
     let after_move = &lines.iter()
         .map(parse)
-        .map(|robot| move_robot(&robot, &bounds, seconds).0)
+        .map(|robot| map.move_robot(&robot, seconds).0)
         .collect::<Vec<_>>();
 
     count(after_move, &|robot| robot.0 < half_x && robot.1 < half_y) *
@@ -35,29 +39,21 @@ pub fn get_similar_to_tree(lines: &[String]) -> usize {
         .map(parse)
         .collect::<Vec<_>>();
 
+    let map = RefCell::new(Bounded::from(bounds));
+
     successors(Some(initial_position), |robots| {
         Some(robots.iter()
-            .map(|robot| move_robot(robot, &bounds, 1))
+            .map(|robot| map.borrow().move_robot(robot, 1))
             .collect::<Vec<_>>())
-    }).enumerate().for_each(|(second, robots)| {
-        print_to_terminal(bounds, second, &robots);
-    });
-    0
-}
-
-fn move_robot((robot, diff): &MovingRobot, bounds: &Index2D, amount: usize) -> MovingRobot {
-    (contrains_to(&((diff * amount) + robot), &bounds), *diff)
+    }).enumerate()
+        .inspect(|(_, robots)| map.borrow_mut().fill(robots))
+        .filter(|(_, robots)| map.borrow().has_big_cluster(robots))
+        .inspect(|(second, _)| map.borrow().print(*second))
+        .nth(0).unwrap().0
 }
 
 fn count<T>(positions: &Vec<T>, matches: &dyn Fn(&&T) -> bool) -> usize {
     positions.iter().filter(matches).count()
-}
-
-fn contrains_to(Diff(diff_x, diff_y): &Diff, Index2D(x, y): &Index2D) -> Index2D {
-    let x = diff_x.rem_euclid(x.to_i32().unwrap()).to_usize().unwrap();
-    let y = diff_y.rem_euclid(y.to_i32().unwrap()).to_usize().unwrap();
-
-    Index2D(x, y)
 }
 
 fn parse(line: &String) -> (Index2D, Diff) {
@@ -75,21 +71,85 @@ fn to_usize(x: &str) -> usize {
     usize::from_str_radix(x, 10).unwrap()
 }
 
-fn print_to_terminal(bounds: Index2D, second: usize, robots: &Vec<(Index2D, Diff)>) {
-    println!("=======================================================================================");
-    println!("====================================    {second:4}       ====================================");
-    println!("=======================================================================================");
+impl Bounded<bool> {
+    const FILLED: &'static str = "◻️";
+    const NOT_FILLED: &'static str = "◼️";
 
-    (0..bounds.1).for_each(|y| {
-        (0..bounds.0).for_each(|x| {
-            if robots.iter().any(|(robot, _)| robot.0 == x && robot.1 == y) {
-                print!("◻️")
-            } else {
-                print!("◼️")
+    fn from(bounds: Index2D) -> Bounded<bool> {
+        Bounded {
+            content: vec![vec![false; bounds.0]; bounds.1],
+            height: bounds.1,
+            width: bounds.0
+        }
+    }
+
+    fn move_robot(&self, (previous, diff): &MovingRobot, amount: usize) -> MovingRobot {
+        (self.contrains_to(&((diff * amount) + previous)), *diff)
+    }
+
+    fn fill(&mut self, robots: &[MovingRobot]) {
+        self.get_all_coordinates().iter()
+            .for_each(|Index2D(x, y)| self.content[*y][*x] = false);
+
+        robots.iter()
+            .for_each(|(Index2D(x, y), _)| self.content[*y][*x] = true);
+    }
+
+    fn print(&self, second: usize) {
+        println!("=======================================================================================");
+        println!("====================================    {second:4}       ====================================");
+        println!("=======================================================================================");
+
+        self.print_by(&|_, filled| match *filled {
+            true => Self::FILLED,
+            false => Self::NOT_FILLED
+        })
+    }
+
+    fn contrains_to(&self, Diff(diff_x, diff_y): &Diff) -> Index2D {
+        let x = diff_x.rem_euclid(self.width.to_i32().unwrap()).to_usize().unwrap();
+        let y = diff_y.rem_euclid(self.height.to_i32().unwrap()).to_usize().unwrap();
+
+        Index2D(x, y)
+    }
+
+    fn has_big_cluster(&self, robots: &[MovingRobot]) -> bool {
+        let cluster_min_size = robots.len() / 3;
+        let half = robots.len() / 2;
+        
+        robots.iter()
+            // As we are searching for a big cluster, doing that lightens the load a little 
+            // with low risk, as it is highly improbable that the whole cluster is in the first half
+            .skip(half)
+            .any(|(position, _)| self.capture_group_size(position) > cluster_min_size)
+    }
+
+    fn capture_group_size(&self, position: &Index2D) -> usize {
+        // This allows us not to do further allocation for lone robots, a pretty common scenario
+        let adjacent = self.find_adjacent(position);
+        if !adjacent.iter().any(|pos| self.find(pos).is_some_and(|exists| *exists)) {
+            return 1;
+        }
+        
+        let mut contained = FxHashSet::<Index2D>::default();
+        let mut to_visit = LinkedList::<Index2D>::new();
+
+        contained.insert(*position);
+        adjacent.iter().for_each(|pos| to_visit.push_back(*pos));
+        
+        while !to_visit.is_empty() {
+            let curr = to_visit.pop_front().unwrap();
+            let exists = self.find(&curr);
+
+            if contained.contains(&curr) || exists.is_none() || !exists.unwrap() {
+                continue
             }
-        });
-        println!();
-    });
 
-    sleep(Duration::from_millis(600))
+            contained.insert(curr);
+            self.find_adjacent(&curr).iter()
+                .for_each(|next| to_visit.push_back(*next))
+        }
+
+        contained.len()
+    }
 }
