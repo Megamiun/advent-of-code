@@ -1,5 +1,6 @@
-use std::fmt::Debug;
 use crate::util::{Diff, Index2D};
+use crate::y2024::util::bounded::EnumDirection::{Down, Left, Right, Up};
+use std::fmt::Debug;
 use std::sync::LazyLock;
 
 pub struct Bounded<T> {
@@ -116,4 +117,53 @@ impl Direction {
     pub const VALUES: LazyLock<[&'static Direction; 4]> = LazyLock::new(|| {
         [Direction::UP, Direction::RIGHT, Direction::DOWN, Direction::LEFT]
     });
+}
+
+
+#[derive(PartialEq, Eq, Hash, Copy, Clone, Debug, Ord, PartialOrd)]
+pub enum EnumDirection {
+    Up,
+    Right,
+    Down,
+    Left
+}
+
+impl EnumDirection {
+    pub const VALUES: [EnumDirection; 4] = [Up, Right, Down, Left];
+    
+    pub fn get_dir(&self) -> Diff {
+        match self {
+            Up => Diff(0, -1),
+            Right =>  Diff(1, 0),
+            Down => Diff(0, 1),
+            Left =>  Diff(-1, 0)
+        }
+    }
+
+    pub fn get_reverse(&self) -> EnumDirection {
+        match self {
+            Up => Down,
+            Right => Left,
+            Down => Up,
+            Left => Right
+        }
+    }
+
+    pub fn get_clockwise(&self) -> EnumDirection {
+        match self {
+            Up => Right,
+            Right => Down,
+            Down => Left,
+            Left => Up
+        }
+    }
+    
+    pub fn get_counter_clockwise(&self) -> EnumDirection {
+        match self {
+            Up => Left,
+            Right => Up,
+            Down => Right,
+            Left => Down
+        }
+    }
 }
