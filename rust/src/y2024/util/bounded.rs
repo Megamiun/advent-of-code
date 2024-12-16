@@ -1,3 +1,4 @@
+use std::fmt::Debug;
 use crate::util::{Diff, Index2D};
 use std::sync::LazyLock;
 
@@ -21,7 +22,25 @@ impl From<&[String]> for Bounded<char> {
     }
 }
 
-impl<T: PartialEq> Bounded<T> {
+impl<T: Clone> From<&Vec<Vec<T>>> for Bounded<T> {
+    fn from(content: &Vec<Vec<T>>) -> Bounded<T> {
+        Bounded {
+            content: content.clone(),
+            height: content.len(),
+            width: content[0].len(),
+        }
+    }
+}
+
+impl<T: PartialEq + Clone> Bounded<T> {
+    pub fn create_from(map: &[String], get_cell: fn(char) -> T) -> Bounded<T> {
+        let new_map = map.iter().map(|line|
+            line.chars().map(|c| get_cell(c)).collect::<Vec<_>>()
+        ).collect::<Vec<_>>();
+
+        Bounded::from(&new_map)
+    }
+
     pub fn find(&self, coord: &Index2D) -> Option<&T> {
         self.content.get(coord.1)?.get(coord.0)
     }
@@ -64,13 +83,16 @@ impl<T: PartialEq> Bounded<T> {
             ).collect::<Vec<_>>()
     }
 
-
-    pub fn print_by(&self, get_content: &dyn for<'b> Fn(&'b Index2D, &'b T) -> &'b str) {
+    pub fn print_by(&self, get_content: &dyn for<'b> Fn(&'b Index2D, &'b T) -> String) {
         self.content.iter().enumerate().for_each(|(y, line)| {
             line.iter().enumerate()
-                .for_each(move |(x, item)| print!("{}", get_content(&Index2D(x, y), &item)));
+                .for_each(move |(x, item)| print!("{}", get_content(&Index2D(x, y), item)));
             println!()
         })
+    }
+
+    pub fn set(&mut self, Index2D(x, y): &Index2D, value: T) {
+        self.content[*y][*x] = value
     }
 }
 
@@ -80,8 +102,7 @@ impl<T: Clone> Bounded<T> {
     }
 }
 
-
-#[derive(PartialEq, Eq, Hash, Copy, Clone)]
+#[derive(PartialEq, Eq, Hash, Copy, Clone, Debug)]
 pub struct Direction {
     pub dir: Diff
 }

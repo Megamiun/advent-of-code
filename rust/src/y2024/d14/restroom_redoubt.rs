@@ -6,6 +6,7 @@ use rustc_hash::FxHashSet;
 use std::cell::RefCell;
 use std::collections::LinkedList;
 use std::iter::successors;
+use std::string::ToString;
 use std::sync::LazyLock;
 
 type MovingRobot = (Index2D, Diff);
@@ -72,9 +73,6 @@ fn to_usize(x: &str) -> usize {
 }
 
 impl Bounded<bool> {
-    const FILLED: &'static str = "◻️";
-    const NOT_FILLED: &'static str = "◼️";
-
     fn from(bounds: Index2D) -> Bounded<bool> {
         Bounded {
             content: vec![vec![false; bounds.0]; bounds.1],
@@ -101,8 +99,8 @@ impl Bounded<bool> {
         println!("=======================================================================================");
 
         self.print_by(&|_, filled| match *filled {
-            true => Self::FILLED,
-            false => Self::NOT_FILLED
+            true => "◻️".to_string(),
+            false => "◼️".to_string()
         })
     }
 
