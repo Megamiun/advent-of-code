@@ -1,10 +1,11 @@
 use crate::util::Index2D;
-use crate::y2024::util::bounded::{Bounded, EnumDirection};
+use crate::y2024::util::bounded::Bounded;
+use crate::y2024::util::direction::Direction;
+use crate::y2024::util::direction::Direction::Right;
 use rustc_hash::{FxHashMap, FxHashSet};
 use std::fmt::Debug;
-use EnumDirection::Right;
 
-type Key = (Index2D, EnumDirection);
+type Key = (Index2D, Direction);
 
 pub fn get_min_path(lines: &[String]) -> usize {
     Bounded::from(lines).get_min_path()
@@ -22,7 +23,7 @@ impl Bounded<char> {
         let min_spanning_tree = self.get_min_spanning_tree();
         let end = self.find_first(&'E').unwrap();
 
-        EnumDirection::VALUES.iter()
+        Direction::VALUES.iter()
             .filter_map(|&dir| Some(min_spanning_tree.get(&(end, dir))?.0))
             .min().unwrap_or(0)
     }
@@ -64,19 +65,19 @@ impl Bounded<char> {
         min_distances_path
     }
 
-    fn movement_for(to_key: &Key, dir: EnumDirection, score: usize, addition: usize) -> (usize, Key, Key) {
+    fn movement_for(to_key: &Key, dir: Direction, score: usize, addition: usize) -> (usize, Key, Key) {
         (score + addition, *to_key, ((to_key.0 + dir.get_dir()).unwrap(), dir))
     }
 
     fn get_unique_spots_on(&self, min_distances_path: &mut FxHashMap<Key, (usize, Vec<Key>)>, end: &Index2D) -> usize {
-        let min_distance = EnumDirection::VALUES.iter()
+        let min_distance = Direction::VALUES.iter()
             .filter_map(|&dir| Some(min_distances_path.get(&(*end, dir))?.0))
             .min()
             .unwrap_or(0);
 
         let mut acc = FxHashSet::<Index2D>::default();
 
-        EnumDirection::VALUES.iter().filter(|&&dir| {
+        Direction::VALUES.iter().filter(|&&dir| {
             min_distances_path
                 .get(&(*end, dir))
                 .is_some_and(|v| v.0 == min_distance)
