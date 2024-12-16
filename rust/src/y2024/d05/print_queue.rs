@@ -68,13 +68,13 @@ fn parse_inputs(lines: &[String]) -> (Vec<(usize, usize)>, Vec<Vec<usize>>) {
 
     let rules = grouped[0]
         .iter()
-        .map(|line| line.split("|").map(&to_usize).collect::<Vec<usize>>())
+        .map(|line| line.split("|").map(&to_usize).collect::<Vec<_>>())
         .map(|content| (content[0], content[1]))
         .collect::<Vec<_>>();
 
     let instructions = grouped[1]
         .iter()
-        .map(|line| line.split(",").map(&to_usize).collect::<Vec<usize>>())
+        .map(|line| line.split(",").map(&to_usize).collect::<Vec<_>>())
         .collect::<Vec<_>>();
     (rules, instructions)
 }

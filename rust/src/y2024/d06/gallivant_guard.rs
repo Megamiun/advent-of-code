@@ -1,28 +1,23 @@
-use crate::util::{Diff, Index2D};
+use crate::util::Index2D;
+use crate::y2024::util::direction::Direction;
+use crate::y2024::util::direction::Direction::{Down, Left, Right, Up};
 use rustc_hash::FxHashSet;
 use std::collections::{HashMap, HashSet};
 use std::hash::BuildHasher;
 use std::iter::successors;
 use std::sync::LazyLock;
 
-#[derive(PartialEq, Eq, Hash, Copy, Clone)]
-struct Direction {
-    dir: Diff,
-    next: fn() -> &'static Direction,
-}
-
 impl Direction {
-    const N: &'static Direction = &Direction { dir: Diff(0, -1), next: || Direction::E };
-    const E: &'static Direction = &Direction { dir: Diff(1, 0), next: || Direction::S };
-    const S: &'static Direction = &Direction { dir: Diff(0, 1), next: || Direction::W };
-    const W: &'static Direction = &Direction { dir: Diff(-1, 0), next: || Direction::N };
-
-    const VALUES: LazyLock<HashMap<char, &'static Direction>> = LazyLock::new(|| {
-        HashMap::from([('^', Direction::N), ('>', Direction::E), ('V', Direction::S), ('<', Direction::W)])
+    const CHAR_VALUES: LazyLock<HashMap<char, Direction>> = LazyLock::new(|| {
+        HashMap::from([('^', Up), ('>', Right), ('V', Down), ('<', Left)])
     });
 
-    fn from(char: char) -> &'static Direction {
-        Self::VALUES.get(&char).unwrap()
+    fn from(char: char) -> Direction {
+        Self::CHAR_VALUES[&char]
+    }
+    
+    fn next(&self) -> Direction {
+        self.get_clockwise()
     }
 }
 
@@ -43,16 +38,16 @@ pub fn get_loops_after_obstacle(lines: &[String]) -> usize {
         .count()
 }
 
-fn get_unique_guard_positions(maze: &Vec<Vec<char>>, guard_pos: Index2D, guard_dir: &'static Direction) -> HashSet<Index2D> {
+fn get_unique_guard_positions(maze: &Vec<Vec<char>>, guard_pos: Index2D, guard_dir: Direction) -> HashSet<Index2D> {
     successors(
         Option::from((guard_pos, guard_dir)),
-        |(new_pos, new_dir)| visit_next(&maze, new_pos, new_dir),
+        |(new_pos, new_dir)| visit_next(&maze, new_pos, *new_dir),
     )
         .map(|(position, _)| position)
         .collect::<HashSet<_>>()
 }
 
-fn causes_loop(maze: &Vec<Vec<char>>, obstacle: Index2D, guard_pos: Index2D, guard_dir: &'static Direction) -> bool {
+fn causes_loop(maze: &Vec<Vec<char>>, obstacle: Index2D, guard_pos: Index2D, guard_dir: Direction) -> bool {
     let mut visited = create_hash_set_for(maze);
     let mut curr = (guard_pos, guard_dir);
 
@@ -75,7 +70,7 @@ fn causes_loop(maze: &Vec<Vec<char>>, obstacle: Index2D, guard_pos: Index2D, gua
     }
 }
 
-fn find_initial_guard_position(maze: &Vec<Vec<char>>) -> (Index2D, &'static Direction) {
+fn find_initial_guard_position(maze: &Vec<Vec<char>>) -> (Index2D, Direction) {
     (0..maze.len()).flat_map(|y| {
         (0..maze[y].len())
             .filter(|&x| !['.', '#'].contains(&maze[y][x]))
@@ -87,17 +82,17 @@ fn find_initial_guard_position(maze: &Vec<Vec<char>>) -> (Index2D, &'static Dire
 fn visit_next_with_obstacle(
     maze: &Vec<Vec<char>>,
     pos: &Index2D,
-    direction: &'static Direction,
+    direction: Direction,
     obstacle: &Index2D,
-) -> Option<(Index2D, &'static Direction)> {
-    let next = (pos + direction.dir)?;
+) -> Option<(Index2D, Direction)> {
+    let next = (pos + direction.get_dir())?;
 
     if *obstacle == next {
-        return Option::from((pos.clone(), (direction.next)()));
+        return Option::from((pos.clone(), direction.next()));
     }
 
     match maze.get(next.1)?.get(next.0)? {
-        '#' => Option::from((pos.clone(), (direction.next)())),
+        '#' => Option::from((pos.clone(), direction.next())),
         _ => Option::from((next, direction)),
     }
 }
@@ -105,13 +100,13 @@ fn visit_next_with_obstacle(
 fn visit_next(
     maze: &Vec<Vec<char>>,
     pos: &Index2D,
-    direction: &'static Direction,
-) -> Option<(Index2D, &'static Direction)> {
-    let Index2D(x, y) = (pos + direction.dir)?;
+    direction: Direction,
+) -> Option<(Index2D, Direction)> {
+    let Index2D(x, y) = (pos + direction.get_dir())?;
     let new_char = maze.get(y)?.get(x)?;
 
     match new_char {
-        '#' => Option::from((pos.clone(), (direction.next)())),
+        '#' => Option::from((pos.clone(), direction.next())),
         _ => Option::from((Index2D(x, y), direction)),
     }
 }
@@ -123,9 +118,9 @@ fn as_maze(lines: &[String]) -> Vec<Vec<char>> {
         .collect::<Vec<_>>()
 }
 
-fn create_hash_set_for(maze: &Vec<Vec<char>>) -> HashSet<(Index2D, &Direction), impl BuildHasher> {
+fn create_hash_set_for(maze: &Vec<Vec<char>>) -> HashSet<(Index2D, Direction), impl BuildHasher> {
     let capacity = maze.len().pow(2);
     // Default impl makes this slower (From 41ms to 60ms on my computer) for the complete flow
     // HashSet::<(Index2D, &Direction)>::with_capacity(capacity)
-    FxHashSet::<(Index2D, &Direction)>::with_capacity_and_hasher(capacity, Default::default())
+    FxHashSet::<(Index2D, Direction)>::with_capacity_and_hasher(capacity, Default::default())
 }

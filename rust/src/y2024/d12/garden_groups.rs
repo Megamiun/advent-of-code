@@ -1,10 +1,11 @@
 use crate::util::Index2D;
-use crate::y2024::util::bounded::{Bounded, Direction};
+use crate::y2024::util::bounded::Bounded;
+use crate::y2024::util::direction::Direction;
+use rustc_hash::FxHashSet;
 use std::collections::{HashMap, LinkedList};
 use std::iter::successors;
 use std::ops::Add;
 use std::sync::LazyLock;
-use rustc_hash::FxHashSet;
 
 pub fn find_price_by_perimeter(lines: &[String]) -> usize {
     Bounded::from(lines).find_price_by_perimeter()
@@ -44,17 +45,17 @@ impl Bounded<char> {
         let mut contained = FxHashSet::<Index2D>::default();
         let mut barriers = FxHashSet::<Barrier>::default();
 
-        let mut to_visit = LinkedList::<(Index2D, &'static Direction)>::new();
+        let mut to_visit = LinkedList::<(Index2D, Direction)>::new();
 
         contained.insert(*coord);
         Direction::VALUES.iter()
-            .for_each(|dir| to_visit.push_back((*coord, dir)));
+            .for_each(|dir| to_visit.push_back((*coord, *dir)));
 
         let first = self.find_safe(coord);
 
         while !to_visit.is_empty() {
             let (curr, dir) = to_visit.pop_front().unwrap();
-            let next = &curr + dir.dir;
+            let next = &curr + dir.get_dir();
 
             if next.is_none() {
                 barriers.insert(Barrier::from(curr, dir));
@@ -74,7 +75,7 @@ impl Bounded<char> {
 
             contained.insert(next);
             Direction::VALUES.iter()
-                .for_each(|dir| to_visit.push_back((next, dir)))
+                .for_each(|dir| to_visit.push_back((next, *dir)))
         }
 
         Region { contained, barriers }
@@ -107,8 +108,8 @@ impl Region {
     }
 
     fn capture_sides(&self, barrier: &Barrier) -> Side {
-        let barriers = Direction::PARALLEL.get(barrier.to).unwrap().iter()
-            .flat_map(|&dir| {
+        let barriers = Direction::PARALLEL[&barrier.to].iter()
+            .flat_map(|dir| {
                 successors(Some(barrier.clone()), |curr| curr + dir)
                     .take_while(|next| self.barriers.contains(next))
             }).collect::<FxHashSet<Barrier>>();
@@ -120,11 +121,11 @@ impl Region {
 #[derive(PartialEq, Eq, Hash, Copy, Clone)]
 struct Barrier {
     position: Index2D,
-    to: &'static Direction,
+    to: Direction,
 }
 
 impl Barrier {
-    fn from(position: Index2D, to: &'static Direction) -> Barrier {
+    fn from(position: Index2D, to: Direction) -> Barrier {
         Barrier { position, to }
     }
 }
@@ -133,18 +134,18 @@ impl Add<&Direction> for &Barrier {
     type Output = Option<Barrier>;
 
     fn add(self, rhs: &Direction) -> Self::Output {
-        Some(Barrier { position: (self.position + rhs.dir)?, to: self.to })
+        Some(Barrier { position: (self.position + rhs.get_dir())?, to: self.to })
     }
 }
 
 impl Direction {
-    const PARALLEL: LazyLock<HashMap<&'static Direction, Vec<&'static Direction>>> =
+    const PARALLEL: LazyLock<HashMap<Direction, Vec<Direction>>> =
         LazyLock::new(|| {
             HashMap::from([
-                (Direction::UP, vec![Direction::LEFT, Direction::RIGHT]),
-                (Direction::DOWN, vec![Direction::LEFT, Direction::RIGHT]),
-                (Direction::LEFT, vec![Direction::UP, Direction::DOWN]),
-                (Direction::RIGHT, vec![Direction::UP, Direction::DOWN]),
+                (Direction::Up, vec![Direction::Left, Direction::Right]),
+                (Direction::Down, vec![Direction::Left, Direction::Right]),
+                (Direction::Left, vec![Direction::Up, Direction::Down]),
+                (Direction::Right, vec![Direction::Up, Direction::Down]),
             ])
         });
 }
