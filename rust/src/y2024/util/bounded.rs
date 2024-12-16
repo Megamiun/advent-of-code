@@ -102,7 +102,7 @@ impl<T: Clone> Bounded<T> {
     }
 }
 
-#[derive(PartialEq, Eq, Hash, Copy, Clone, Debug)]
+#[derive(PartialEq, Eq, Hash, Copy, Clone, Debug, Ord, PartialOrd)]
 pub struct Direction {
     pub dir: Diff
 }

@@ -3,7 +3,7 @@ use std::ops::{Add, Div, Mul, Rem, Sub};
 use forward_ref_generic::forward_ref_binop;
 use num_traits::ToPrimitive;
 
-#[derive(PartialEq, Eq, Hash, Clone, Copy, Display, Debug)]
+#[derive(PartialEq, Eq, Hash, Clone, Copy, Display, Debug, Ord, PartialOrd)]
 #[display("[{_0}; {_1}]")]
 pub struct Index2D(pub usize, pub usize);
 
@@ -79,7 +79,7 @@ impl Sub<Diff> for Index2D {
     }
 }
 
-#[derive(PartialEq, Eq, Hash, Clone, Copy, Display, Debug)]
+#[derive(PartialEq, Eq, Hash, Clone, Copy, Display, Debug, Ord, PartialOrd)]
 #[display("({_0}; {_1})")]
 pub struct Diff(pub i32, pub i32);
 
