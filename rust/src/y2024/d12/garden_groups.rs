@@ -21,7 +21,7 @@ impl Bounded<char> {
             .sum()
     }
 
-    pub fn find_price_by_sides(&self) -> usize {
+    fn find_price_by_sides(&self) -> usize {
         self.find_regions().iter()
             .map(|region| region.find_sides().len() * region.contained.len())
             .sum()

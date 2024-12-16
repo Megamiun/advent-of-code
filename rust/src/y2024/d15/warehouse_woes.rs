@@ -5,7 +5,7 @@ use derive_more::Display;
 use std::fmt::Formatter;
 use Cell::{Box, BoxL, BoxR};
 
-pub fn pt1(groups: &[&[String]]) -> usize {
+pub fn move_robot_single(groups: &[&[String]]) -> usize {
     let mut map = Bounded::create_from(groups[0], Cell::from);
 
     let directions = groups[1]
@@ -17,7 +17,7 @@ pub fn pt1(groups: &[&[String]]) -> usize {
     map.calculate()
 }
 
-pub fn pt2(groups: &[&[String]]) -> usize {
+pub fn move_robot_wide(groups: &[&[String]]) -> usize {
     let mut map = Bounded::create_from(groups[0], Cell::from).widen();
 
     let directions = groups[1]
