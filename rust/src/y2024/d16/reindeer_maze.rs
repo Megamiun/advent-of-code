@@ -15,42 +15,24 @@ pub fn get_unique_best_spots(lines: &[String]) -> usize {
 
 impl Bounded<char> {
     fn get_min_path(&self) -> usize {
-        let mut visited = FxHashSet::<Index2D>::with_capacity_and_hasher(self.width * self.height, Default::default());
-        let mut to_visit = PriorityQueue::<(usize, Index2D, &Direction)>::new();
-
-        let start = self.find_first(&'S').unwrap();
+        let min_spanning_tree = self.get_min_spanning_tree();
         let end = self.find_first(&'E').unwrap();
 
-        to_visit.push(&(0, start, Direction::RIGHT));
-
-        while !to_visit.is_empty() {
-            let (score, position, dir) = to_visit.pop().unwrap();
-
-            if position == end {
-                return score;
-            }
-
-            if self.find_safe(&position) == '#' || visited.contains(&position) {
-                continue;
-            }
-
-            visited.insert(position);
-
-            to_visit.push(&(score + 1, (position + dir.dir).unwrap(), dir));
-            Direction::VALUES.iter()
-                .filter(|&&new_dir| new_dir != dir)
-                .for_each(|&new_dir| to_visit.push(&(score + 1001, (position + new_dir.dir).unwrap(), new_dir)))
-        }
-
-        0
+        Direction::VALUES.iter()
+            .filter_map(|&&dir| Some(min_spanning_tree.get(&(end, dir))?.0))
+            .min().unwrap_or(0)
     }
 
     fn get_unique_best_spots(&self) -> usize {
+        let end = self.find_first(&'E').unwrap();
+        
+        self.get_unique_spots_on(&mut self.get_min_spanning_tree(), &end)
+    }
+
+    fn get_min_spanning_tree(&self) -> FxHashMap<Key, (usize, Vec<Key>)> {
         let mut to_visit = PriorityQueue::<(usize, Key, Key)>::new();
         let mut min_distances_path = FxHashMap::<Key, (usize, Vec<Key>)>::default();
-
         let start = self.find_first(&'S').unwrap();
-        let end = self.find_first(&'E').unwrap();
 
         to_visit.push(&(0, (start, *Direction::RIGHT), (start, *Direction::RIGHT)));
 
@@ -76,8 +58,8 @@ impl Bounded<char> {
                 .filter(|&&new_dir| new_dir != &dir)
                 .for_each(|&new_dir| to_visit.push(&(score + 1001, to_key, ((to + new_dir.dir).unwrap(), *new_dir))))
         }
-
-        self.get_unique_spots_on(&mut min_distances_path, &end)
+    
+        min_distances_path
     }
 
     fn get_unique_spots_on(&self, min_distances_path: &mut FxHashMap<Key, (usize, Vec<Key>)>, end: &Index2D) -> usize {
@@ -115,9 +97,7 @@ struct PriorityQueue<T: PartialOrd + Ord + Clone> {
 
 impl<T: PartialOrd + Ord + Clone + Debug> PriorityQueue<T> {
     fn new() -> PriorityQueue<T> {
-        PriorityQueue {
-            delegate: Vec::new(),
-        }
+        PriorityQueue { delegate: Vec::new() }
     }
 
     fn push(&mut self, item: &T) {
