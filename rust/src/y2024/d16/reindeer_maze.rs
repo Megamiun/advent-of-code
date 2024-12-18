@@ -2,7 +2,7 @@ use crate::util::Index2D;
 use crate::y2024::util::bounded::Bounded;
 use crate::y2024::util::direction::Direction;
 use crate::y2024::util::direction::Direction::Right;
-use crate::y2024::util::priority_queue::PriorityQueue;
+use crate::y2024::util::key_priority_queue::KeyPriorityQueue;
 use rustc_hash::{FxHashMap, FxHashSet};
 
 type Key = (Index2D, Direction);
@@ -35,15 +35,14 @@ impl Bounded<char> {
     }
 
     fn get_min_spanning_tree(&self) -> FxHashMap<Key, (usize, Vec<Key>)> {
-        let mut to_visit = PriorityQueue::<(usize, Key, Key)>::heap_queue();
+        let mut to_visit = KeyPriorityQueue::<usize, (usize, Key, Key)>::stack_queue(|value| value.0);
         let mut min_distances_path = FxHashMap::<Key, (usize, Vec<Key>)>::default();
         let start = self.find_first(&'S').unwrap();
 
-        to_visit.push_heap(&(0, (start, Right), (start, Right)));
+        to_visit.push(&(0, (start, Right), (start, Right)));
 
         while !to_visit.is_empty() {
-            let visit = to_visit.pop().unwrap();
-            let (score, from_key, to_key) = visit.as_ref();
+            let (score, from_key, to_key) = to_visit.pop().unwrap();
 
             let (to, dir) = to_key;
             if self.find_safe(&to) == '#' {
@@ -51,16 +50,16 @@ impl Bounded<char> {
             }
 
             if let Some((distance, back)) = min_distances_path.get_mut(&to_key) {
-                if *distance == *score {
-                    back.push(*from_key);
+                if *distance == score {
+                    back.push(from_key);
                 }
                 continue;
             }
 
-            min_distances_path.insert(*to_key, (*score, vec![*from_key]));
-            to_visit.push_heap(&Self::movement_for(&to_key, *dir, *score, 1));
-            to_visit.push_heap(&Self::movement_for(&to_key, dir.get_clockwise(), *score, 1001));
-            to_visit.push_heap(&Self::movement_for(&to_key, dir.get_counter_clockwise(), *score, 1001));
+            min_distances_path.insert(to_key, (score, vec![from_key]));
+            to_visit.push(&Self::movement_for(&to_key, dir, score, 1));
+            to_visit.push(&Self::movement_for(&to_key, dir.get_clockwise(), score, 1001));
+            to_visit.push(&Self::movement_for(&to_key, dir.get_counter_clockwise(), score, 1001));
         }
 
         min_distances_path
