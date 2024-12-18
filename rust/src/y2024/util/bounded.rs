@@ -63,6 +63,7 @@ impl<T: PartialEq + Clone> Bounded<T> {
     pub fn find_adjacent(&self, index: &Index2D) -> Vec<Index2D> {
         Direction::VALUES.iter()
             .filter_map(|dir| index + dir.get_dir())
+            .filter(|adj| self.is_within(adj))
             .collect()
     }
     
