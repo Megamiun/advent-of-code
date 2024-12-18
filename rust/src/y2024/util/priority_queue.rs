@@ -5,7 +5,13 @@ pub struct PriorityQueue<T: PartialOrd + Ord + Clone> {
 }
 
 impl<T: PartialOrd + Ord + Clone + Debug> PriorityQueue<T> {
-    pub fn new() -> PriorityQueue<T> {
+    pub fn stack_queue() -> PriorityQueue<T> {
+        PriorityQueue {
+            delegate: Vec::new(),
+        }
+    }
+    
+    pub fn heap_queue() -> PriorityQueue<Box<T>> {
         PriorityQueue {
             delegate: Vec::new(),
         }
@@ -35,6 +41,27 @@ impl<T: PartialOrd + Ord + Clone + Debug> PriorityQueue<T> {
             self.push_ordered(item, start, half);
         } else {
             self.push_ordered(item, half + 1, end);
+        }
+    }
+}
+
+impl<T: PartialOrd + Ord + Clone + Debug> PriorityQueue<Box<T>> {
+    pub fn push_heap(&mut self, item: &T) {
+        self.push_ordered_heap(item, 0, self.delegate.iter().len())
+    }
+
+    fn push_ordered_heap(&mut self, item: &T, start: usize, end: usize) {
+        if start >= end {
+            self.delegate.insert(start, Box::new(item.clone()));
+            return;
+        }
+
+        let half = (end + start) / 2;
+
+        if item >= &self.delegate[half] {
+            self.push_ordered_heap(item, start, half);
+        } else {
+            self.push_ordered_heap(item, half + 1, end);
         }
     }
 }
