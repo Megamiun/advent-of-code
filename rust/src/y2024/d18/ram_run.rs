@@ -3,7 +3,6 @@ use crate::y2024::util::bounded::Bounded;
 use crate::y2024::util::priority_queue::PriorityQueue;
 use rustc_hash::FxHashMap;
 use std::iter::successors;
-use std::panic::panic_any;
 
 pub fn find_min_steps_after(lines: &[String], dimensions: usize, bytes: usize) -> usize {
     let to_fall = lines.iter().map(parse).take(bytes).collect::<Vec<_>>();
@@ -32,7 +31,7 @@ pub fn find_min_blocker(lines: &[String], dimensions: usize) -> String {
         }
     }
     
-    panic_any("Path is not blocked")
+    panic!("Path is not blocked")
 }
 
 impl Bounded<bool> {
@@ -51,29 +50,29 @@ impl Bounded<bool> {
     }
 
     fn get_min_path_for_exit(&self) -> Option<Vec<Index2D>> {
-        let mut visited = FxHashMap::<Index2D, Option<Index2D>>::default();
-        let mut to_visit = PriorityQueue::<(usize, Index2D, Option<Index2D>)>::new();
-        to_visit.push(&(0, Index2D(0, 0), None));
+        let mut visited = FxHashMap::<Index2D, Option<Index2D>>::with_capacity_and_hasher(self.width * self.width, Default::default());
+        let mut to_visit = PriorityQueue::<(usize, Index2D, Option<Index2D>)>::heap_queue();
+        to_visit.push_heap(&(0, Index2D(0, 0), None));
 
         let end = Index2D(self.width - 1, self.height - 1);
         
         while !to_visit.is_empty() {
-            let (score, curr, previous) = to_visit.pop().unwrap();
+            let visit = to_visit.pop().unwrap();
+            let (score, curr, previous) = visit.as_ref();
 
-            if self.find_safe(&curr) || visited.contains_key(&curr) {
+            if self.find_safe(curr) || visited.contains_key(curr) {
                 continue;
             }
 
-            if curr == end {
-                visited.insert(curr, previous);
+            visited.insert(*curr, *previous);
+
+            if *curr == end {
                 return Some(successors(Some(end), |prev| visited[prev]).collect());
             }
 
-            visited.insert(curr, previous);
-
-            self.find_adjacent(&curr)
-                .iter()
-                .for_each(|adj| to_visit.push(&(score + 1, *adj, Some(curr))));
+            for adj in self.find_adjacent(&curr) { 
+                to_visit.push_heap(&(score + 1, adj, Some(*curr)));
+            }
         }
 
         None
@@ -87,6 +86,6 @@ fn parse(line: &String) -> Index2D {
             usize::from_str_radix(*y, 10).unwrap(),
         )
     } else {
-        panic_any(format!("{line} has not been identified"));
+        panic!("{line} can not be parsed to coordinate");
     }
 }
