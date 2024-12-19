@@ -1,4 +1,5 @@
 use crate::util::Index2D;
+use crate::y2024::d18::parse::parse;
 use crate::y2024::util::bounded::Bounded;
 use crate::y2024::util::collections::key_indexed::key_priority_queue::KeyPriorityQueue;
 use rustc_hash::FxHashMap;
@@ -35,20 +36,6 @@ pub fn find_min_blocker(lines: &[String], dimensions: usize) -> String {
 }
 
 impl Bounded<bool> {
-    fn create_using(dimensions: usize, bytes: &[Index2D]) -> Bounded<bool> {
-        let mut content = vec![vec![false; dimensions]; dimensions];
-
-        bytes
-            .iter()
-            .for_each(|Index2D(x, y)| content[*y][*x] = true);
-
-        Bounded {
-            content,
-            height: dimensions,
-            width: dimensions,
-        }
-    }
-
     fn get_min_path_for_exit(&self) -> Option<Vec<Index2D>> {
         let mut visited: FxHashMap<Index2D, Option<Index2D>> = FxHashMap::with_capacity_and_hasher(self.width * self.height, Default::default());
         let mut to_visit = KeyPriorityQueue::<(usize, (Index2D, Option<Index2D>))>::new();
@@ -75,16 +62,5 @@ impl Bounded<bool> {
         }
 
         None
-    }
-}
-
-fn parse(line: &String) -> Index2D {
-    if let [x, y] = line.split(",").collect::<Vec<_>>().as_slice() {
-        Index2D(
-            usize::from_str_radix(*x, 10).unwrap(),
-            usize::from_str_radix(*y, 10).unwrap(),
-        )
-    } else {
-        panic!("{line} can not be parsed to coordinate");
     }
 }

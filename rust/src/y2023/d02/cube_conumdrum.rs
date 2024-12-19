@@ -1,7 +1,7 @@
+use crate::y2023::d02::cube_conumdrum::Color::{B, G, R};
 use std::cmp::max;
 use std::collections::HashMap;
 use std::hash::Hash;
-use crate::y2023::d02::cube_conumdrum::Color::{B, G, R};
 
 #[derive(PartialEq, Eq, Hash)]
 enum Color {
@@ -26,22 +26,22 @@ impl Color {
     }
 }
 
-pub fn sum_minimum_power(rounds: &[String]) -> u32 {
+pub fn sum_minimum_power(rounds: &[String]) -> usize {
     rounds
         .iter()
         .map(|round| get_game_summary(round))
         .map(|(_, round)| get_minimum_for_colors(round))
         .map(|values| values.iter().fold(1, |acc, curr| acc * curr.1))
-        .sum::<u32>()
+        .sum::<usize>()
 }
 
-fn get_minimum_for_colors(rounds: Vec<HashMap<&Color, u32>>) -> HashMap<&Color, u32> {
+fn get_minimum_for_colors(rounds: Vec<HashMap<&Color, usize>>) -> HashMap<&Color, usize> {
     rounds.iter().fold(HashMap::new(), |acc, curr| {
         let mut map = HashMap::new();
 
         Color::VALUES
             .iter()
-            .map(|key| (key, *max(acc.get(key), curr.get(key)).unwrap_or(&0u32)))
+            .map(|key| (key, *max(acc.get(key), curr.get(key)).unwrap_or(&0usize)))
             .filter(|(_, value)| *value != 0)
             .for_each(|(key, val)| {
                 map.insert(key, val);
@@ -51,13 +51,11 @@ fn get_minimum_for_colors(rounds: Vec<HashMap<&Color, u32>>) -> HashMap<&Color, 
     })
 }
 
-pub fn sum_valid(original: &[String], limits: &[String]) -> u32 {
-    let mut limits_num = limits.iter().map(|t| u32::from_str_radix(t, 10).unwrap());
-
+pub fn sum_valid(original: &[String], limits: &[usize]) -> usize {
     let limit_per_color = HashMap::from([
-        (&R, limits_num.nth(0).unwrap()),
-        (&G, limits_num.nth(0).unwrap()),
-        (&B, limits_num.nth(0).unwrap()),
+        (&R, limits[0]),
+        (&G, limits[1]),
+        (&B, limits[2]),
     ]);
 
     original
@@ -68,19 +66,19 @@ pub fn sum_valid(original: &[String], limits: &[String]) -> u32 {
         .sum()
 }
 
-fn is_within_limit(maps: &[HashMap<&Color, u32>], limits: &HashMap<&Color, u32>) -> bool {
+fn is_within_limit(maps: &[HashMap<&Color, usize>], limits: &HashMap<&Color, usize>) -> bool {
     maps.iter()
         .all(|round| round.iter().all(|(color, number)| number <= &limits[color]))
 }
 
-fn get_game_summary(line: &str) -> (u32, Vec<HashMap<&Color, u32>>) {
+fn get_game_summary(line: &str) -> (usize, Vec<HashMap<&Color, usize>>) {
     let mut split_line = line.split(":");
 
     let (game, rounds) = (split_line.next().unwrap(), split_line.next().unwrap());
     let game_num = game
         .split(" ")
         .nth(1)
-        .map(|num| u32::from_str_radix(num, 10).unwrap())
+        .map(|num| usize::from_str_radix(num, 10).unwrap())
         .unwrap();
 
     let round_summary = rounds
@@ -96,10 +94,10 @@ fn get_game_summary(line: &str) -> (u32, Vec<HashMap<&Color, u32>>) {
     (game_num, round_summary)
 }
 
-fn get_round_summary(color_data: &str) -> (&Color, u32) {
+fn get_round_summary(color_data: &str) -> (&Color, usize) {
     let mut split_color_data = color_data.trim().split(" ");
     let (number, color_name) = (
-        u32::from_str_radix(split_color_data.next().unwrap(), 10).unwrap(),
+        usize::from_str_radix(split_color_data.next().unwrap(), 10).unwrap(),
         split_color_data.next().unwrap(),
     );
 
