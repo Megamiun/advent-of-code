@@ -171,7 +171,7 @@ fn get_file_space_pair(lines: &[String]) -> Vec<(usize, Option<usize>)> {
         .map(|c| c.to_digit(10).unwrap() as usize)
         .collect::<Vec<_>>()
         .chunks(2)
-        .map(|s| (s[0], s.get(1).cloned()))
+        .map(|s| (s[0], s.get(1).copied()))
         .collect::<Vec<_>>()
 }
 

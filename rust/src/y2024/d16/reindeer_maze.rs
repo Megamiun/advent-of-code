@@ -2,7 +2,7 @@ use crate::util::Index2D;
 use crate::y2024::util::bounded::Bounded;
 use crate::y2024::util::direction::Direction;
 use crate::y2024::util::direction::Direction::Right;
-use crate::y2024::util::key_priority_queue::KeyPriorityQueue;
+use crate::y2024::util::collections::key_indexed::key_priority_queue::KeyPriorityQueue;
 use rustc_hash::{FxHashMap, FxHashSet};
 
 type Key = (Index2D, Direction);
@@ -35,14 +35,14 @@ impl Bounded<char> {
     }
 
     fn get_min_spanning_tree(&self) -> FxHashMap<Key, (usize, Vec<Key>)> {
-        let mut to_visit = KeyPriorityQueue::<usize, (usize, Key, Key)>::stack_queue(|value| value.0);
+        let mut to_visit = KeyPriorityQueue::<(usize, (Key, Key))>::new();
         let mut min_distances_path = FxHashMap::<Key, (usize, Vec<Key>)>::default();
         let start = self.find_first(&'S').unwrap();
 
-        to_visit.push(&(0, (start, Right), (start, Right)));
+        to_visit.push(&(0, ((start, Right), (start, Right))));
 
         while !to_visit.is_empty() {
-            let (score, from_key, to_key) = to_visit.pop().unwrap();
+            let (score, (from_key, to_key)) = to_visit.pop().unwrap();
 
             let (to, dir) = to_key;
             if self.find_safe(&to) == '#' {
@@ -65,8 +65,8 @@ impl Bounded<char> {
         min_distances_path
     }
 
-    fn movement_for(to_key: &Key, dir: Direction, score: usize, addition: usize) -> (usize, Key, Key) {
-        (score + addition, *to_key, ((to_key.0 + dir.get_dir()).unwrap(), dir))
+    fn movement_for(to_key: &Key, dir: Direction, score: usize, addition: usize) -> (usize, (Key, Key)) {
+        (score + addition, (*to_key, ((to_key.0 + dir.get_dir()).unwrap(), dir)))
     }
 
     fn get_unique_spots_on(&self, min_distances_path: &mut FxHashMap<Key, (usize, Vec<Key>)>, end: &Index2D) -> usize {

@@ -1,6 +1,6 @@
 use crate::util::Index2D;
 use crate::y2024::util::bounded::Bounded;
-use crate::y2024::util::key_priority_queue::KeyPriorityQueue;
+use crate::y2024::util::collections::key_indexed::key_priority_queue::KeyPriorityQueue;
 use rustc_hash::FxHashMap;
 use std::iter::successors;
 
@@ -50,14 +50,14 @@ impl Bounded<bool> {
     }
 
     fn get_min_path_for_exit(&self) -> Option<Vec<Index2D>> {
-        let mut visited: FxHashMap<Index2D, Option<Index2D>> = FxHashMap::with_capacity_and_hasher(self.width * self.width, Default::default());
-        let mut to_visit = KeyPriorityQueue::<usize, (usize, Index2D, Option<Index2D>)>::stack_queue(|value| value.0);
-        to_visit.push(&(0, Index2D(0, 0), None));
+        let mut visited: FxHashMap<Index2D, Option<Index2D>> = FxHashMap::with_capacity_and_hasher(self.width * self.height, Default::default());
+        let mut to_visit = KeyPriorityQueue::<(usize, (Index2D, Option<Index2D>))>::new();
+        to_visit.push(&(0, (Index2D(0, 0), None)));
 
         let end = Index2D(self.width - 1, self.height - 1);
         
         while !to_visit.is_empty() {
-            let (score, curr, previous) = to_visit.pop().unwrap();
+            let (score, (curr, previous)) = to_visit.pop().unwrap();
 
             if self.find_safe(&curr) || visited.contains_key(&curr) {
                 continue;
@@ -70,7 +70,7 @@ impl Bounded<bool> {
             }
 
             for adj in self.find_adjacent(&curr) {
-                to_visit.push(&(score + 1, adj, Some(curr)));
+                to_visit.push(&(score + 1, (adj, Some(curr))));
             }
         }
 
