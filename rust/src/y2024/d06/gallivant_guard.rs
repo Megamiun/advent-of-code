@@ -88,11 +88,11 @@ fn visit_next_with_obstacle(
     let next = (pos + direction.get_dir())?;
 
     if *obstacle == next {
-        return Option::from((pos.clone(), direction.next()));
+        return Option::from((*pos, direction.next()));
     }
 
     match maze.get(next.1)?.get(next.0)? {
-        '#' => Option::from((pos.clone(), direction.next())),
+        '#' => Option::from((*pos, direction.next())),
         _ => Option::from((next, direction)),
     }
 }
@@ -106,7 +106,7 @@ fn visit_next(
     let new_char = maze.get(y)?.get(x)?;
 
     match new_char {
-        '#' => Option::from((pos.clone(), direction.next())),
+        '#' => Option::from((*pos, direction.next())),
         _ => Option::from((Index2D(x, y), direction)),
     }
 }

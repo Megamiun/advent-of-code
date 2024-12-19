@@ -110,7 +110,7 @@ impl Region {
     fn capture_sides(&self, barrier: &Barrier) -> Side {
         let barriers = Direction::PARALLEL[&barrier.to].iter()
             .flat_map(|dir| {
-                successors(Some(barrier.clone()), |curr| curr + dir)
+                successors(Some(*barrier), |curr| curr + dir)
                     .take_while(|next| self.barriers.contains(next))
             }).collect::<FxHashSet<Barrier>>();
 

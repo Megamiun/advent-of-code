@@ -21,7 +21,7 @@ impl From<&[String]> for Bounded<char> {
     }
 }
 
-impl<T: Clone> From<&Vec<Vec<T>>> for Bounded<T> {
+impl<T: Copy> From<&Vec<Vec<T>>> for Bounded<T> {
     fn from(content: &Vec<Vec<T>>) -> Bounded<T> {
         Bounded {
             content: content.clone(),
@@ -31,7 +31,7 @@ impl<T: Clone> From<&Vec<Vec<T>>> for Bounded<T> {
     }
 }
 
-impl<T: PartialEq + Clone> Bounded<T> {
+impl<T: PartialEq + Copy> Bounded<T> {
     pub fn create_from(map: &[String], get_cell: fn(char) -> T) -> Bounded<T> {
         let new_map = map.iter().map(|line|
             line.chars().map(|c| get_cell(c)).collect::<Vec<_>>()
@@ -96,8 +96,8 @@ impl<T: PartialEq + Clone> Bounded<T> {
     }
 }
 
-impl<T: Clone> Bounded<T> {
+impl<T: Copy> Bounded<T> {
     pub fn find_safe(&self, coord: &Index2D) -> T {
-        self.content[coord.1][coord.0].clone()
+        self.content[coord.1][coord.0]
     }
 }

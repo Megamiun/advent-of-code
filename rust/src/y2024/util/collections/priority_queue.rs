@@ -4,6 +4,16 @@ pub struct PriorityQueue<T: PartialOrd + Ord + Clone> {
     delegate: Vec<T>,
 }
 
+impl<T: PartialOrd + Ord + Clone> PriorityQueue<T> {
+    pub fn is_empty(&self) -> bool {
+        self.delegate.is_empty()
+    }
+
+    pub fn pop(&mut self) -> Option<T> {
+        self.delegate.pop()
+    }
+}
+
 impl<T: PartialOrd + Ord + Clone + Debug> PriorityQueue<T> {
     pub fn stack_queue() -> PriorityQueue<T> {
         PriorityQueue {
@@ -15,14 +25,6 @@ impl<T: PartialOrd + Ord + Clone + Debug> PriorityQueue<T> {
         PriorityQueue {
             delegate: Vec::new(),
         }
-    }
-
-    pub fn is_empty(&self) -> bool {
-        self.delegate.is_empty()
-    }
-
-    pub fn pop(&mut self) -> Option<T> {
-        self.delegate.pop()
     }
 
     pub fn push(&mut self, item: &T) {
@@ -45,14 +47,14 @@ impl<T: PartialOrd + Ord + Clone + Debug> PriorityQueue<T> {
     }
 }
 
-impl<T: PartialOrd + Ord + Clone + Debug> PriorityQueue<Box<T>> {
+impl<T: PartialOrd + Ord + Copy + Debug> PriorityQueue<Box<T>> {
     pub fn push_heap(&mut self, item: &T) {
         self.push_ordered_heap(item, 0, self.delegate.iter().len())
     }
 
     fn push_ordered_heap(&mut self, item: &T, start: usize, end: usize) {
         if start >= end {
-            self.delegate.insert(start, Box::new(item.clone()));
+            self.delegate.insert(start, Box::new(*item));
             return;
         }
 
