@@ -1,5 +1,7 @@
+use std::fmt::Debug;
 use crate::y2024::util::collections::key_indexed::keyable::Keyable;
 
+#[derive(Debug)]
 pub struct KeyPriorityQueue<V>
 where
     V: Keyable,
@@ -11,7 +13,7 @@ where
 impl<V: Keyable> KeyPriorityQueue<V>
 where
     V: Copy,
-    V::Key: Ord + Copy,
+    V::Key: Ord + Copy + Debug,
 {
     pub fn new() -> KeyPriorityQueue<V> {
         KeyPriorityQueue { delegate: vec![] }
@@ -38,8 +40,7 @@ where
 
     fn push_ordered(&mut self, key: &V::Key, item: &V, start: usize, end: usize) {
         if start >= end {
-            self.delegate
-                .insert(start, (key.clone(), vec![*item]));
+            self.delegate.insert(start, (*key, vec![*item]));
             return;
         }
 
