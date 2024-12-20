@@ -1,11 +1,9 @@
 use crate::util::Index2D;
-use crate::y2024::util::bounded::Bounded;
-use crate::y2024::util::collections::key_indexed::key_priority_queue::KeyPriorityQueue;
-use rustc_hash::{FxHashMap, FxHashSet};
-use std::iter::successors;
 use crate::y2024::d18::parse::parse;
+use crate::y2024::util::bounded::Bounded;
 use crate::y2024::util::direction::Direction;
 use crate::y2024::util::direction::Direction::{Down, Left, Right, Up};
+use rustc_hash::FxHashSet;
 
 pub fn find_min_blocker_dfs(lines: &[String], dimensions: usize) -> String {
     let to_fall = lines.iter().map(parse).collect::<Vec<_>>();
