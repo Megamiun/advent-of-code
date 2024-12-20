@@ -2,16 +2,14 @@ use crate::util::{Diff, Index2D};
 use crate::y2024::util::bounded::Bounded;
 use crate::y2024::util::collections::key_indexed::key_priority_queue::KeyPriorityQueue;
 use crate::y2024::util::direction::Direction;
-use rustc_hash::{FxBuildHasher, FxHashMap};
+use rustc_hash::{FxBuildHasher, FxHashMap, FxHashSet};
 use std::collections::{HashMap, HashSet};
+use std::hash::BuildHasher;
 
-pub fn find_all_shortcuts_that_save_at_least(lines: &[String], limit: usize, over: usize) -> usize {
+pub fn find_all_shortcuts_that_save_at_least(lines: &[String], limit: usize, min_saved: usize) -> usize {
     Bounded::from(lines)
         .into_distance_map()
-        .get_all_cheats(limit)
-        .iter()
-        .filter(|(distance, _)| *distance >= over)
-        .count()
+        .get_cheats_count(limit, min_saved)
 }
 
 impl Bounded<char> {
@@ -49,32 +47,33 @@ impl Bounded<char> {
 }
 
 impl Bounded<Option<usize>> {
-    fn get_all_cheats(&self, limit: usize) -> Vec<(usize, (Index2D, Index2D))> {
-        let diffs = Direction::VALUES.iter()
-            .flat_map(|dir| Self::generate_outwards(&Diff(0, 0), 0, limit, *dir))
-            .filter(|(_, dist)| *dist != 0)
-            .collect::<HashSet<_>>();
+    fn get_cheats_count(&self, limit: usize, min_saved: usize) -> usize {
+        let mut diffs = FxHashSet::<(Diff, usize)>::default();
+        let start_diff = Diff(0, 0);
+        
+        Direction::VALUES.iter().for_each(|dir| 
+            Self::generate_outwards(&mut diffs, &(start_diff + dir.get_dir()), 1, limit - 1, *dir));
         
         self.get_all_coordinates_with_content().iter()
-            .filter_map(|(index, &s)| Some((*index, s?)))
-            
-            .flat_map(|entry| diffs.iter().map(|diff| (entry, *diff)).collect::<Vec<_>>())
+            .filter_map(|(index, &distance)| Some((*index, distance?)))
+            .flat_map(|index_dist| diffs.iter().map(|diff| (index_dist, *diff)).collect::<Vec<_>>())
             .filter_map(|((destination, dest_dist), (diff, distance))| {
                 let source = (destination + diff)?;
-                let shortcut_length = dest_dist.checked_sub((*self.find(&source)?)? + distance)?;
-                Some((shortcut_length, (source, destination)))
+                let shortcut_value = dest_dist.checked_sub((*self.find(&source)?)? + distance)?;
+                
+                Some((shortcut_value, (source, destination)))
             })
-            .filter(|(length, _)| *length > 0)
-            .collect()
+            .filter(|(length, _)| *length >= min_saved)
+            .count()
     }
 
-    fn generate_outwards(diff: &Diff, distance: usize, remaining: usize, to: Direction) -> Vec<(Diff, usize)> {
-        if remaining == 0 {
-            return vec![(*diff, distance)];
+    fn generate_outwards(diffs: &mut HashSet<(Diff, usize), impl BuildHasher>, diff: &Diff, distance: usize, remaining: usize, to: Direction) {
+        if !diffs.insert((*diff, distance)) || remaining == 0 {
+            return;
         }
 
-        [to, to.get_clockwise()].iter().flat_map(|dir| 
-            Self::generate_outwards(&(diff + dir.get_dir()), distance + 1, remaining - 1, to)
-        ).chain([(*diff, distance)]).collect()
+        for dir in [to, to.get_clockwise()].iter() {
+            Self::generate_outwards(diffs, &(diff + dir.get_dir()), distance + 1, remaining - 1, to)
+        }
     }
 }
