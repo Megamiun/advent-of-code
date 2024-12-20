@@ -36,11 +36,11 @@ impl<T: Copy> From<&Vec<Vec<T>>> for Bounded<T> {
 
 impl<T: Copy> Bounded<T> {
     pub fn from_map(width: usize, height: usize, content: &HashMap<Index2D, T, impl BuildHasher>) -> Bounded<Option<T>> {
-        let new_content: Vec<Vec<_>> = (0..height).map(|y| {
-            (0..width)
-                .map(|x| content.get(&Index2D(x, y)).cloned())
-                .collect()
-        }).collect();
+        let mut new_content = vec![vec![None; width]; height];
+
+        for (Index2D(x, y), value) in content {
+            new_content[*y][*x] = Some(*value); 
+        }
 
         Bounded { content: new_content, height, width }
     }
