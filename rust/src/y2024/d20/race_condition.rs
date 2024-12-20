@@ -49,17 +49,17 @@ impl Bounded<char> {
 impl Bounded<Option<usize>> {
     fn get_cheats_count(&self, limit: usize, min_saved: usize) -> usize {
         let mut diffs = FxHashSet::<(Diff, usize)>::default();
-        
-        Direction::VALUES.iter().for_each(|dir| 
+
+        Direction::VALUES.iter().for_each(|dir|
             Self::generate_outwards(&mut diffs, &(Diff(0, 0) + dir.get_dir()), 1, limit - 1, *dir));
-        
+
         self.get_all_coordinates_with_content().iter()
             .filter(|(_, distance)| distance.is_some())
-            .flat_map(|index_dist| diffs.iter().map(|diff| (index_dist, *diff)).collect::<Vec<_>>())
+            .flat_map(|index_dist| diffs.iter().map(|diff| (*index_dist, *diff)))
             .filter_map(|((dest, &dest_dist), (diff, distance))| {
                 let source = (dest + diff)?;
                 let shortcut_value = dest_dist?.checked_sub((*self.find(&source)?)? + distance)?;
-                
+
                 Some((shortcut_value, (source, dest)))
             })
             .filter(|(length, _)| *length >= min_saved)
