@@ -50,9 +50,9 @@ impl Bounded<Option<usize>> {
     fn get_cheats_count(&self, limit: usize, min_saved: usize) -> usize {
         let diffs = Self::get_diffs(limit);
 
-        self.get_all_present().iter()
-            .filter(|s| *s.1 >= min_saved)
-            .flat_map(|index_dist| diffs.iter().map(|diff| (*index_dist, diff)))
+        self.get_all_present_iter()
+            .filter(|(_, &position)| position >= min_saved)
+            .flat_map(|index_dist| diffs.iter().map(move |diff| (index_dist, diff)))
             .filter_map(|((dest, dest_dist), (diff, distance))| {
                 let source = (dest + diff)?;
                 let shortcut_value = dest_dist.checked_sub((*self.find(&source)?)? + distance)?;
