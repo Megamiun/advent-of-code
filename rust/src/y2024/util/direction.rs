@@ -47,4 +47,13 @@ impl Direction {
             Left => Down
         }
     }
+    
+    pub fn into_char(self) -> char {
+        match self {
+            Up => '^',
+            Right => '>',
+            Down => 'v',
+            Left => '<'
+        }
+    }
 }

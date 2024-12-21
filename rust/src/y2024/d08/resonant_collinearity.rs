@@ -42,7 +42,7 @@ impl Bounded<char> {
     /// Return two segments, one coming from the first node, another from the second.
     /// This allows us to know if a node is responsible for at least one antinode later.
     fn get_antinode_lines(&self, first: Index2D, second: Index2D) -> Vec<Vec<Index2D>> {
-        let distance = first.get_distance_to(second);
+        let distance = first - second;
 
         vec![
             self.get_within_bounds(first, |acc| acc + distance),

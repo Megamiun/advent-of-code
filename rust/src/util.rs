@@ -1,17 +1,13 @@
 use derive_more::Display;
-use std::ops::{Add, Div, Mul, Rem, Sub};
 use forward_ref_generic::forward_ref_binop;
 use num_traits::ToPrimitive;
+use std::ops::{Add, Div, Mul, Rem, Sub};
 
 #[derive(PartialEq, Eq, Hash, Clone, Copy, Display, Debug, Ord, PartialOrd)]
 #[display("[{_0}; {_1}]")]
 pub struct Index2D(pub usize, pub usize);
 
 impl Index2D {
-    pub fn get_distance_to(&self, other: Index2D) -> Diff {
-        self.as_diff().sub(other.as_diff())
-    }
-
     pub fn as_diff(&self) -> Diff {
         Diff(self.0 as i32, self.1 as i32)
     }
@@ -35,9 +31,9 @@ impl Add<Index2D> for Index2D {
 }
 
 impl Sub<Index2D> for Index2D {
-    type Output = Option<Index2D>;
+    type Output = Diff;
     fn sub(self, other: Index2D) -> Self::Output {
-        Some(Self(self.0.checked_sub(other.0)?, self.1.checked_sub(other.1)?))
+        Diff(self.0 as i32 - other.0 as i32, self.1 as i32 - other.1 as i32)
     }
 }
 
