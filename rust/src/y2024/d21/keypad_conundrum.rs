@@ -1,57 +1,80 @@
 use crate::util::Index2D;
 use crate::y2024::util::direction::Direction::{Down, Left, Right, Up};
-use std::cmp::min_by_key;
+use std::cmp::min;
 use std::collections::HashMap;
-use std::ops::Deref;
 use std::sync::LazyLock;
+use rustc_hash::{FxHashMap, FxHashSet};
 
-pub fn get_sum_of_complexity(lines: &[String]) -> usize {
-    lines.iter().map(get_complexity).sum()
+pub fn get_sum_of_complexity(lines: &[String], robots: usize) -> usize {
+    lines.iter().map(|line| Solver::new().get_complexity(line, robots)).sum()
 }
 
-fn get_complexity(line: &String) -> usize {
-    let numerical_part = line.strip_suffix('A').unwrap();
-    let numerical_value = usize::from_str_radix(numerical_part, 10).unwrap();
-    let minimum = solve_for(numerical_part, &[NUMERIC.deref(), DIRECTIONAL.deref(), DIRECTIONAL.deref()]);
-    
-    minimum.len() * numerical_value
+struct Solver {
+    cache: FxHashMap<(String, usize), usize>,
 }
-fn solve_for(line: &str, map: &[&HashMap<char, Index2D>]) -> String {
-    if map.is_empty() {
-        return line.to_string() + "A"
+
+impl Solver {
+    fn new() -> Solver {
+        Solver { cache: FxHashMap::default() }
     }
+    
+    fn get_complexity(&mut self, line: &String, robots: usize) -> usize {
+        let numeric = NUMERIC.to_owned();
+        let directional = DIRECTIONAL.to_owned();
+        let layers = [&numeric].iter().chain(vec![&directional; robots].iter())
+            .copied().collect::<Vec<_>>();
 
-    ("A".to_string() + line + "A").chars().collect::<Vec<_>>().windows(2).map(|window| {
-        let [horizontal, vertical] = derive_movement(window, map[0]);
+        let numerical_part = line.strip_suffix('A').unwrap();
+        let numerical_value = usize::from_str_radix(numerical_part, 10).unwrap();
+        let minimum = self.solve_for(numerical_part, &layers.as_slice(), 0);
 
-        if BANNED.contains(&(window[1], window[0])) {
-            return solve_for(&join_into(&vertical, &horizontal), &map[1..])
-        } else if BANNED.contains(&(window[0], window[1])) {
-            return solve_for(&join_into(&horizontal, &vertical), &map[1..])
+        minimum * numerical_value
+    }
+    
+    fn solve_for(&mut self, line: &str, map: &[&HashMap<char, Index2D>], level: usize) -> usize {
+        if let Some(cached) = self.cache.get(&(line.to_string(), level)) {
+            return *cached
+        }
+        
+        if map.is_empty() {
+            return line.len() + 1
         }
 
-        min_by_key(
-            solve_for(&join_into(&horizontal, &vertical), &map[1..]),
-            solve_for(&join_into(&vertical, &horizontal), &map[1..]),
-            |str| str.len()
-        )
-    }).collect()
+        let result = ("A".to_string() + line + "A").chars().collect::<Vec<_>>().windows(2).map(|window| {
+            let [horizontal, vertical] = self.derive_movement(window, map[0]);
+
+            if BANNED.contains(&(window[1], window[0])) {
+                return self.solve_for(&join_into(&vertical, &horizontal), &map[1..], level + 1)
+            } else if BANNED.contains(&(window[0], window[1])) {
+                return self.solve_for(&join_into(&horizontal, &vertical), &map[1..], level + 1)
+            }
+
+            min(
+                self.solve_for(&join_into(&horizontal, &vertical), &map[1..], level + 1),
+                self.solve_for(&join_into(&vertical, &horizontal), &map[1..], level + 1),
+            )
+        }).sum();
+        
+        self.cache.insert((line.to_string(), level), result);
+        
+        result
+    }
+
+    fn derive_movement(&self, window: &[char], position: &HashMap<char, Index2D>) -> [String; 2] {
+        let distance = position[&window[1]] - position[&window[0]];
+
+        let horizontal = if distance.0 > 0 { Right } else { Left };
+        let vertical = if distance.1 > 0 { Down } else { Up };
+
+        [
+            String::from_iter((0..distance.0.abs()).map(|_| horizontal.into_char())),
+            String::from_iter((0..distance.1.abs()).map(|_| vertical.into_char()))
+        ]
+    }
 }
 
 fn join_into(horizontal: &str, vertical: &str) -> String {
     [vertical, horizontal].join("")
-}
-
-fn derive_movement(window: &[char], position: &HashMap<char, Index2D>) -> [String; 2] {
-    let distance = position[&window[1]] - position[&window[0]];
-
-    let horizontal = if distance.0 > 0 { Right } else { Left };
-    let vertical = if distance.1 > 0 { Down } else { Up };
-
-    [
-        String::from_iter((0..distance.0.abs()).map(|_| horizontal.into_char())),
-        String::from_iter((0..distance.1.abs()).map(|_| vertical.into_char()))
-    ]
 }
 
 const NUMERIC: LazyLock<HashMap<char, Index2D>> = LazyLock::new(|| HashMap::from([
