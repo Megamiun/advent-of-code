@@ -32,8 +32,8 @@ Possibly out of date at the moment you look at it, but at the best effort basis:
 - ★★ d16 - [Rust](rust/src/y2024/d16)
 - ★★ d17 - [Rust](rust/src/y2024/d17) / [Excel](excel/2024-17.xlsx)
 - ★★ d18 - [Rust](rust/src/y2024/d18)
-- ☆☆ d19
-- ☆☆ d20
+- ★★ d19 - [Rust](rust/src/y2024/d19)
+- ★★ d20 - [Rust](rust/src/y2024/d20)
 - ☆☆ d21
 - ☆☆ d22
 - ☆☆ d23

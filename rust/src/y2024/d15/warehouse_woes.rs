@@ -125,7 +125,7 @@ impl Bounded<Cell> {
     }
 
     fn calculate(&self) -> usize {
-        self.get_all_coordinates_with_content().iter()
+        self.get_all_coordinates_with_content_iter()
             .filter(|(_, &cell)| cell == Box || cell == BoxL)
             .map(|(pos, _)| (pos.1 * 100) + pos.0)
             .sum()

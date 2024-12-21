@@ -48,21 +48,18 @@ impl Bounded<char> {
 
 impl Bounded<Option<usize>> {
     fn get_cheats_count(&self, limit: usize, min_saved: usize) -> usize {
-        let mut diffs = FxHashSet::<(Diff, usize)>::default();
+        let diffs = Self::get_diffs(limit);
 
-        Direction::VALUES.iter().for_each(|dir|
-            Self::generate_outwards(&mut diffs, &(Diff(0, 0) + dir.get_dir()), 1, limit - 1, *dir));
-
-        self.get_all_coordinates_with_content().iter()
-            .filter(|(_, distance)| distance.is_some())
-            .flat_map(|index_dist| diffs.iter().map(|diff| (*index_dist, *diff)))
-            .filter_map(|((dest, &dest_dist), (diff, distance))| {
+        self.get_all_present().iter()
+            .filter(|s| *s.1 >= min_saved)
+            .flat_map(|index_dist| diffs.iter().map(|diff| (*index_dist, diff)))
+            .filter_map(|((dest, dest_dist), (diff, distance))| {
                 let source = (dest + diff)?;
-                let shortcut_value = dest_dist?.checked_sub((*self.find(&source)?)? + distance)?;
+                let shortcut_value = dest_dist.checked_sub((*self.find(&source)?)? + distance)?;
 
-                Some((shortcut_value, (source, dest)))
+                Some(shortcut_value)
             })
-            .filter(|(length, _)| *length >= min_saved)
+            .filter(|length| *length >= min_saved)
             .count()
     }
 
@@ -74,5 +71,14 @@ impl Bounded<Option<usize>> {
         for dir in [to, to.get_clockwise()].iter() {
             Self::generate_outwards(diffs, &(diff + dir.get_dir()), distance + 1, remaining - 1, to)
         }
+    }
+
+    fn get_diffs(limit: usize) -> Vec<(Diff, usize)> {
+        let mut diffs = FxHashSet::<(Diff, usize)>::default();
+
+        Direction::VALUES.iter().for_each(|dir|
+            Self::generate_outwards(&mut diffs, &(Diff(0, 0) + dir.get_dir()), 1, limit - 1, *dir));
+        
+        diffs.iter().copied().collect::<Vec<_>>()
     }
 }

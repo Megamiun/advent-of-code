@@ -46,6 +46,20 @@ impl<T: Copy> Bounded<T> {
     }
 }
 
+impl<T: PartialEq + Copy> Bounded<Option<T>> {
+    pub fn get_all_present_iter(&self) -> impl Iterator<Item=(Index2D, &T)> + '_ {
+        self.content.iter().enumerate().flat_map(|(y, line)| {
+            line.iter()
+                .enumerate()
+                .filter_map(move |(x, item)| Some((Index2D(x, y), item.as_ref()?)))
+        })
+    }
+
+    pub fn get_all_present(&self) -> Vec<(Index2D, &T)> {
+        self.get_all_present_iter().collect()
+    }
+}
+
 impl<T: PartialEq + Copy> Bounded<T> {
     pub fn create_from(map: &[String], get_cell: fn(char) -> T) -> Bounded<T> {
         let new_map = map
@@ -86,15 +100,16 @@ impl<T: PartialEq + Copy> Bounded<T> {
             .collect()
     }
 
-    pub fn get_all_coordinates(&self) -> Vec<Index2D> {
-        self.content
-            .iter()
-            .enumerate()
-            .flat_map(|(y, line)| line.iter().enumerate().map(move |(x, _)| Index2D(x, y)))
-            .collect::<Vec<_>>()
+    pub fn get_all_coordinates_iter(&self) -> impl Iterator<Item=Index2D> + '_ {
+        (0..self.height).flat_map(|y|
+            (0..self.width).map(move |x| Index2D(x, y)))
     }
 
-    pub fn get_all_coordinates_with_content(&self) -> Vec<(Index2D, &T)> {
+    pub fn get_all_coordinates(&self) -> Vec<Index2D> {
+        self.get_all_coordinates_iter().collect()
+    }
+
+    pub fn get_all_coordinates_with_content_iter(&self) -> impl Iterator<Item=(Index2D, &T)> {
         self.content
             .iter()
             .enumerate()
@@ -103,7 +118,10 @@ impl<T: PartialEq + Copy> Bounded<T> {
                     .enumerate()
                     .map(move |(x, item)| (Index2D(x, y), item))
             })
-            .collect::<Vec<_>>()
+    }
+
+    pub fn get_all_coordinates_with_content(&self) -> Vec<(Index2D, &T)> {
+        self.get_all_coordinates_with_content_iter().collect()
     }
 
     pub fn print_by(&self, get_content: &dyn for<'b> Fn(&'b Index2D, &'b T) -> String) {
