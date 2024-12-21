@@ -31,11 +31,11 @@ impl Bounded<char> {
     fn find_regions(&self) -> Vec<Region> {
         let mut regions = Vec::<Region>::new();
 
-        for coord in &self.get_all_coordinates() {
-            if regions.iter().any(|region| region.contained.contains(coord)) {
+        for coord in self.get_all_coordinates_iter() {
+            if regions.iter().any(|region| region.contained.contains(&coord)) {
                 continue
             }
-            regions.push(self.capture_regions(coord))
+            regions.push(self.capture_regions(&coord))
         };
 
         regions
