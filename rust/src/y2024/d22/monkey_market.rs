@@ -19,9 +19,9 @@ pub fn get_max_bananas_after_4_numbers(lines: &[String]) -> usize {
 }
 
 fn populate_payouts(seed: usize, sequence_payout: &mut FxHashMap<[i8; 4], usize>) {
-    let mut visited = 
+    let mut visited =
         FxHashSet::<[i8; 4]>::with_capacity_and_hasher(2000, FxBuildHasher::default());
-    
+
     let daily_numbers = get_secret_numbers(seed)
         .take(2000)
         .map(|secret| secret % 10)
@@ -36,9 +36,8 @@ fn populate_payouts(seed: usize, sequence_payout: &mut FxHashMap<[i8; 4], usize>
         if let [a1, a2, a3, a4] = diff_seq {
             let key = [a1.0, a2.0, a3.0, a4.0];
             if visited.insert(key) {
-                sequence_payout.entry(key)
-                    .and_modify(|a| a.add_assign(a4.1))
-                    .or_insert_with(|| 0);
+                let value_pointer = sequence_payout.entry(key).or_insert_with(|| 0);
+                *value_pointer += a4.1
             }
         };
     });
