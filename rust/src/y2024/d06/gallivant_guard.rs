@@ -1,6 +1,6 @@
-use crate::util::Index2D;
-use crate::y2024::util::direction::Direction;
-use crate::y2024::util::direction::Direction::{Down, Left, Right, Up};
+use crate::util::coordinates::Index2D;
+use crate::util::direction::Direction;
+use crate::util::direction::Direction::{Down, Left, Right, Up};
 use rustc_hash::FxHashSet;
 use std::collections::{HashMap, HashSet};
 use std::hash::BuildHasher;

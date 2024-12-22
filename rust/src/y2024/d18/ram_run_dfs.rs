@@ -1,8 +1,8 @@
-use crate::util::Index2D;
+use crate::util::coordinates::Index2D;
 use crate::y2024::d18::parse::parse;
-use crate::y2024::util::bounded::Bounded;
-use crate::y2024::util::direction::Direction;
-use crate::y2024::util::direction::Direction::{Down, Left, Right, Up};
+use crate::util::bounded::Bounded;
+use crate::util::direction::Direction;
+use crate::util::direction::Direction::{Down, Left, Right, Up};
 use rustc_hash::FxHashSet;
 
 pub fn find_min_blocker_dfs(lines: &[String], dimensions: usize) -> String {

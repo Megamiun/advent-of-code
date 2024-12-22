@@ -1,7 +1,7 @@
-use crate::util::{Diff, Index2D};
-use crate::y2024::util::bounded::Bounded;
-use crate::y2024::util::collections::key_indexed::key_priority_queue::KeyPriorityQueue;
-use crate::y2024::util::direction::Direction;
+use crate::util::coordinates::{Diff, Index2D};
+use crate::util::bounded::Bounded;
+use crate::util::collections::key_indexed::key_priority_queue::KeyPriorityQueue;
+use crate::util::direction::Direction;
 use rustc_hash::{FxBuildHasher, FxHashMap, FxHashSet};
 use std::collections::{HashMap, HashSet};
 use std::hash::BuildHasher;

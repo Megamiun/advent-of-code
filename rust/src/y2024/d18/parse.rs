@@ -1,5 +1,5 @@
-use crate::util::Index2D;
-use crate::y2024::util::bounded::Bounded;
+use crate::util::coordinates::Index2D;
+use crate::util::bounded::Bounded;
 
 pub fn parse(line: &String) -> Index2D {
     if let [x, y] = line.split(",").collect::<Vec<_>>().as_slice() {

@@ -1,7 +1,7 @@
-use crate::util::Index2D;
+use crate::util::coordinates::Index2D;
 use crate::y2024::d18::parse::parse;
-use crate::y2024::util::bounded::Bounded;
-use crate::y2024::util::collections::key_indexed::key_priority_queue::KeyPriorityQueue;
+use crate::util::bounded::Bounded;
+use crate::util::collections::key_indexed::key_priority_queue::KeyPriorityQueue;
 use rustc_hash::FxHashMap;
 use std::iter::successors;
 

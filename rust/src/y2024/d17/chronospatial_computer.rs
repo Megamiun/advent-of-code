@@ -41,7 +41,6 @@ pub fn find(groups: &[&[String]]) -> usize {
 
         let mut queue = LinkedList::from_iter(program.iter());
 
-        println!("{a_value}");
         loop {
             let Some((new_ptr, new_output)) = run(&mut registers, &program, instructor_pointer) else {
                 return queue.is_empty()
