@@ -34,7 +34,7 @@ Possibly out of date at the moment you look at it, but at the best effort basis:
 - ★★ d18 - [Rust](rust/src/y2024/d18)
 - ★★ d19 - [Rust](rust/src/y2024/d19)
 - ★★ d20 - [Rust](rust/src/y2024/d20)
-- ☆☆ d21
+- ★★ d21 - [Rust](rust/src/y2024/d21)
 - ☆☆ d22
 - ☆☆ d23
 - ☆☆ d24
@@ -61,7 +61,7 @@ Possibly out of date at the moment you look at it, but at the best effort basis:
 - ★★ d17 - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2023/d17)
 - ★★ d18 - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2023/d18)
 - ★★ d19 - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2023/d19)
-- ★☆ d20 - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2023/d20)
+- ★★ d20 - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2023/d20)
 - ★☆ d21 - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2023/d21)
 - ★★ d22 - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2023/d22)
 - ★★ d23 - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2023/d23)
