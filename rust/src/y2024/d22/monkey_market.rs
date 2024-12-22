@@ -1,7 +1,6 @@
-use rustc_hash::FxHashMap;
+use rustc_hash::{FxBuildHasher, FxHashMap, FxHashSet};
 use std::iter::successors;
-use std::ops::BitXor;
-use num_traits::ToPrimitive;
+use std::ops::{AddAssign, BitXor};
 
 pub fn get_sum_of_secrets_after(lines: &[String], rounds: usize) -> usize {
     lines.iter()
@@ -10,18 +9,19 @@ pub fn get_sum_of_secrets_after(lines: &[String], rounds: usize) -> usize {
 }
 
 pub fn get_max_bananas_after_4_numbers(lines: &[String]) -> usize {
-    let mut payout_per_seq_per_monkey = FxHashMap::default();
+    let mut payout_per_seq_per_monkey = FxHashMap::with_capacity_and_hasher(3000, Default::default());
     
     lines.iter()
         .filter_map(|line| usize::from_str_radix(line, 10).ok())
         .for_each(|seed| populate_payouts(seed, &mut payout_per_seq_per_monkey));
     
-    payout_per_seq_per_monkey.values()
-        .map(|payout| payout.values().sum())
-        .max().unwrap()
+    *payout_per_seq_per_monkey.values().max().unwrap()
 }
 
-fn populate_payouts(seed: usize, sequence_payout: &mut FxHashMap<[i8; 4], FxHashMap<usize, usize>>) {
+fn populate_payouts(seed: usize, sequence_payout: &mut FxHashMap<[i8; 4], usize>) {
+    let mut visited = 
+        FxHashSet::<[i8; 4]>::with_capacity_and_hasher(2000, FxBuildHasher::default());
+    
     let daily_numbers = get_secret_numbers(seed)
         .take(2000)
         .map(|secret| secret % 10)
@@ -34,9 +34,12 @@ fn populate_payouts(seed: usize, sequence_payout: &mut FxHashMap<[i8; 4], FxHash
     
     diffs.windows(4).for_each(|diff_seq| {
         if let [a1, a2, a3, a4] = diff_seq {
-            sequence_payout
-                .entry([a1.0, a2.0, a3.0, a4.0]).or_insert_with(|| FxHashMap::default())
-                .entry(seed).or_insert(a4.1);
+            let key = [a1.0, a2.0, a3.0, a4.0];
+            if visited.insert(key) {
+                sequence_payout.entry(key)
+                    .and_modify(|a| a.add_assign(a4.1))
+                    .or_insert_with(|| 0);
+            }
         };
     });
 }
