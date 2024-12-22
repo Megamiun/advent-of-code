@@ -30,7 +30,7 @@ Possibly out of date at the moment you look at it, but at the best effort basis:
 - ★★ d14 - [Rust](rust/src/y2024/d14)
 - ★★ d15 - [Rust](rust/src/y2024/d15)
 - ★★ d16 - [Rust](rust/src/y2024/d16)
-- ★★ d17 - [Rust](rust/src/y2024/d17) / [Excel](excel/2024-17.xlsx)
+- ★★ d17 - [Rust](rust/src/y2024/d17) / [Excel](excel/y2024/d17.xlsx)
 - ★★ d18 - [Rust](rust/src/y2024/d18)
 - ★★ d19 - [Rust](rust/src/y2024/d19)
 - ★★ d20 - [Rust](rust/src/y2024/d20)
