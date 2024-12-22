@@ -1,6 +1,6 @@
-use crate::util::Index2D;
-use crate::y2024::util::bounded::Bounded;
-use crate::y2024::util::direction::Direction;
+use crate::util::coordinates::Index2D;
+use crate::util::bounded::Bounded;
+use crate::util::direction::Direction;
 use rustc_hash::FxHashSet;
 use std::collections::{HashMap, LinkedList};
 use std::iter::successors;

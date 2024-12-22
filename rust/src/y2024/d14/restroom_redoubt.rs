@@ -1,5 +1,5 @@
-use crate::util::{Diff, Index2D};
-use crate::y2024::util::bounded::Bounded;
+use crate::util::coordinates::{Diff, Index2D};
+use crate::util::bounded::Bounded;
 use num_traits::ToPrimitive;
 use regex::Regex;
 use rustc_hash::FxHashSet;

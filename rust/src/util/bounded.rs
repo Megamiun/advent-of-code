@@ -1,5 +1,5 @@
-use crate::util::Index2D;
-use crate::y2024::util::direction::Direction;
+use crate::util::coordinates::Index2D;
+use crate::util::direction::Direction;
 use std::collections::HashMap;
 use std::hash::BuildHasher;
 

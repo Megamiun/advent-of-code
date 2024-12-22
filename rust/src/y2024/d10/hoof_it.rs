@@ -1,5 +1,5 @@
-use crate::util::Index2D;
-use crate::y2024::util::bounded::Bounded;
+use crate::util::coordinates::Index2D;
+use crate::util::bounded::Bounded;
 use std::collections::HashSet;
 
 pub fn get_reachable_sum_for(lines: &[String]) -> usize {

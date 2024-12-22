@@ -1,8 +1,8 @@
-use crate::util::Index2D;
+use crate::util::coordinates::Index2D;
 use crate::y2024::d15::warehouse_woes::Cell::{Empty, Robot, Wall};
-use crate::y2024::util::bounded::Bounded;
-use crate::y2024::util::direction::Direction;
-use crate::y2024::util::direction::Direction::{Left, Right};
+use crate::util::bounded::Bounded;
+use crate::util::direction::Direction;
+use crate::util::direction::Direction::{Left, Right};
 use derive_more::Display;
 use std::fmt::Formatter;
 use Cell::{Box, BoxL, BoxR};

@@ -1,9 +1,9 @@
-use crate::util::Index2D;
-use crate::y2024::util::direction::Direction::{Down, Left, Right, Up};
+use crate::util::coordinates::Index2D;
+use crate::util::direction::Direction::{Down, Left, Right, Up};
+use rustc_hash::FxHashMap;
 use std::cmp::min;
 use std::collections::HashMap;
 use std::sync::LazyLock;
-use rustc_hash::{FxHashMap, FxHashSet};
 
 pub fn get_sum_of_complexity(lines: &[String], robots: usize) -> usize {
     lines.iter().map(|line| Solver::new().get_complexity(line, robots)).sum()

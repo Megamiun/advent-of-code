@@ -1,5 +1,5 @@
-use crate::util::Diff;
-use crate::y2024::util::direction::Direction::{Down, Left, Right, Up};
+use crate::util::coordinates::Diff;
+use crate::util::direction::Direction::{Down, Left, Right, Up};
 
 #[derive(PartialEq, Eq, Hash, Copy, Clone, Debug, Ord, PartialOrd)]
 pub enum Direction {

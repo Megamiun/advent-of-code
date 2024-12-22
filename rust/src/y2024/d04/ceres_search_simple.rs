@@ -1,5 +1,5 @@
-use crate::util::{Diff, Index2D};
-use crate::y2024::util::bounded::Bounded;
+use crate::util::coordinates::{Diff, Index2D};
+use crate::util::bounded::Bounded;
 
 static DIRECTIONS: &[Diff] = &[Diff(1, 1), Diff(1, 0), Diff(1, -1), Diff(0, 1), Diff(0, -1), Diff(-1, 1), Diff(-1, 0), Diff(-1, -1)];
 

@@ -11,7 +11,7 @@ use std::time::Instant;
 
 pub mod y2023;
 pub mod y2024;
-mod util;
+pub mod util;
 
 pub fn run_for_groups<T: Display>(year: u32, day: u32, solution: &str, files: &[&str], exec: impl Fn(&[&[String]]) -> T) {
     run_for_files(year, day, solution, files, |lines| {

@@ -1,8 +1,8 @@
-use crate::util::Index2D;
-use crate::y2024::util::bounded::Bounded;
-use crate::y2024::util::direction::Direction;
-use crate::y2024::util::direction::Direction::Right;
-use crate::y2024::util::collections::key_indexed::key_priority_queue::KeyPriorityQueue;
+use crate::util::coordinates::Index2D;
+use crate::util::bounded::Bounded;
+use crate::util::direction::Direction;
+use crate::util::direction::Direction::Right;
+use crate::util::collections::key_indexed::key_priority_queue::KeyPriorityQueue;
 use rustc_hash::{FxHashMap, FxHashSet};
 
 type Key = (Index2D, Direction);

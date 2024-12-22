@@ -1,5 +1,5 @@
 use std::fmt::Debug;
-use crate::y2024::util::collections::key_indexed::keyable::Keyable;
+use crate::util::collections::key_indexed::keyable::Keyable;
 
 #[derive(Debug)]
 pub struct KeyPriorityQueue<V>
