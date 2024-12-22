@@ -1,7 +1,7 @@
 package br.com.gabryel.adventofcode.y2023.d19
 
-import br.com.gabryel.adventofcode.readLines
-import br.com.gabryel.adventofcode.takeUntilNextBlankLine
+import br.com.gabryel.adventofcode.util.readLines
+import br.com.gabryel.adventofcode.util.takeUntilNextBlankLine
 
 private val pipelineBreaker = """(.*)\{(.*)}""".toRegex()
 private val pieceBreaker = """\d+""".toRegex()

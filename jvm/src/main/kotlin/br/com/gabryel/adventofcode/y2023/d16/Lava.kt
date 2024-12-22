@@ -1,7 +1,7 @@
 package br.com.gabryel.adventofcode.y2023.d16
 
 import br.com.gabryel.adventofcode.y2023.d16.Direction.*
-import br.com.gabryel.adventofcode.readLines
+import br.com.gabryel.adventofcode.util.readLines
 
 private typealias DirectionsMap = Array<Array<MutableSet<Direction>>>
 

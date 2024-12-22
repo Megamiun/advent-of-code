@@ -1,5 +1,6 @@
 package br.com.gabryel.adventofcode.y2022
 
+import br.com.gabryel.adventofcode.util.*
 import java.util.*
 import java.util.Comparator.comparingInt
 
@@ -61,6 +62,6 @@ private fun List<List<Char>>.findCharacter(searched: Char) =
             .map { (x) -> x to y }
     }.first()
 
-private fun getMap() = getLines {
+private fun getMap() = getLinesFromSystemIn {
     it.toCharArray().toList()
 }.toList()

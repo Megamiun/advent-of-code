@@ -1,5 +1,7 @@
 package br.com.gabryel.adventofcode.y2022
 
+import br.com.gabryel.adventofcode.util.getLinesFromSystemIn
+
 private val digitsRegex = """(\d+)""".toRegex()
 private val operationRegex = """([+*]) (\w+)""".toRegex()
 
@@ -83,4 +85,4 @@ private class Monkey(
 
 }
 
-private fun getMonkeyInfo() = getLines().toList().ifEmpty { null }
+private fun getMonkeyInfo() = getLinesFromSystemIn().toList().ifEmpty { null }

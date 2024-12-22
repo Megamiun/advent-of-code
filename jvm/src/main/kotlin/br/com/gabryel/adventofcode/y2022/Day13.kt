@@ -1,5 +1,6 @@
 package br.com.gabryel.adventofcode.y2022
 
+import br.com.gabryel.adventofcode.util.getGroupsFromSystemIn
 import br.com.gabryel.adventofcode.y2022.Packet.Num
 import br.com.gabryel.adventofcode.y2022.Packet.PacketArray
 import java.util.*
@@ -57,7 +58,7 @@ private sealed interface Packet : Comparable<Packet> {
     }
 }
 
-private fun getPacketPairs() = getGroupsOfLines()
+private fun getPacketPairs() = getGroupsFromSystemIn()
     .map { (l, r) -> toPacket(l) to toPacket(r) }
 
 private fun toPacket(line: String): Packet {

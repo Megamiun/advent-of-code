@@ -1,6 +1,6 @@
 package br.com.gabryel.adventofcode.y2023.d20
 
-import br.com.gabryel.adventofcode.readLines
+import br.com.gabryel.adventofcode.util.readLines
 import java.util.concurrent.atomic.AtomicInteger
 
 fun main() {

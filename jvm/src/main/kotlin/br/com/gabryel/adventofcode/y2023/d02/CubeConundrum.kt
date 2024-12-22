@@ -1,7 +1,7 @@
 package br.com.gabryel.adventofcode.y2023.d02
 
 import br.com.gabryel.adventofcode.y2023.d02.Color.*
-import br.com.gabryel.adventofcode.readLines
+import br.com.gabryel.adventofcode.util.readLines
 
 fun main() {
     listOf("sample1", "input").forEach {

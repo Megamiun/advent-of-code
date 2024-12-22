@@ -1,5 +1,6 @@
 package br.com.gabryel.adventofcode.y2022
 
+import br.com.gabryel.adventofcode.util.*
 import java.util.concurrent.TimeUnit.NANOSECONDS
 import kotlin.math.absoluteValue
 import kotlin.system.measureNanoTime
@@ -24,7 +25,7 @@ private fun List<Direction>.runWithSize(size: Int) {
     println()
 }
 
-private fun getCommands() = getLines {
+private fun getCommands() = getLinesFromSystemIn {
     val (direction, steps) = it.split(" ")
     Direction.valueOf(direction) to steps.toInt()
 }.toList()

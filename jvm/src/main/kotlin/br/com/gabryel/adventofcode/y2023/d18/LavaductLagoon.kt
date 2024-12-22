@@ -1,8 +1,8 @@
 package br.com.gabryel.adventofcode.y2023.d18
 
-import br.com.gabryel.adventofcode.readLines
+import br.com.gabryel.adventofcode.util.Coordinate
+import br.com.gabryel.adventofcode.util.readLines
 import br.com.gabryel.adventofcode.y2023.*
-import br.com.gabryel.adventofcode.y2023.d10.Coordinate
 import br.com.gabryel.adventofcode.y2023.d18.Direction.*
 import java.util.EnumMap
 import java.util.HexFormat.fromHexDigits

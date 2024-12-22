@@ -1,6 +1,6 @@
 package br.com.gabryel.adventofcode.y2023.d07
 
-import br.com.gabryel.adventofcode.readLines
+import br.com.gabryel.adventofcode.util.readLines
 
 private val order = (listOf('A', 'K', 'Q', 'J', 'T') + ('9' downTo '2'))
     .mapIndexed { index, card -> card to index }

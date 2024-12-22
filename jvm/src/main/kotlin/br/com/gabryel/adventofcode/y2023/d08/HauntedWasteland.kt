@@ -1,6 +1,6 @@
 package br.com.gabryel.adventofcode.y2023.d08
 
-import br.com.gabryel.adventofcode.readLines
+import br.com.gabryel.adventofcode.util.readLines
 import kotlin.time.measureTimedValue
 
 private val directionRegex = """[0-9A-Z]+""".toRegex()

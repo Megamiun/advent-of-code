@@ -1,8 +1,9 @@
 package br.com.gabryel.adventofcode.y2023.d23
 
-import br.com.gabryel.adventofcode.y2023.d10.Coordinate
-import br.com.gabryel.adventofcode.y2023.d23.Direction.*
-import br.com.gabryel.adventofcode.readLines
+import br.com.gabryel.adventofcode.util.Coordinate
+import br.com.gabryel.adventofcode.util.Direction
+import br.com.gabryel.adventofcode.util.Direction.*
+import br.com.gabryel.adventofcode.util.readLines
 
 fun main() {
     listOf("sample", "input").forEach { file ->
@@ -88,7 +89,7 @@ private class LongWalk(private val lines: List<String>, private val canClimbSlop
 
     private fun Coordinate.inDirectionIfMovable(direction: Direction) =
         getIfNonWall(direction)
-            ?.takeIf { (row, col) -> canClimbSlopes || getSafeTile(row, col) != direction.inverseSlope }
+            ?.takeIf { (row, col) -> canClimbSlopes || getSafeTile(row, col) != direction.inverseSlope() }
             ?.let { listOf(it) }
             .orEmpty()
 
@@ -101,9 +102,9 @@ private class LongWalk(private val lines: List<String>, private val canClimbSlop
     private fun getSafeTile(row: Int, col: Int) = lines.getOrNull(row)?.getOrNull(col) ?: '#'
 }
 
-private enum class Direction(val vector: Pair<Int, Int>, val inverseSlope: Char) {
-    RIGHT(0 to 1, '>'),
-    DOWN(1 to 0, 'v'),
-    LEFT(0 to -1, '<'),
-    UP(-1 to 0, '^');
+private fun Direction.inverseSlope() = when (this) {
+    RIGHT -> '>'
+    DOWN -> 'v'
+    LEFT -> '<'
+    UP -> '^'
 }

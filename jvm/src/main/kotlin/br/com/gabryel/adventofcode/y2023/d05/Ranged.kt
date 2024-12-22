@@ -1,6 +1,6 @@
 package br.com.gabryel.adventofcode.y2023.d05
 
-import br.com.gabryel.adventofcode.takeUntilNextBlankLine
+import br.com.gabryel.adventofcode.util.takeUntilNextBlankLine
 import kotlin.math.max
 import kotlin.math.min
 

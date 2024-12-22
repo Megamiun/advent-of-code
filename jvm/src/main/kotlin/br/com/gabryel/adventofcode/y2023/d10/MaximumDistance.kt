@@ -1,5 +1,7 @@
 package br.com.gabryel.adventofcode.y2023.d10
 
+import br.com.gabryel.adventofcode.util.Coordinate
+
 private val leftToRight = "SFL-".toSet() to "S7J-".toSet()
 private val topToBottom = "SF7|".toSet() to "SLJ|".toSet()
 

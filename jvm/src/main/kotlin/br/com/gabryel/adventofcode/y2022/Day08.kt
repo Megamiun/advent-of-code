@@ -1,5 +1,7 @@
 package br.com.gabryel.adventofcode.y2022
 
+import br.com.gabryel.adventofcode.util.getLinesFromSystemIn
+
 fun main() {
     val forest = getForest()
 
@@ -82,7 +84,7 @@ fun List<MutableList<Boolean>>.mark(x: Int, y: Int) { this[y][x] = true }
 fun List<List<Int>>.invertedGet(y: Int, x: Int) = get(x, y)
 fun List<MutableList<Boolean>>.invertedMark(y: Int, x: Int) = mark(x, y)
 
-private fun getForest() = getLines {it.windowed(1).map { it.toInt() } }.toList()
+private fun getForest() = getLinesFromSystemIn {it.windowed(1).map { it.toInt() } }.toList()
 
 private data class TreePosition(val west: Int = 0, val east: Int = 0, val north: Int = 0, val south: Int = 0) {
     val points = west * east * north * south

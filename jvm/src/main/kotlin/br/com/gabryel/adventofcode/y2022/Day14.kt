@@ -1,5 +1,7 @@
 package br.com.gabryel.adventofcode.y2022
 
+import br.com.gabryel.adventofcode.util.*
+
 fun main() {
     val rocks = getRocks()
 
@@ -69,7 +71,7 @@ class CaveMap(val map: Array<BooleanArray>, val fallingPoint: Coordinate) {
     }
 }
 
-private fun getRocks() = getLines { line ->
+private fun getRocks() = getLinesFromSystemIn { line ->
     line.split(" -> ")
         .map { coords -> coords.split(",").map(String::toInt).let { it[0] to it[1] } }
         .windowed(2) { (left, right) ->

@@ -1,6 +1,6 @@
 package br.com.gabryel.adventofcode.y2023.d03
 
-import br.com.gabryel.adventofcode.readLines
+import br.com.gabryel.adventofcode.util.readLines
 
 fun main() {
     listOf("sample1", "input").forEach { file ->
