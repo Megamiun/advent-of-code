@@ -1,5 +1,7 @@
 package br.com.gabryel.adventofcode.y2022
 
+import br.com.gabryel.adventofcode.util.getLinesFromSystemIn
+
 fun main() {
     val elfCalories = parseCalories()
     println("Most caloric: ${elfCalories.max()}")
@@ -17,4 +19,4 @@ private fun parseCalories2() = generateSequence {
     getAllLines().ifEmpty { null }?.sum()
 }.toList()
 
-private fun getAllLines() = getLines(String::toIntOrNull).toList()
+private fun getAllLines() = getLinesFromSystemIn(String::toIntOrNull).toList()

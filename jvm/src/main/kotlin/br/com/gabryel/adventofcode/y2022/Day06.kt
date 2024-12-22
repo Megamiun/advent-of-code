@@ -1,7 +1,9 @@
 package br.com.gabryel.adventofcode.y2022
 
+import br.com.gabryel.adventofcode.util.getLinesFromSystemIn
+
 fun main() {
-    getLines().forEach { line ->
+    getLinesFromSystemIn().forEach { line ->
         val (packetMarkerEnd, packetMarker) = extractPositionAndMarker(line, 4)
         val (messageMarkerEnd, messageMarker) = extractPositionAndMarker(line, 14)
 

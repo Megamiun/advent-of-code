@@ -1,5 +1,7 @@
 package br.com.gabryel.adventofcode.y2022
 
+import br.com.gabryel.adventofcode.util.getLinesFromSystemIn
+
 fun main() {
     val pairs = getAllElfPairs()
 
@@ -10,7 +12,7 @@ fun main() {
 private infix operator fun IntRange.contains(other: IntRange) =
     first in other && last in other
 
-private fun getAllElfPairs() = getLines { line ->
+private fun getAllElfPairs() = getLinesFromSystemIn { line ->
     val (first, second) = line.split(",").map { pair ->
         val (start, ending) = pair.split("-")
         start.toInt()..ending.toInt()

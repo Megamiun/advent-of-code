@@ -1,4 +1,4 @@
-package br.com.gabryel.adventofcode.y2022
+package br.com.gabryel.adventofcode.util
 
 typealias Coordinate = Pair<Int, Int>
 
@@ -12,7 +12,3 @@ operator fun Coordinate.plus(other: Coordinate) = (x() + other.x()) to (y() + ot
 fun Coordinate.getAdjacent() = Direction.entries.map { this + it.vector }
 
 val ZERO = 0 to 0
-
-enum class Direction(val vector: Coordinate) {
-    R(1 to 0), L(-1 to 0), U(0 to 1), D(0 to -1)
-}

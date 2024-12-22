@@ -1,5 +1,7 @@
 package br.com.gabryel.adventofcode.y2022
 
+import br.com.gabryel.adventofcode.util.getLinesFromSystemIn
+
 fun main() {
     val summary = getSummaryOfDirs()
     println("Sum of Dirs With Size <= 100000: ${summary.filterValues { it <= 100000 }.values.sum()}")
@@ -8,7 +10,7 @@ fun main() {
 }
 
 private fun getSummaryOfDirs(): Map<String, Long> {
-    val linesIterator = getLines().toList().listIterator()
+    val linesIterator = getLinesFromSystemIn().toList().listIterator()
     val acc = Accumulator(currDir = "/").parse(linesIterator)
 
     acc.printPath()

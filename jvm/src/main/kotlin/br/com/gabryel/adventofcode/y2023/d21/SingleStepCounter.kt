@@ -1,7 +1,7 @@
 package br.com.gabryel.adventofcode.y2023.d21
 
-import br.com.gabryel.adventofcode.y2023.d10.Coordinate
-import br.com.gabryel.adventofcode.readLines
+import br.com.gabryel.adventofcode.util.Coordinate
+import br.com.gabryel.adventofcode.util.readLines
 
 fun main() {
     listOf("sample", "input").forEach { file ->

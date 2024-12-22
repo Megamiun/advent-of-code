@@ -1,10 +1,10 @@
 package br.com.gabryel.adventofcode.y2024.d06
 
-import br.com.gabryel.adventofcode.y2022.Coordinate
-import br.com.gabryel.adventofcode.y2022.plus
-import br.com.gabryel.adventofcode.y2022.x
-import br.com.gabryel.adventofcode.y2022.y
-import br.com.gabryel.adventofcode.readLines
+import br.com.gabryel.adventofcode.util.Coordinate
+import br.com.gabryel.adventofcode.util.plus
+import br.com.gabryel.adventofcode.util.x
+import br.com.gabryel.adventofcode.util.y
+import br.com.gabryel.adventofcode.util.readLines
 import java.util.HashSet
 
 enum class Direction(val diff: Coordinate, val next: () -> Direction, val character: Char) {

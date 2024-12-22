@@ -1,7 +1,7 @@
 package br.com.gabryel.adventofcode.y2023.d25
 
 import br.com.gabryel.adventofcode.y2023.logTimed
-import br.com.gabryel.adventofcode.readLines
+import br.com.gabryel.adventofcode.util.readLines
 import kotlin.math.max
 import kotlin.math.min
 

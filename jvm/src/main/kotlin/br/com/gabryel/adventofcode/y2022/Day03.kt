@@ -1,5 +1,7 @@
 package br.com.gabryel.adventofcode.y2022
 
+import br.com.gabryel.adventofcode.util.getLinesFromSystemIn
+
 fun main() {
     val rucksacks = getAllRucksacks()
 
@@ -14,7 +16,7 @@ fun main() {
     println("Sum of Rucksacks Priorities in Groups of Three: $groupPrioritySum")
 }
 
-private fun getAllRucksacks() = getLines(::Rucksack).toList()
+private fun getAllRucksacks() = getLinesFromSystemIn(::Rucksack).toList()
 
 private class Rucksack(val content: String) {
     private val halfPoint = content.length / 2

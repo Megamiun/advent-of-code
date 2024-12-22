@@ -1,12 +1,14 @@
 package br.com.gabryel.adventofcode.y2022
 
+import br.com.gabryel.adventofcode.util.getLinesFromSystemIn
+
 fun main() {
     val matches = getAllMatches()
     println("Total Hand Stance Points: ${matches.sumOf { it.handStacePoints }}")
     println("Total Win Stance Points: ${matches.sumOf { it.winStacePoints }}")
 }
 
-private fun getAllMatches() = getLines { line ->
+private fun getAllMatches() = getLinesFromSystemIn { line ->
     val (opponent, you) = line.split(" ")
     Match(opponent, you)
 }.toList()

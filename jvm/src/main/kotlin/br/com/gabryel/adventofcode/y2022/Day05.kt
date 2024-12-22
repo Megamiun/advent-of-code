@@ -1,5 +1,7 @@
 package br.com.gabryel.adventofcode.y2022
 
+import br.com.gabryel.adventofcode.util.getLinesFromSystemIn
+
 private val numberRegex = "\\d+".toRegex()
 
 typealias ContainerQuantityTaker = List<Char>.(Int) -> List<Char>
@@ -37,7 +39,7 @@ private fun <E> List<E>.replace(position: Int, item: E) =
     take(position) + item + takeLast((size - position) - 1)
 
 private fun findStacksAndInstructions() =
-    getLines().getStacks() to getLines().getInstructions()
+    getLinesFromSystemIn().getStacks() to getLinesFromSystemIn().getInstructions()
 
 private fun Sequence<String>.getStacks(): Stacks {
     val reversed = toList().reversed()

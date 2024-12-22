@@ -2,7 +2,7 @@ package br.com.gabryel.adventofcode.y2023.d24
 
 import br.com.gabryel.adventofcode.y2023.d24.Vector3D.Dimension
 import br.com.gabryel.adventofcode.y2023.d24.Vector3D.Dimension.*
-import br.com.gabryel.adventofcode.readLines
+import br.com.gabryel.adventofcode.util.readLines
 import java.math.BigDecimal
 import java.math.BigInteger
 import java.math.MathContext

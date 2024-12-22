@@ -1,6 +1,6 @@
 package br.com.gabryel.adventofcode.y2023.d15
 
-import br.com.gabryel.adventofcode.readLines
+import br.com.gabryel.adventofcode.util.readLines
 
 typealias IndexMap = Array<MutableList<Pair<String, Int>>>
 

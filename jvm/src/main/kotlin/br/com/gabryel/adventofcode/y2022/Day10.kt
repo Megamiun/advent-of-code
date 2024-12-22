@@ -1,5 +1,7 @@
 package br.com.gabryel.adventofcode.y2022
 
+import br.com.gabryel.adventofcode.util.getLinesFromSystemIn
+
 fun main() {
     val positions = sequence {
         var current = 1
@@ -30,4 +32,4 @@ fun main() {
     }
 }
 
-private fun getInstructions() = getLines()
+private fun getInstructions() = getLinesFromSystemIn()

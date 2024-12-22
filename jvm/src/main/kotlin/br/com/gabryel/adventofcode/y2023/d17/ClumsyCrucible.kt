@@ -1,7 +1,7 @@
 package br.com.gabryel.adventofcode.y2023.d17
 
 import br.com.gabryel.adventofcode.y2023.d17.Direction.*
-import br.com.gabryel.adventofcode.readLines
+import br.com.gabryel.adventofcode.util.readLines
 import java.util.PriorityQueue
 
 fun main() {

@@ -1,4 +1,4 @@
-package br.com.gabryel.adventofcode
+package br.com.gabryel.adventofcode.util
 
 object ResourceReader
 
