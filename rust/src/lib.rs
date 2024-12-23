@@ -4,6 +4,7 @@ extern crate derive_more;
 extern crate rustc_hash;
 extern crate ibig;
 extern crate forward_ref_generic;
+extern crate itertools;
 
 use std::fmt::Display;
 use std::fs::read_to_string;
@@ -24,8 +25,9 @@ pub fn run_for_files<T: Display>(year: u32, day: u32, solution: &str, files: &[&
     let padded_day = pad_left(day);
 
     files.iter().for_each(|file| {
+        let key = format!("{file} - {solution}");
         println!("-------------------");
-        println!("{file} - {solution}");
+        println!("{key}");
         println!("-------------------");
         println!("-------------------");
 
@@ -33,12 +35,7 @@ pub fn run_for_files<T: Display>(year: u32, day: u32, solution: &str, files: &[&
 
         println!();
         
-        let start = Instant::now();
-        let result = exec(&lines);
-        let end = start.elapsed();
-        
-        println!("Result: {result}\n");
-        println!("Took {}ms\n", end.as_millis());
+        timed(&key, || exec(&lines));
     })
 }
 
@@ -49,6 +46,17 @@ pub fn read_lines(year: u32, day: &String, file: String) -> Vec<String> {
     read_to_string(path).unwrap().lines()
         .map(|line| line.to_string())
         .collect()
+}
+
+pub fn timed<T: Display>(name: &str, execute: impl Fn() -> T) -> T {
+    let start = Instant::now();
+    let result = execute();
+    let end = start.elapsed();
+
+    println!("[{name}] Result: {result}");
+    println!("[{name}] Took {}ms\n", end.as_millis());
+
+    result
 }
 
 fn pad_left(day: u32) -> String {
