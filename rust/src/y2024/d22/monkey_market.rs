@@ -1,6 +1,6 @@
 use rustc_hash::{FxBuildHasher, FxHashMap, FxHashSet};
 use std::iter::successors;
-use std::ops::{AddAssign, BitXor};
+use std::ops::BitXor;
 
 pub fn get_sum_of_secrets_after(lines: &[String], rounds: usize) -> usize {
     lines.iter()
