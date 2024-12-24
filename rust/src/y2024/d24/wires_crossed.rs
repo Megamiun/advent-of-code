@@ -1,5 +1,4 @@
 use crate::y2024::d24::parse::{parse, EdgeMap};
-use crate::y2024::d24::wires_crossed_adder::get_swappable_node_pairs_adder;
 use itertools::Itertools;
 use std::cmp::Reverse;
 use std::collections::HashMap;
@@ -17,10 +16,6 @@ pub fn define_z_output(groups: &[&[String]; 2]) -> usize {
     });
 
     z_values
-}
-
-pub fn get_swappable_node_pairs(groups: &[&[String]; 2], limit: usize) -> String {
-    get_swappable_node_pairs_adder(groups, limit)
 }
 
 fn get_z_bits<'a>(nodes: &mut HashMap<&'a str, bool>, edges: &'a EdgeMap) -> Vec<bool> {

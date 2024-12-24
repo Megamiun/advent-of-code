@@ -27,11 +27,8 @@ fn get_swaps(level: usize, carry: &str, mistakes_remaining: usize, edges: &EdgeM
 
     let z_result = get_inputs_for(edges, z_level, "XOR");
     if z_result.is_none() || !z_result.unwrap().contains(&carry) {
-        if let Some((carry_xor, _)) = get_op_for(edges, carry, "XOR") {
-            return exchange(level, carry, mistakes_remaining, [z_level, carry_xor], edges)
-        }
-
-        return None
+        let (carry_xor, _) = get_op_for(edges, carry, "XOR")?;
+        return exchange(level, carry, mistakes_remaining, [z_level, carry_xor], edges)
     }
 
     let z_result = z_result.unwrap();
