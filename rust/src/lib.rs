@@ -1,14 +1,15 @@
 extern crate core;
-extern crate regex;
 extern crate derive_more;
-extern crate rustc_hash;
-extern crate ibig;
 extern crate forward_ref_generic;
+extern crate ibig;
 extern crate itertools;
+extern crate regex;
+extern crate rustc_hash;
 
 use std::fmt::Display;
 use std::fs::read_to_string;
 use std::time::Instant;
+use itertools::Itertools;
 
 pub mod y2023;
 pub mod y2024;
@@ -21,9 +22,14 @@ pub fn run_for_groups<T: Display>(year: u32, day: u32, solution: &str, files: &[
     })
 }
 
-pub fn run_for_files<T: Display>(year: u32, day: u32, solution: &str, files: &[&str], exec: impl Fn(&[String]) -> T) {
-    let padded_day = pad_left(day);
+pub fn run_for_n_groups<T: Display, const N: usize>(year: u32, day: u32, solution: &str, files: &[&str], exec: impl Fn(&[&[String]; N]) -> T) {
+    run_for_files(year, day, solution, files, |lines| {
+        let groups = lines.splitn(N, |line| line.is_empty()).collect_vec();
+        exec(&groups.try_into().unwrap())
+    })
+}
 
+pub fn run_for_files<T: Display>(year: u32, day: u32, solution: &str, files: &[&str], exec: impl Fn(&[String]) -> T) {
     files.iter().for_each(|file| {
         let key = format!("{file} - {solution}");
         println!("-------------------");
@@ -31,7 +37,7 @@ pub fn run_for_files<T: Display>(year: u32, day: u32, solution: &str, files: &[&
         println!("-------------------");
         println!("-------------------");
 
-        let lines = read_lines(year, &padded_day, file.to_string());
+        let lines = read_lines(year, day, file);
 
         println!();
         
@@ -39,8 +45,8 @@ pub fn run_for_files<T: Display>(year: u32, day: u32, solution: &str, files: &[&
     })
 }
 
-pub fn read_lines(year: u32, day: &String, file: String) -> Vec<String> {
-    let path = "./resources/y".to_string() + &year.to_string() + "/d" + day + "/" + &file;
+pub fn read_lines(year: u32, day: u32, file: &str) -> Vec<String> {
+    let path = format!("./resources/y{year}/d{}/{file}", pad_left(day));
 
     println!("Reading file: {}", path);
     read_to_string(path).unwrap().lines()

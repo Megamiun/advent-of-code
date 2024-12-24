@@ -1,17 +1,17 @@
-use crate::util::coordinates::Index2D;
-use crate::y2024::d15::warehouse_woes::Cell::{Empty, Robot, Wall};
 use crate::util::bounded::Bounded;
+use crate::util::coordinates::Index2D;
 use crate::util::direction::Direction;
 use crate::util::direction::Direction::{Left, Right};
+use crate::y2024::d15::warehouse_woes::Cell::{Empty, Robot, Wall};
 use derive_more::Display;
 use std::fmt::Formatter;
 use Cell::{Box, BoxL, BoxR};
 use Direction::{Down, Up};
 
-pub fn move_robot_single(groups: &[&[String]]) -> usize {
-    let mut map = Bounded::create_from(groups[0], Cell::from);
+pub fn move_robot_single([map, directions]: &[&[String]; 2]) -> usize {
+    let mut map = Bounded::create_from(map, Cell::from);
 
-    let directions = groups[1]
+    let directions = directions
         .iter()
         .flat_map(|line| line.chars().map(|c| Direction::from_char(c)))
         .collect::<Vec<_>>();
@@ -20,10 +20,10 @@ pub fn move_robot_single(groups: &[&[String]]) -> usize {
     map.calculate()
 }
 
-pub fn move_robot_wide(groups: &[&[String]]) -> usize {
-    let mut map = Bounded::create_from(groups[0], Cell::from).widen();
+pub fn move_robot_wide([map, directions]: &[&[String]; 2]) -> usize {
+    let mut map = Bounded::create_from(map, Cell::from).widen();
 
-    let directions = groups[1]
+    let directions = directions
         .iter()
         .flat_map(|line| line.chars().map(|c| Direction::from_char(c)))
         .collect::<Vec<_>>();
