@@ -9,9 +9,9 @@ use Instruction::{Bst, Bxc, Bxl, Div, Jnz, Out};
 
 const EXTRACTOR: LazyLock<Regex> = LazyLock::new(|| Regex::new("(\\d+)").unwrap());
 
-pub fn execute(groups: &[&[String]]) -> String {
-    let mut registers = get_registers(groups[0]);
-    let program = get_program(&groups[1][0]);
+pub fn execute([registers, program]: &[&[String]; 2]) -> String {
+    let mut registers = get_registers(registers);
+    let program = get_program(&program[0]);
 
     let mut instructor_pointer = 0;
     let mut output = Vec::<usize>::new();
@@ -30,9 +30,9 @@ pub fn execute(groups: &[&[String]]) -> String {
     output.iter().map(|num| num.to_string()).collect::<Vec<_>>().join(",")
 }
 
-pub fn find(groups: &[&[String]]) -> usize {
-    let registers = get_registers(groups[0]);
-    let program = get_program(&groups[1][0]);
+pub fn find([registers, program]: &[&[String]; 2]) -> usize {
+    let registers = get_registers(registers);
+    let program = get_program(&program[0]);
 
     successors(Some(0usize), |prev| Some(prev + 1)).filter(|a_value| {
         let mut instructor_pointer = 0;

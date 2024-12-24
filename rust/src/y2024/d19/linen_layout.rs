@@ -1,8 +1,7 @@
 use rustc_hash::FxHashMap;
 
-pub fn get_possible_towels(lines: &[&[String]]) -> usize {
-    let available = &lines[0][0].split(", ").collect::<Vec<_>>();
-    let goals = lines[1];
+pub fn get_possible_towels([available, goals]: &[&[String]; 2]) -> usize {
+    let available = &available[0].split(", ").collect::<Vec<_>>();
 
     Solver::new(available)
         .count_valid_arrangements_for_all(goals)
@@ -10,9 +9,8 @@ pub fn get_possible_towels(lines: &[&[String]]) -> usize {
         .count()
 }
 
-pub fn get_towels_arrangements(lines: &[&[String]]) -> usize {
-    let available = &lines[0][0].split(", ").collect::<Vec<_>>();
-    let goals = lines[1];
+pub fn get_towels_arrangements([available, goals]: &[&[String]; 2]) -> usize {
+    let available = &available[0].split(", ").collect::<Vec<_>>();
 
     Solver::new(available)
         .count_valid_arrangements_for_all(goals)
