@@ -7,15 +7,11 @@ pub fn get_swappable_node_pairs_adder(groups: &[&[String]; 2], limit: usize) -> 
 
     let zero_carry = get_result_for(&edges, "x00", "y00", "AND").unwrap();
 
-    get_swaps(1, zero_carry, limit + 1, &edges).unwrap()
+    get_swaps(1, zero_carry, limit, &edges).unwrap()
         .iter().sorted().join(",")
 }
 
-fn get_swaps(level: usize, carry: &str, mistakes_remaining: usize, edges: &EdgeMap) -> Option<Vec<String>> {
-    if mistakes_remaining == 0 {
-        return None
-    }
-    
+fn get_swaps(level: usize, carry: &str, mistakes_left: usize, edges: &EdgeMap) -> Option<Vec<String>> {
     if edges.len() < 5 {
         return Some(vec![])
     }
@@ -28,7 +24,7 @@ fn get_swaps(level: usize, carry: &str, mistakes_remaining: usize, edges: &EdgeM
     let z_result = get_inputs_for(edges, z_level, "XOR");
     if z_result.is_none() || !z_result.unwrap().contains(&carry) {
         let (carry_xor, _) = get_op_for(edges, carry, "XOR")?;
-        return exchange(level, carry, mistakes_remaining, [z_level, carry_xor], edges)
+        return exchange(level, carry, mistakes_left, [z_level, carry_xor], edges)
     }
 
     let z_result = z_result.unwrap();
@@ -38,7 +34,7 @@ fn get_swaps(level: usize, carry: &str, mistakes_remaining: usize, edges: &EdgeM
 
     if !z_result.contains(&xy_xor) {
         let non_carry = if carry == z_result[0] { z_result[1] } else { z_result[0] };
-        return exchange(level, carry, mistakes_remaining, [xy_xor, non_carry], edges)
+        return exchange(level, carry, mistakes_left, [xy_xor, non_carry], edges)
     }
 
     let z_xor = get_result_for(edges, carry, xy_xor, "XOR").unwrap();
@@ -51,17 +47,21 @@ fn get_swaps(level: usize, carry: &str, mistakes_remaining: usize, edges: &EdgeM
     let new_edges =
         HashMap::from_iter(edges.iter().filter(|(result, _)| !used.contains(result)).map(|s| (*s.0, *s.1)));
 
-    get_swaps(level + 1, new_carry, mistakes_remaining, &new_edges)
+    get_swaps(level + 1, new_carry, mistakes_left, &new_edges)
 }
 
-fn exchange(level: usize, carry: &str, mistakes_remaining: usize, [lhs, rhs]: [&str; 2], edges: &EdgeMap) -> Option<Vec<String>> {
+fn exchange(level: usize, carry: &str, mistakes_left: usize, [lhs, rhs]: [&str; 2], edges: &EdgeMap) -> Option<Vec<String>> {
+    if mistakes_left == 0 {
+        return None
+    }
+
     let mut new_edges = edges.clone();
     
     let lhs_result = edges[lhs];
     new_edges.insert(lhs, edges[rhs]);
     new_edges.insert(rhs, lhs_result);
 
-    let mut mistakes = get_swaps(level, carry, mistakes_remaining - 1, &new_edges)?;
+    let mut mistakes = get_swaps(level, carry, mistakes_left - 1, &new_edges)?;
     mistakes.push(lhs.to_string());
     mistakes.push(rhs.to_string());
     Some(mistakes)
