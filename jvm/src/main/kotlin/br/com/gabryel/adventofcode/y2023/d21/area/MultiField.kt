@@ -32,9 +32,7 @@ data class MultiField(
                 val (tile, direction) = toVisit.remove()
                 val newTile = tile + direction.vector
 
-                if (max(newTile.x().absoluteValue, newTile.y().absoluteValue) > 3) {
-                    continue
-                }
+                if (!newTile.isInBounds(context)) continue
 
                 if (newTile !in matrix) {
                     val (prevDistance, prevArea) = matrix[tile]!!
@@ -46,16 +44,16 @@ data class MultiField(
                 }
             }
 
-            val minimal = matrix
-                .filterKeys { max(it.x().absoluteValue, it.y().absoluteValue) <= context.halfLevelFactor }
-                .values.minOf { it.first }
+            val inBounds = matrix.filterKeys { it.isInBounds(context) }
+            val minimal = inBounds.values.minOf { it.first }
 
-            val filterExternal = matrix
-                .filterKeys { max(it.x().absoluteValue, it.y().absoluteValue) <= context.halfLevelFactor }
-                .mapValues { (_, v) -> v.first - minimal to v.second }
+            val corrected = inBounds.mapValues { (_, v) -> v.first - minimal to v.second }
 
-            return MultiField(context, filterExternal, reference.level + 1)
+            return MultiField(context, corrected, reference.level + 1)
         }
+
+        private infix fun Coordinate.isInBounds(context: Context) =
+            max(x().absoluteValue, y().absoluteValue) <= context.halfLevelFactor
     }
 
     override val stepsToEnd = matrix.values.maxOf { (k, v) -> k + v.stepsToEnd }
