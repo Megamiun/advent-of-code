@@ -10,7 +10,7 @@ data class MultiField(
     override val context: Context,
     private val matrix: Map<Coordinate, AreaState>,
     override val level: Int
-): Area {
+) : Area {
     private val signalsCache = EnumMap<Direction, List<StepState>>(Direction::class.java)
     private val signalTimesCache = EnumMap<Direction, Long>(Direction::class.java)
     private val stepsCache = mutableMapOf<Long, Long>()
@@ -18,8 +18,7 @@ data class MultiField(
     companion object {
         fun growFrom(areas: Map<Coordinate, AreaState>): Area {
             val reference = areas.firstNotNullOf { it.value.second }
-            val matrix = areas.mapValues { (_, data) -> data.first to data.second }
-                .toMutableMap()
+            val matrix = areas.mapValues { (_, data) -> data.first to data.second }.toMutableMap()
 
             val toVisit = PriorityQueue(compareBy<Pair<Coordinate, Direction>> { (coord, dir) ->
                 matrix[coord]!!.first + matrix[coord]!!.second.getTimeToSignal(dir)
@@ -64,9 +63,16 @@ data class MultiField(
     override val firstOut = Direction.entries.minOf(::getTimeToSignal)
 
     override fun getSignals(direction: Direction) = signalsCache.getOrPut(direction) {
-        filterAreas(direction).flatMap { (coord, info) ->
-            info.second.getSignals(direction)
-                .map { signal -> (info.first + signal.first) to (coord * context.getLevelMultiplier(level)) + signal.second }
+        val allSignals = filterAreas(direction).flatMap { (coord, info) ->
+            val baseCoord = coord * context.getLevelMultiplier(level)
+
+            info.second.getSignals(direction).map { signal -> (info.first + signal.first) to baseCoord + signal.second }
+        }
+
+        allSignals.filter { (lDistance, lCoord) ->
+            allSignals.none { (rDistance, rCoord) ->
+                lCoord != rCoord && (lCoord.getManhattanDistance(rCoord)) == (lDistance - rDistance).toInt()
+            }
         }
     }
 
@@ -76,18 +82,20 @@ data class MultiField(
     }
 
     override fun expand(direction: Direction) = context.get(this, direction) {
-        growFrom(filterAreas(direction).mapKeys { (k) -> k + (direction.inverse().vector * 3) })
+        growFrom(filterAreas(direction).mapKeys { (coord) -> coord + (direction.inverse().vector * 3) })
     }
 
-    override fun afterSteps(steps: Long) = stepsCache.getOrPut(steps) {
-        matrix.values.sumOf { (start, cell) -> cell.afterSteps(steps - start) }
+    override fun countPossibleAtStep(steps: Long) = stepsCache.getOrPut(steps) {
+        matrix.values.sumOf { (start, cell) -> cell.countPossibleAtStep(steps - start) }
     }
 
     private fun countForParity(even: Boolean) =
         matrix.values.sumOf { (distance, cell) -> cell.stepsPerParity[(distance % 2 == 0L) == even]!! }
 
     private fun filterAreas(direction: Direction) = matrix
-        .filter { (coord) -> direction.vector.x() in listOf(0, coord.x()) && direction.vector.y() in listOf(0, coord.y()) }
+        .filter { (coord) ->
+            direction.vector.x() in listOf(0, coord.x()) && direction.vector.y() in listOf(0, coord.y())
+        }
 
     override fun toString() = "[level: $level, stepsToEnd: $stepsToEnd]"
 }

@@ -23,7 +23,7 @@ class SingleField(
 
     private val stepsCache = mutableMapOf<Long, Long>()
 
-    override fun afterSteps(steps: Long) = stepsCache.getOrPut(steps) {
+    override fun countPossibleAtStep(steps: Long) = stepsCache.getOrPut(steps) {
         if (steps < stepsToEnd)
             distanceMap.sumOf {
                 it.count { distance -> distance != -1L && distance <= steps && distance % 2 == steps % 2 }.toLong()
@@ -77,9 +77,7 @@ class SingleField(
             }
 
             val arrayMatrix = Array(context.dimension) { y ->
-                LongArray(context.dimension) { x ->
-                    distances[x to y] ?: -1
-                }
+                LongArray(context.dimension) { x -> distances[x to y] ?: -1 }
             }
 
             return SingleField(context, signals, arrayMatrix)

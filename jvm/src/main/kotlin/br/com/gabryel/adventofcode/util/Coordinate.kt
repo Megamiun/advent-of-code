@@ -1,5 +1,7 @@
 package br.com.gabryel.adventofcode.util
 
+import kotlin.math.absoluteValue
+
 typealias Coordinate = Pair<Int, Int>
 
 typealias CharMap = Array<CharArray>
@@ -12,6 +14,8 @@ operator fun CharMap.get(coord: Coordinate) = getOrNull(coord.y())?.getOrNull(co
 
 fun Coordinate.x() = first
 fun Coordinate.y() = second
+
+infix fun Coordinate.getManhattanDistance(other: Coordinate) = (x() - other.x()).absoluteValue + (y() - other.y()).absoluteValue
 
 infix fun Coordinate.distanceTo(other: Coordinate) = (x() - other.x()) to (y() - other.y())
 

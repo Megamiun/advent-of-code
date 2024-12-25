@@ -7,11 +7,11 @@ import br.com.gabryel.adventofcode.y2023.d21.area.Area.Context
 import br.com.gabryel.adventofcode.y2023.d21.area.SingleField
 
 fun main() {
-    listOf("input").forEach { file ->
+    listOf("sample", "input").forEach { file ->
         val map = readLines(2023, 21, file)
 
         SingleStepCounter(map).printSequenceForSteps(file, "Limited", 6, 64)
-        BigStepCounter(map).printSequenceForSteps(file, "Infinite", 6, 10, 50, 1000, 5000, 26501365)
+        BigStepCounter(map).printSequenceForSteps(file, "Infinite", 6, 10, 50, 1000, 5000, 2650136, 26501365)
     }
 }
 
@@ -29,17 +29,16 @@ interface StepCounter {
 
 class SingleStepCounter(private val map: List<String>) : StepCounter {
     override fun getPossibleTilesOn(steps: Long): Long {
-        return map.getCentral().afterSteps(steps)
+        return map.getCentral().countPossibleAtStep(steps)
     }
 }
 
 class BigStepCounter(private val map: List<String>) : StepCounter {
     override fun getPossibleTilesOn(steps: Long): Long {
-        return logTimeSection("") {
-            generateSequence<Area>(map.getCentral()) { it.grow() }
-                .first { steps < it.firstOut }
-                .afterSteps(steps)
-        }
+        return generateSequence<Area>(map.getCentral()) { it.grow() }
+            .onEach { println("${it.level} -> ${it.stepsToEnd} -> ${it.stepsPerParity}") }
+            .first { steps < it.firstOut }
+            .countPossibleAtStep(steps)
     }
 }
 
