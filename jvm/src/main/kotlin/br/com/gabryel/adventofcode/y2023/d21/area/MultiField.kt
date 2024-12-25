@@ -18,6 +18,8 @@ data class MultiField(
     companion object {
         fun growFrom(areas: Map<Coordinate, AreaState>): Area {
             val reference = areas.firstNotNullOf { it.value.second }
+            val context = reference.context
+
             val matrix = areas.mapValues { (_, data) -> data.first to data.second }.toMutableMap()
 
             val toVisit = PriorityQueue(compareBy<Pair<Coordinate, Direction>> { (coord, dir) ->
@@ -30,7 +32,7 @@ data class MultiField(
                 val (tile, direction) = toVisit.remove()
                 val newTile = tile + direction.vector
 
-                if (max(newTile.x().absoluteValue, newTile.y().absoluteValue) > 1) {
+                if (max(newTile.x().absoluteValue, newTile.y().absoluteValue) > 3) {
                     continue
                 }
 
@@ -45,20 +47,18 @@ data class MultiField(
             }
 
             val minimal = matrix
-                .filterKeys { max(it.x().absoluteValue, it.y().absoluteValue) <= 1 }
+                .filterKeys { max(it.x().absoluteValue, it.y().absoluteValue) <= context.halfLevelFactor }
                 .values.minOf { it.first }
 
             val filterExternal = matrix
-                .filterKeys { max(it.x().absoluteValue, it.y().absoluteValue) <= 1 }
+                .filterKeys { max(it.x().absoluteValue, it.y().absoluteValue) <= context.halfLevelFactor }
                 .mapValues { (_, v) -> v.first - minimal to v.second }
 
-            return MultiField(reference.context, filterExternal, reference.level + 1)
+            return MultiField(context, filterExternal, reference.level + 1)
         }
     }
 
     override val stepsToEnd = matrix.values.maxOf { (k, v) -> k + v.stepsToEnd }
-
-    override val stepsPerParity = listOf(true, false).associateWith(this::countForParity)
 
     override val firstOut = Direction.entries.minOf(::getTimeToSignal)
 
@@ -82,20 +82,19 @@ data class MultiField(
     }
 
     override fun expand(direction: Direction) = context.get(this, direction) {
-        growFrom(filterAreas(direction).mapKeys { (coord) -> coord + (direction.inverse().vector * 3) })
+        growFrom(filterAreas(direction).mapKeys { (coord) -> coord + (direction.inverse().vector * context.levelFactor) })
     }
 
     override fun countPossibleAtStep(steps: Long) = stepsCache.getOrPut(steps) {
         matrix.values.sumOf { (start, cell) -> cell.countPossibleAtStep(steps - start) }
     }
 
-    private fun countForParity(even: Boolean) =
-        matrix.values.sumOf { (distance, cell) -> cell.stepsPerParity[(distance % 2 == 0L) == even]!! }
+    override fun getPossiblePerParity(even: Boolean) =
+        countPossibleAtStep(stepsToEnd - if (even) 2 else 1)
 
-    private fun filterAreas(direction: Direction) = matrix
-        .filter { (coord) ->
-            direction.vector.x() in listOf(0, coord.x()) && direction.vector.y() in listOf(0, coord.y())
-        }
+    private fun filterAreas(direction: Direction) = matrix.filter { (coord) ->
+        direction.vector.x() * context.halfLevelFactor in listOf(0, coord.x()) && direction.vector.y() * context.halfLevelFactor in listOf(0, coord.y())
+    }
 
     override fun toString() = "[level: $level, stepsToEnd: $stepsToEnd]"
 }

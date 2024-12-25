@@ -10,27 +10,14 @@ import kotlin.collections.set
 class SingleField(
     override val context: Context,
     private val signals: Map<Direction, List<StepState>>,
-    private val distanceMap: Array<LongArray>
+    private val stepsMap: LongArray
 ) : Area {
 
     override val level = 1
 
-    override val stepsToEnd = distanceMap.maxOf { it.maxOf { it } }
-
-    override val stepsPerParity = listOf(true, false).associateWith(this::countForParity)
+    override val stepsToEnd = stepsMap.size.toLong()
 
     override val firstOut = signals.values.minOf { it.minOf { it.first } }
-
-    private val stepsCache = mutableMapOf<Long, Long>()
-
-    override fun countPossibleAtStep(steps: Long) = stepsCache.getOrPut(steps) {
-        if (steps < stepsToEnd)
-            distanceMap.sumOf {
-                it.count { distance -> distance != -1L && distance <= steps && distance % 2 == steps % 2 }.toLong()
-            }
-        else
-            stepsPerParity[steps % 2 == 0L]!!
-    }
 
     override fun getSignals(direction: Direction) = signals[direction]!!
 
@@ -39,6 +26,14 @@ class SingleField(
     override fun expand(direction: Direction): Area = context.get(this, direction) {
         from(context, getSignals(direction))
     }
+
+    override fun countPossibleAtStep(steps: Long) =
+        if (steps < 0) 0
+        else if (steps < stepsToEnd) stepsMap[steps.toInt()]
+        else getPossiblePerParity(steps % 2 == 0L)
+
+    override fun getPossiblePerParity(even: Boolean) =
+        stepsMap[stepsMap.size - if (even) 2 else 1]
 
     companion object {
         fun from(context: Context, starts: List<StepState>): SingleField {
@@ -76,11 +71,17 @@ class SingleField(
                 }
             }
 
-            val arrayMatrix = Array(context.dimension) { y ->
-                LongArray(context.dimension) { x -> distances[x to y] ?: -1 }
-            }
+            return SingleField(context, signals, distances.createStepCounter())
+        }
 
-            return SingleField(context, signals, arrayMatrix)
+        private fun Map<Coordinate, Long>.createStepCounter(): LongArray {
+            val stepsMap = values.groupingBy { it }.eachCount()
+
+            return (0..stepsMap.keys.max()).asSequence()
+                .map { stepsMap[it] ?: 0 }.chunked(2).toList()
+                .scan(listOf(0L, 0L)) { (acc1, acc2), result ->
+                    listOf(acc1 + result[0], acc2 + (result.getOrNull(1) ?: 0))
+                }.drop(1).flatten().toList().toLongArray()
         }
 
         private fun Char?.getType(): CellType {
@@ -91,9 +92,6 @@ class SingleField(
             }
         }
     }
-
-    private fun countForParity(even: Boolean) =
-        distanceMap.sumOf { it.count { distance -> distance != -1L && ((distance % 2 == 0L) == even) }.toLong() }
 
     override fun toString() = "[level 1, stepsToEnd: $stepsToEnd, hash: ${System.identityHashCode(this)}]"
 }
