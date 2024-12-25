@@ -24,7 +24,7 @@ fun readLines(year: Int, day: Int, file: String, keepBlanks: Boolean = false) =
         .filter { keepBlanks || it.isNotBlank() }
 
 fun readFile(year: Int, day: Int, file: String) =
-    ResourceReader.javaClass.getResourceAsStream("y$year/d${day.toString().padStart(2, '0')}/$file")
+    ResourceReader.javaClass.getResourceAsStream("../y$year/d${day.toString().padStart(2, '0')}/$file")
         ?.bufferedReader()?.readText()
         ?: throw IllegalStateException("""¨y$year/d$day/$file¨ not found""")
 

@@ -1,5 +1,6 @@
 package br.com.gabryel.adventofcode.y2023.d10
 
+import br.com.gabryel.adventofcode.util.CharMap
 import br.com.gabryel.adventofcode.util.Coordinate
 
 private val leftToRight = "SFL-".toSet() to "S7J-".toSet()
@@ -10,14 +11,14 @@ private val bottomToTop = topToBottom.let { (first, second) -> second to first }
 
 private typealias ToFromPossibilities = Pair<Set<Char>, Set<Char>>
 
-class MaximumDistance(private val map: CoordMap) {
+class MaximumDistance(private val map: CharMap) {
     private val distances = mutableMapOf<Coordinate, Int>()
 
     private val toVisit = ArrayDeque<Pair<Int, Coordinate>>()
 
     val maxDistance by lazy { map.findMaxDistance() }
 
-    private fun CoordMap.findMaxDistance(): Int {
+    private fun CharMap.findMaxDistance(): Int {
         val (startX, startY) = mapIndexed { index, line -> index to line.indexOfFirst { it == 'S' } }
             .first { it.second != -1 }
 
