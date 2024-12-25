@@ -2,34 +2,37 @@ package br.com.gabryel.adventofcode.y2023.d21.area
 
 import br.com.gabryel.adventofcode.util.*
 import br.com.gabryel.adventofcode.y2023.d21.area.Area.Context
-import br.com.gabryel.adventofcode.y2023.d21.area.CellType.GROUND
-import br.com.gabryel.adventofcode.y2023.d21.area.CellType.OUTSIDE
-import java.util.EnumMap
+import br.com.gabryel.adventofcode.y2023.d21.area.CellType.*
+import java.util.*
+import kotlin.collections.ArrayDeque
+import kotlin.collections.set
 
-data class SingleField(
+class SingleField(
     override val context: Context,
-    private val starts: List<StepState>,
     private val signals: Map<Direction, List<StepState>>,
-    private val distanceMap: Map<Coordinate, Long>
+    private val distanceMap: Array<LongArray>
 ) : Area {
 
     override val level = 1
 
-    override val stepsToEnd = distanceMap.values.max()
+    override val stepsToEnd = distanceMap.maxOf { it.maxOf { it } }
 
     override val stepsPerParity = listOf(true, false).associateWith(this::countForParity)
 
     override val firstOut = signals.values.minOf { it.minOf { it.first } }
 
-    override fun afterSteps(steps: Long) =
+    private val stepsCache = mutableMapOf<Long, Long>()
+
+    override fun afterSteps(steps: Long) = stepsCache.getOrPut(steps) {
         if (steps < stepsToEnd)
-            distanceMap.values.count { distance -> distance <= steps && distance % 2 == steps % 2 }.toLong()
+            distanceMap.sumOf {
+                it.count { distance -> distance != -1L && distance <= steps && distance % 2 == steps % 2 }.toLong()
+            }
         else
             stepsPerParity[steps % 2 == 0L]!!
+    }
 
     override fun getSignals(direction: Direction) = signals[direction]!!
-
-    override fun getAreas(direction: Direction) = mapOf((0 to 0) to (0L to this))
 
     override fun getTimeToSignal(direction: Direction) = getSignals(direction).minOf { it.first }
 
@@ -73,12 +76,18 @@ data class SingleField(
                 }
             }
 
-            return SingleField(context, starts, signals, distances)
+            val arrayMatrix = Array(context.dimension) { y ->
+                LongArray(context.dimension) { x ->
+                    distances[x to y] ?: -1
+                }
+            }
+
+            return SingleField(context, signals, arrayMatrix)
         }
 
         private fun Char?.getType(): CellType {
             return when (this) {
-                '#' -> CellType.WALL
+                '#' -> WALL
                 null -> OUTSIDE
                 else -> GROUND
             }
@@ -86,7 +95,7 @@ data class SingleField(
     }
 
     private fun countForParity(even: Boolean) =
-        distanceMap.values.count { distance -> (distance % 2 == 0L) == even }.toLong()
+        distanceMap.sumOf { it.count { distance -> distance != -1L && ((distance % 2 == 0L) == even) }.toLong() }
 
     override fun toString() = "[level 1, stepsToEnd: $stepsToEnd, hash: ${System.identityHashCode(this)}]"
 }

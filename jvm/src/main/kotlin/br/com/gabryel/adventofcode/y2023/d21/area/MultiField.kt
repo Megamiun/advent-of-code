@@ -70,15 +70,13 @@ data class MultiField(
         }
     }
 
-    override fun getAreas(direction: Direction) = filterAreas(direction)
-
     override fun getTimeToSignal(direction: Direction) = signalTimesCache.getOrPut(direction) {
         filterAreas(direction)
             .minOf { (_, info) -> info.first + info.second.getTimeToSignal(direction) }
     }
 
     override fun expand(direction: Direction) = context.get(this, direction) {
-        growFrom(getAreas(direction).mapKeys { (k) -> k + (direction.inverse().vector * 3) })
+        growFrom(filterAreas(direction).mapKeys { (k) -> k + (direction.inverse().vector * 3) })
     }
 
     override fun afterSteps(steps: Long) = stepsCache.getOrPut(steps) {

@@ -1,5 +1,6 @@
 package br.com.gabryel.adventofcode.y2023.d21
 
+import br.com.gabryel.adventofcode.util.logTimeSection
 import br.com.gabryel.adventofcode.util.readLines
 import br.com.gabryel.adventofcode.y2023.d21.area.Area
 import br.com.gabryel.adventofcode.y2023.d21.area.Area.Context
@@ -16,7 +17,9 @@ fun main() {
 
 private fun StepCounter.printSequenceForSteps(file: String, type: String, vararg printable: Long) {
     printable.forEach { steps ->
-        println("[Walkable Tiles - $type][$file][$steps] ${getPossibleTilesOn(steps)}")
+        logTimeSection("[Walkable Tiles - $type][$file][$steps]") {
+            println("[Walkable Tiles - $type][$file][$steps] ${getPossibleTilesOn(steps)}")
+        }
     }
 }
 
@@ -24,7 +27,7 @@ interface StepCounter {
     fun getPossibleTilesOn(steps: Long): Long
 }
 
-class SingleStepCounter(private val map: List<String>): StepCounter {
+class SingleStepCounter(private val map: List<String>) : StepCounter {
     override fun getPossibleTilesOn(steps: Long): Long {
         return map.getCentral().afterSteps(steps)
     }
@@ -32,10 +35,11 @@ class SingleStepCounter(private val map: List<String>): StepCounter {
 
 class BigStepCounter(private val map: List<String>) : StepCounter {
     override fun getPossibleTilesOn(steps: Long): Long {
-        return generateSequence<Area>(map.getCentral()) { it.grow() }
-            .onEach { println("${it.level} -> (${it.firstOut} : ${it.stepsToEnd}) -> ${it.stepsPerParity}") }
-            .first { steps < it.firstOut }
-            .afterSteps(steps)
+        return logTimeSection("") {
+            generateSequence<Area>(map.getCentral()) { it.grow() }
+                .first { steps < it.firstOut }
+                .afterSteps(steps)
+        }
     }
 }
 

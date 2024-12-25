@@ -9,7 +9,7 @@ typealias StepState = Pair<Long, Coordinate>
 typealias AreaState = Pair<Long, Area>
 
 interface Area {
-    class Context(val map: CharMap, private val known: MutableMap<Pair<Int, List<StepState>>, Area>) {
+    class Context(val map: CharMap, private val known: MutableMap<List<StepState>, Area>) {
         val dimension = map.size
 
         val dimensions = map[0].size to map.size
@@ -17,7 +17,7 @@ interface Area {
         fun getLevelMultiplier(level: Int) = (3.0.pow(level - 1)).toLong() * dimension
 
         fun get(area: Area, direction: Direction, calculate: () -> Area) =
-            known.getOrPut(area.level to area.getSignals(direction)) { calculate() }
+            known.getOrPut(area.getSignals(direction)) { calculate() }
     }
 
     val stepsPerParity: Map<Boolean, Long>
@@ -31,8 +31,6 @@ interface Area {
     val level: Int
 
     fun getSignals(direction: Direction): List<StepState>
-
-    fun getAreas(direction: Direction): Map<Coordinate, AreaState>
 
     fun getTimeToSignal(direction: Direction): Long
 
