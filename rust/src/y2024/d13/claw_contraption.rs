@@ -1,9 +1,10 @@
+use derive_more::Display;
+use itertools::Itertools;
 use num_traits::{Num, ToPrimitive};
 use regex::Regex;
 use std::sync::LazyLock;
-use derive_more::Display;
 
-type XYPair = (f64, f64);
+type XYPair = [f64; 2];
 
 const EXTRACTOR: LazyLock<Regex> = LazyLock::new(|| Regex::new("(\\d+).{4}(\\d+)").unwrap());
 
@@ -13,22 +14,16 @@ pub fn calculate(groups: &[&[String]]) -> usize {
 }
 
 pub fn calculate_with_error(groups: &[&[String]]) -> usize {
-    let error = &(10000000000000f64, 10000000000000f64);
+    let error = [10000000000000f64, 10000000000000f64];
 
     sum_groups(groups, &|a, b, goal|
-        get_min_tokens(*a, *b, (goal.0 +  error.0, goal.1 +  error.1), f64::MAX))
+        get_min_tokens(*a, *b, [goal[0] +  error[0], goal[1] +  error[1]], f64::MAX))
 }
 
 fn sum_groups(groups: &[&[String]], calculate: &dyn Fn(&XYPair, &XYPair, &XYPair) -> Option<usize>) -> usize {
-    groups
-        .iter()
-        .map(parse_group)
-        .filter_map(|group| {
-            match group.as_slice() {
-                [a, b, goal] => calculate(a, b, goal),
-                _ => None,
-            }
-        }).sum()
+    groups.iter().map(parse_group)
+        .filter_map(|[a, b, goal]| calculate(&a, &b, &goal))
+        .sum()
 }
 
 fn get_min_tokens(
@@ -37,8 +32,8 @@ fn get_min_tokens(
     goal: XYPair,
     limit: f64,
 ) -> Option<usize> {
-    let x = &Equation { a: button_a.0, b: button_b.0, goal: goal.0 };
-    let y = &Equation { a: button_a.1, b: button_b.1, goal: goal.1 };
+    let x = &Equation { a: button_a[0], b: button_b[0], goal: goal[0] };
+    let y = &Equation { a: button_a[1], b: button_b[1], goal: goal[1] };
 
     let b_x_div_y = x.b / y.b;
 
@@ -54,13 +49,11 @@ fn get_min_tokens(
     Some((a.to_usize()? * 3) + b.to_usize()?)
 }
 
-fn parse_group(group: &&[String]) -> Vec<XYPair> {
-    group
-        .iter()
-        .map(|line| {
-            let (_, [x, y]) = EXTRACTOR.captures(line).unwrap().extract();
-            (to_f64(x), to_f64(y))
-        }).collect()
+fn parse_group(group: &&[String]) -> [XYPair; 3] {
+    group.iter().map(|line| {
+        let (_, [x, y]) = EXTRACTOR.captures(line).unwrap().extract();
+        [to_f64(x), to_f64(y)]
+    }).collect_vec().try_into().unwrap()
 }
 
 fn to_f64(x: &str) -> f64 {

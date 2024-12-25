@@ -1,8 +1,10 @@
+use crate::util::parse_num::parse_usize;
+use itertools::Itertools;
+
 pub fn get_sum_of_correct_middle_points(lines: &[String]) -> usize {
     let (rules, instructions) = parse_inputs(lines);
 
-    instructions
-        .iter()
+    instructions.iter()
         .filter(|&instruction| satisfies_rules(&rules, instruction))
         .map(|instruction| instruction[(instruction.len() - 1) / 2])
         .sum()
@@ -11,8 +13,7 @@ pub fn get_sum_of_correct_middle_points(lines: &[String]) -> usize {
 pub fn get_sum_of_incorrect_middle_points(lines: &[String]) -> usize {
     let (rules, instructions) = parse_inputs(lines);
 
-    instructions
-        .iter()
+    instructions.iter()
         .filter(|&instruction| !satisfies_rules(&rules, instruction))
         .map(|instruction| fix_instruction(&rules, instruction))
         .map(|instruction| instruction[(instruction.len() - 1) / 2])
@@ -64,21 +65,14 @@ fn parse_inputs(lines: &[String]) -> (Vec<(usize, usize)>, Vec<Vec<usize>>) {
     let grouped = lines
         .split(|line| line.is_empty())
         .take(2)
-        .collect::<Vec<_>>();
+        .collect_vec();
 
-    let rules = grouped[0]
-        .iter()
-        .map(|line| line.split("|").map(&to_usize).collect::<Vec<_>>())
-        .map(|content| (content[0], content[1]))
-        .collect::<Vec<_>>();
+    let rules = grouped[0].iter()
+        .map(|line| line.split("|").map(parse_usize).collect_vec())
+        .map(|content| (content[0], content[1]));
 
-    let instructions = grouped[1]
-        .iter()
-        .map(|line| line.split(",").map(&to_usize).collect::<Vec<_>>())
-        .collect::<Vec<_>>();
-    (rules, instructions)
-}
-
-fn to_usize(num: &str) -> usize {
-    usize::from_str_radix(num, 10).unwrap()
+    let instructions = grouped[1].iter()
+        .map(|line| line.split(",").map(parse_usize).collect_vec());
+    
+    (rules.collect(), instructions.collect())
 }

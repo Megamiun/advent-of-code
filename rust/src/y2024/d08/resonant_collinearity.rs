@@ -1,6 +1,7 @@
-use crate::util::coordinates::Index2D;
 use crate::util::bounded::Bounded;
-use std::collections::{HashMap, HashSet};
+use crate::util::coordinates::Index2D;
+use itertools::Itertools;
+use std::collections::HashMap;
 use std::iter::successors;
 
 pub fn get_antinodes_for_single_jump(lines: &[String]) -> usize {
@@ -12,8 +13,8 @@ pub fn get_antinodes_for_single_jump(lines: &[String]) -> usize {
         .flat_map(|(_, positions)| city.get_antinodes(positions))
         // only counts segments with two or more antinodes
         .filter_map(|path| path.get(1).cloned())
-        .collect::<HashSet<_>>()
-        .len()
+        .unique()
+        .count()
 }
 
 pub fn get_antinodes_for_repeated_jumps(lines: &[String]) -> usize {
@@ -24,8 +25,8 @@ pub fn get_antinodes_for_repeated_jumps(lines: &[String]) -> usize {
         .iter()
         .flat_map(|(_, positions)| city.get_antinodes(positions))
         .flatten()
-        .collect::<HashSet<_>>()
-        .len()
+        .unique()
+        .count()
 }
 
 impl Bounded<char> {
@@ -33,18 +34,18 @@ impl Bounded<char> {
         let length = positions.len();
 
         (0..length).flat_map(|i| {
-            (i + 1..length).flat_map(|j| 
+            (i + 1..length).flat_map(move |j| 
                 self.get_antinode_lines(positions[i], positions[j])
-            ).collect::<Vec<_>>()
+            )
         }).collect()
     }
 
     /// Return two segments, one coming from the first node, another from the second.
     /// This allows us to know if a node is responsible for at least one antinode later.
-    fn get_antinode_lines(&self, first: Index2D, second: Index2D) -> Vec<Vec<Index2D>> {
+    fn get_antinode_lines(&self, first: Index2D, second: Index2D) -> [Vec<Index2D>; 2] {
         let distance = first - second;
 
-        vec![
+        [
             self.get_within_bounds(first, |acc| acc + distance),
             self.get_within_bounds(second, |acc| acc - distance),
         ]
@@ -57,20 +58,13 @@ impl Bounded<char> {
     }
 
     fn get_anthem_indices(&self) -> HashMap<char, Vec<Index2D>> {
-        let anthem_positions = self.content.iter().enumerate().flat_map(|(y, line)| {
-            line.iter().enumerate()
-                .filter_map(|(x, char)| Some((char, Index2D(x, y))))
-                .filter(|(&char, _)| char != '.')
-                .collect::<Vec<_>>()
-        });
-
         let mut grouped_indices = HashMap::<char, Vec<Index2D>>::new();
-        anthem_positions.for_each(|(char, index)| {
-            if !grouped_indices.contains_key(&char) {
-                grouped_indices.insert(*char, Vec::new());
-            };
-
-            grouped_indices.get_mut(&char).unwrap().push(index)
+        
+        let anthem_positions = self.get_all_coordinates_with_content_iter()
+                .filter(|(_, &char)| char != '.');
+        
+        anthem_positions.for_each(|(index, char)| {
+            grouped_indices.entry(*char).or_insert_with(|| Vec::new()).push(index);
         });
 
         grouped_indices

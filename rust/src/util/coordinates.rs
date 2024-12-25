@@ -1,3 +1,4 @@
+use crate::util::direction::Direction;
 use derive_more::Display;
 use forward_ref_generic::forward_ref_binop;
 use num_traits::ToPrimitive;
@@ -20,6 +21,13 @@ impl Index2D {
             (Ok(new_x_val), Ok(new_y_val)) => Some(Index2D(new_x_val, new_y_val)),
             _ => None,
         }
+    }
+}
+
+impl Add<Direction> for Index2D {
+    type Output = Option<Index2D>;
+    fn add(self, other: Direction) -> Self::Output {
+        self + other.get_dir()
     }
 }
 
@@ -79,6 +87,13 @@ impl Sub<Diff> for Index2D {
 #[display("({_0}; {_1})")]
 pub struct Diff(pub i32, pub i32);
 
+impl Add<Direction> for Diff {
+    type Output = Diff;
+    fn add(self, other: Direction) -> Self::Output {
+        self + other.get_dir()
+    }
+}
+
 impl Add<Diff> for Diff {
     type Output = Diff;
     fn add(self, other: Diff) -> Self::Output {
@@ -119,6 +134,7 @@ impl Div<usize> for Diff {
 forward_ref_binop! { impl Sub for Diff }
 forward_ref_binop! { impl Add for Diff }
 forward_ref_binop! { impl Add for Diff, Index2D }
+forward_ref_binop! { impl Add for Diff, Direction }
 forward_ref_binop! { impl Mul for Diff, usize }
 forward_ref_binop! { impl Div for Diff, usize }
 
@@ -126,6 +142,7 @@ forward_ref_binop! { impl Sub for Index2D }
 forward_ref_binop! { impl Sub for Index2D, Diff }
 forward_ref_binop! { impl Add for Index2D }
 forward_ref_binop! { impl Add for Index2D, Diff }
+forward_ref_binop! { impl Add for Index2D, Direction }
 forward_ref_binop! { impl Mul for Index2D, usize }
 forward_ref_binop! { impl Div for Index2D, usize }
 forward_ref_binop! { impl Rem, rem for Index2D }

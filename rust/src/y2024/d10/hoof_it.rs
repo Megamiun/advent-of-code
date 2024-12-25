@@ -1,6 +1,6 @@
-use crate::util::coordinates::Index2D;
 use crate::util::bounded::Bounded;
-use std::collections::HashSet;
+use crate::util::coordinates::Index2D;
+use itertools::Itertools;
 
 pub fn get_reachable_sum_for(lines: &[String]) -> usize {
     Bounded::from(lines).get_reachable_sum_for()
@@ -13,7 +13,7 @@ pub fn get_trails_sum_for(lines: &[String]) -> usize {
 impl Bounded<char> {
     fn get_reachable_sum_for(&self) -> usize {
         self.find_all(&'0').iter()
-            .map(|position| self.get_reachable(0, position).iter().collect::<HashSet<_>>().len())
+            .map(|position| self.get_reachable(0, position).iter().unique().count())
             .sum()
     }
     

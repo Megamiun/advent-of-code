@@ -1,5 +1,6 @@
-use crate::util::coordinates::{Diff, Index2D};
 use crate::util::bounded::Bounded;
+use crate::util::coordinates::{Diff, Index2D};
+use itertools::Itertools;
 
 static DIRECTIONS: &[Diff] = &[Diff(1, 1), Diff(1, 0), Diff(1, -1), Diff(0, 1), Diff(0, -1), Diff(-1, 1), Diff(-1, 0), Diff(-1, -1)];
 
@@ -14,9 +15,8 @@ impl Bounded<char> {
         (0..self.height).map(|y| {
             (0..self.width).map(|x| {
                 let position = Index2D(x, y);
-                let char = self.find_safe(&position);
 
-                match char {
+                match self.find_safe(&position) {
                     'X' => DIRECTIONS.iter().filter(|&dir| self.is_valid(&position, dir, MAS)).count(),
                     _ => 0
                 }
@@ -32,7 +32,7 @@ impl Bounded<char> {
             .map_while(|pos| self.find(&pos))
             .take(word.len())
             .copied()
-            .collect::<Vec<_>>();
+            .collect_vec();
         
         value == *word
     }

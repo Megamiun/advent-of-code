@@ -3,13 +3,14 @@ extern crate derive_more;
 extern crate forward_ref_generic;
 extern crate ibig;
 extern crate itertools;
+extern crate paste;
 extern crate regex;
 extern crate rustc_hash;
 
+use itertools::Itertools;
 use std::fmt::Display;
 use std::fs::read_to_string;
 use std::time::Instant;
-use itertools::Itertools;
 
 pub mod y2023;
 pub mod y2024;

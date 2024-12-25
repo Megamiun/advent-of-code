@@ -1,3 +1,5 @@
+use crate::util::parse_num::parse_i32;
+use itertools::Itertools;
 use std::collections::HashMap;
 
 pub fn get_sum_of_distances(lines: &[String]) -> i32 {
@@ -25,11 +27,7 @@ fn count_occurrences(right: &[i32]) -> HashMap<i32, i32> {
     let mut counter: HashMap<i32, i32> = HashMap::new();
 
     right.iter().for_each(|num| {
-        if !counter.contains_key(num) {
-            counter.insert(*num, 1);
-        } else {
-            counter.insert(*num, counter[num] + 1);
-        }
+        *counter.entry(*num).or_insert(0) += 1;
     });
     counter
 }
@@ -37,13 +35,6 @@ fn count_occurrences(right: &[i32]) -> HashMap<i32, i32> {
 fn get_columns(lines: &[String]) -> (Vec<i32>, Vec<i32>) {
     lines
         .iter()
-        .map(|line| {
-            let mut items = line.split(' ');
-            (to_i32(items.next().unwrap()), to_i32(items.last().unwrap()))
-        })
+        .map(|line| line.split("   ").map(parse_i32).collect_tuple().unwrap())
         .unzip()
-}
-
-fn to_i32(num: &str) -> i32 {
-    i32::from_str_radix(num, 10).unwrap()
 }

@@ -1,4 +1,5 @@
 use crate::util::coordinates::Index2D;
+use crate::util::direction::Direction;
 use crate::util::direction::Direction::{Down, Left, Right, Up};
 use rustc_hash::FxHashMap;
 use std::cmp::min;
@@ -109,3 +110,9 @@ const BANNED: &[(char, char)] = &[
     ('A', '<'),
     ('^', '<'),
 ];
+
+impl Direction {
+    fn into_char(self) -> char {
+        self.into()
+    }
+}

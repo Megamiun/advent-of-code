@@ -1,5 +1,6 @@
 use crate::util::coordinates::Diff;
 use crate::util::direction::Direction::{Down, Left, Right, Up};
+use derive_more::From;
 
 #[derive(PartialEq, Eq, Hash, Copy, Clone, Debug, Ord, PartialOrd)]
 pub enum Direction {
@@ -7,6 +8,28 @@ pub enum Direction {
     Right,
     Down,
     Left
+}
+
+impl From<char> for Direction {
+    fn from(char: char) -> Direction {
+        match char {
+            '^' => Up,
+            '>' => Right,
+            'v' => Down,
+            _ => Left
+        }
+    }
+}
+
+impl Into<char> for Direction {
+    fn into(self) -> char {
+        match self {
+            Up => '^',
+            Right => '>',
+            Down => 'v',
+            Left => '<'
+        }
+    }
 }
 
 impl Direction {
@@ -45,15 +68,6 @@ impl Direction {
             Right => Up,
             Down => Right,
             Left => Down
-        }
-    }
-    
-    pub fn into_char(self) -> char {
-        match self {
-            Up => '^',
-            Right => '>',
-            Down => 'v',
-            Left => '<'
         }
     }
 }

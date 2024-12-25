@@ -1,5 +1,6 @@
-use crate::util::coordinates::{Diff, Index2D};
 use crate::util::bounded::Bounded;
+use crate::util::coordinates::{Diff, Index2D};
+use itertools::{chain, Itertools};
 
 static XMAS: &[char] = &['X', 'M', 'A', 'S'];
 static SAMX: &[char] = &['S', 'A', 'M', 'X'];
@@ -20,8 +21,7 @@ impl Bounded<char> {
             .collect::<Vec<_>>();
 
         lines.iter().map(|line|
-            line
-                .windows(4)
+            line.windows(4)
                 .filter(|&window| window == XMAS || window == SAMX)
                 .count()
         ).sum()
@@ -32,7 +32,7 @@ impl Bounded<char> {
 
         (0..self.width)
             .map(|x| self.collect_until_end(&Index2D(x, 0), diff))
-            .collect::<Vec<_>>()
+            .collect()
     }
 
     fn collect_diagonals(&self) -> Vec<Vec<char>> {
@@ -40,22 +40,23 @@ impl Bounded<char> {
         let diff_left = &Diff(-1, 1);
 
         let from_top_to_right = (0..self.width)
-            .map(|x| self.collect_until_end(&Index2D(x, 0), diff_right))
-            .collect::<Vec<_>>();
+            .map(|x| self.collect_until_end(&Index2D(x, 0), diff_right));
 
         let from_top_to_left = (0..self.width)
-            .map(|x| self.collect_until_end(&Index2D(x, 0), diff_left))
-            .collect::<Vec<_>>();
+            .map(|x| self.collect_until_end(&Index2D(x, 0), diff_left));
 
         let from_left = (1..self.height)
-            .map(|y| self.collect_until_end(&Index2D(0, y), diff_right))
-            .collect::<Vec<_>>();
+            .map(|y| self.collect_until_end(&Index2D(0, y), diff_right));
 
         let from_right = (1..self.height)
-            .map(|y| self.collect_until_end(&Index2D(self.width - 1, y), diff_left))
-            .collect::<Vec<_>>();
-
-        [from_top_to_right, from_left, from_top_to_left, from_right].concat().to_vec()
+            .map(|y| self.collect_until_end(&Index2D(self.width - 1, y), diff_left));
+        
+        chain!(
+            from_top_to_right.collect_vec(),
+            from_left.collect_vec(),
+            from_top_to_left.collect_vec(),
+            from_right.collect_vec()
+        ).collect_vec()
     }
 
     fn collect_until_end(&self, start: &Index2D, diff: &Diff) -> Vec<char> {

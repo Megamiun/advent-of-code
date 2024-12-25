@@ -1,7 +1,10 @@
+use crate::util::parse_num::parse_i32;
+use itertools::Itertools;
+
 pub fn count_safe(levels: &[String]) -> usize {
     levels
         .iter()
-        .map(|level| level.split(" ").map(&to_i32).collect::<Vec<_>>())
+        .map(|level| level.split(" ").map(parse_i32).collect_vec())
         .filter(|level| is_safe(level, true) || is_safe(level, false))
         .count()
 }
@@ -9,7 +12,7 @@ pub fn count_safe(levels: &[String]) -> usize {
 pub fn count_safe_with_tolerance(levels: &[String]) -> usize {
     levels
         .iter()
-        .map(|level| level.split(" ").map(&to_i32).collect::<Vec<_>>())
+        .map(|level| level.split(" ").map(parse_i32).collect_vec())
         .filter(|level| is_safe_with_tolerance(level, true) || is_safe_with_tolerance(level, false))
         .count()
 }
@@ -43,8 +46,4 @@ fn is_within_bounds(level: &[i32], left: usize, right: usize, positive: bool) ->
     let sign_matches = positive == (diff > 0);
 
     on_bound && sign_matches
-}
-
-fn to_i32(num: &str) -> i32 {
-    i32::from_str_radix(num, 10).unwrap()
 }

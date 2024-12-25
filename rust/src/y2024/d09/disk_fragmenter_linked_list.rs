@@ -1,27 +1,17 @@
+use crate::y2024::d09::helper::get_files_and_blanks;
 use derive_more::Display;
-use std::fmt::Formatter;
+use itertools::Itertools;
+use std::fmt::{Debug, Formatter};
 use std::ptr::null_mut;
 
 pub fn reorder_linked_list(lines: &[String]) -> usize {
-    let chuncked = get_file_space_pair(lines);
-
-    let files = chuncked
-        .iter()
-        .enumerate()
-        .scan(0usize, |prev_end, (index, (file_size, blank_size))| {
-            let start = *prev_end;
-            // This scan MAKES you mutate the state, instead of reusing the previous one 
-            *prev_end = start + file_size + blank_size.unwrap_or(0);
-            Some((start, *file_size, *prev_end, index))
-        })
-        .map(|(start, size, _, id)| (start, Content { file: id, size }))
-        .collect::<Vec<_>>();
-
     let mut list = SortedLinkedList::new();
 
-    files.iter().for_each(|(start, file)| {
-        list.insert_at(*start, *file);
-    });
+    let (files, _) = get_files_and_blanks(lines);
+    let files = files.iter()
+        .map(|[start, size, id]| (start, Content { file: *id, size: *size }))
+        .inspect(|(&start, file)| list.insert_at(start, *file))
+        .collect_vec();
 
     files.iter().rev().for_each(|(_, file)| {
         list.relocate(*file);
@@ -70,7 +60,7 @@ struct Content {
 }
 
 // TODO Check memory leaks and Implement Drop to clean up
-#[derive(PartialEq, Eq, Hash, Debug, Copy, Clone)]
+#[derive(PartialEq, Eq, Hash, Copy, Clone)]
 struct Node<'a> {
     start: usize,
     file: Content,
@@ -79,11 +69,7 @@ struct Node<'a> {
 
 impl<'a> Node<'a> {
     fn get_raw_ptr(start: usize, file: Content, self_next: *mut Node<'a>) -> *mut Node<'a> {
-        Box::into_raw(Box::new(Node {
-            start,
-            file,
-            next: self_next,
-        }))
+        Box::into_raw(Box::new(Node { start, file, next: self_next }))
     }
 
     fn remove(&mut self, file: Content) {
@@ -112,7 +98,7 @@ impl<'a> Node<'a> {
         let next = unsafe { &mut *self.next };
         if self.get_end() + file.size <= next.start {
             self.next = Node::get_raw_ptr(self.get_end(), file, next);
-            next.remove(file)
+            unsafe { &mut *self.next }.remove(file)
         } else {
             next.relocate(file);
         }
@@ -155,6 +141,16 @@ impl<'a> Iterator for NodeIterator<'a> {
     }
 }
 
+impl<'a> Display for SortedLinkedList<'a> {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        if !self.head.is_null() {
+            write!(f, "{}", unsafe { *self.head })
+        } else {
+            write!(f, "[]")
+        }
+    }
+}
+
 impl<'a> Display for Node<'a> {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         if !self.next.is_null() {
@@ -164,14 +160,3 @@ impl<'a> Display for Node<'a> {
         }
     }
 }
-
-fn get_file_space_pair(lines: &[String]) -> Vec<(usize, Option<usize>)> {
-    lines[0]
-        .chars()
-        .map(|c| c.to_digit(10).unwrap() as usize)
-        .collect::<Vec<_>>()
-        .chunks(2)
-        .map(|s| (s[0], s.get(1).copied()))
-        .collect::<Vec<_>>()
-}
-

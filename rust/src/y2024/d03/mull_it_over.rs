@@ -1,3 +1,4 @@
+use crate::util::parse_num::parse_u32;
 use regex::{Captures, Regex};
 use std::sync::LazyLock;
 
@@ -32,9 +33,5 @@ fn calculate_muls(line: &String) -> u32 {
 }
 
 fn extract_u32(groups: &Captures, position: usize) -> u32 {
-    to_u32(groups.get(position).unwrap().as_str())
-}
-
-fn to_u32(num: &str) -> u32 {
-    u32::from_str_radix(num, 10).unwrap()
+    groups.get(position).map(|value| parse_u32(value.as_str())).unwrap()
 }
