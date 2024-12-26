@@ -6,7 +6,7 @@ import java.util.*
 import kotlin.math.absoluteValue
 import kotlin.math.max
 
-data class MultiField(
+class MultiField(
     override val context: Context,
     private val matrix: Map<Coordinate, AreaState>,
     override val level: Int
@@ -32,7 +32,7 @@ data class MultiField(
                 matrix[coord]!!.first + matrix[coord]!!.second.getTimeToSignal(dir)
             })
 
-            toVisit += Direction.entries.flatMap { dir -> matrix.keys.map { coord -> coord to dir } }
+            toVisit += matrix.keys.flatMap { coord -> coord.getAdjacentWithDir() }
 
             while (toVisit.isNotEmpty()) {
                 val (tile, direction) = toVisit.remove()
@@ -46,7 +46,7 @@ data class MultiField(
 
                     matrix[newTile] = (prevDistance + prevArea.getTimeToSignal(direction)) to next
 
-                    toVisit += Direction.entries.map { newTile to it }
+                    toVisit += newTile.getAdjacentWithDir()
                 }
             }
 
@@ -87,7 +87,8 @@ data class MultiField(
     }
 
     override fun countPossibleAtStep(steps: Long) =
-        if (steps >= stepsToEnd) parityCache[(steps % 2).toInt()]
+        if (steps < 0) 0
+        else if (steps >= stepsToEnd) parityCache[(steps % 2).toInt()]
         else countPossibleCache(steps)
 
     private fun getPossiblePerParity(parity: Long) =

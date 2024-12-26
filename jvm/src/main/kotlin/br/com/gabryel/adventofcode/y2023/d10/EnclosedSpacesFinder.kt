@@ -1,6 +1,6 @@
 package br.com.gabryel.adventofcode.y2023.d10
 
-import br.com.gabryel.adventofcode.util.CharMap
+import br.com.gabryel.adventofcode.util.CharArray2D
 import br.com.gabryel.adventofcode.util.Coordinate
 
 private val inflated = mapOf(
@@ -14,7 +14,7 @@ private val inflated = mapOf(
     '.' to listOf("...", "...", "..."),
 ).mapValues { it.value.map { it.toList() } }
 
-fun countInternalPositions(baseMap: CharMap): Int {
+fun countInternalPositions(baseMap: CharArray2D): Int {
     val inflatedMap = baseMap.getInflatedMap()
     inflatedMap.markExternal()
 
@@ -25,7 +25,7 @@ fun countInternalPositions(baseMap: CharMap): Int {
     }
 }
 
-private fun CharMap.getInflatedMap() = toList().flatMap {
+private fun CharArray2D.getInflatedMap() = toList().flatMap {
     val inflatedLine = it.map { inflated[it]!! }
 
     listOf(
@@ -35,7 +35,7 @@ private fun CharMap.getInflatedMap() = toList().flatMap {
     )
 }.map { it.toCharArray() }.toTypedArray()
 
-private fun CharMap.markExternal() {
+private fun CharArray2D.markExternal() {
     val maxX = lastIndex
     val maxY = first().lastIndex
 
@@ -64,12 +64,12 @@ private fun CharMap.markExternal() {
     }
 }
 
-private fun CharMap.isWall(current: Coordinate): Boolean {
+private fun CharArray2D.isWall(current: Coordinate): Boolean {
     val currentSpace = findOnPosition(current)
     return currentSpace != '.' && currentSpace != ' '
 }
 
-private fun CharMap.isExternal(x: Int, y: Int) =
+private fun CharArray2D.isExternal(x: Int, y: Int) =
     getInflatedCoordinates(x, y)
         .map { findOnPosition(it) }.none { it == '0' }
 
@@ -80,7 +80,7 @@ private fun getInflatedCoordinates(upperLeftX: Int, upperLeftY: Int) =
         }
     }
 
-private fun CharMap.setOnPosition(origin: Coordinate, value: Char) {
+private fun CharArray2D.setOnPosition(origin: Coordinate, value: Char) {
     val line = getOrNull(origin.first) ?: return
     if (origin.second !in line.indices) return
 

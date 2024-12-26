@@ -4,15 +4,8 @@ import kotlin.math.absoluteValue
 
 typealias Coordinate = Pair<Int, Int>
 
-typealias CharMap = Array<CharArray>
-
-fun CharMap.findAdjacent(coordinate: Coordinate) =
-    Direction.entries
-        .map { dir -> (coordinate + dir.vector) to (this[coordinate + dir.vector] to dir) }
-
-operator fun CharMap.get(coord: Coordinate) = getOrNull(coord.y())?.getOrNull(coord.x())
-
 fun Coordinate.x() = first
+
 fun Coordinate.y() = second
 
 infix fun Coordinate.getManhattanDistance(other: Coordinate) = (x() - other.x()).absoluteValue + (y() - other.y()).absoluteValue
@@ -32,6 +25,8 @@ operator fun Coordinate.rem(other: Int) = (x() % other) to (y() % other)
 operator fun Coordinate.rem(other: Long) = (x() % other).toInt() to (y() % other).toInt()
 
 fun Coordinate.getAdjacent() = Direction.entries.map { this + it.vector }
+
+fun Coordinate.getAdjacentWithDir() = Direction.entries.map { this + it.vector to it }
 
 infix fun Coordinate.bindTo(dimensions: Coordinate) = (x().mod(dimensions.x())) to (y().mod(dimensions.y()))
 
