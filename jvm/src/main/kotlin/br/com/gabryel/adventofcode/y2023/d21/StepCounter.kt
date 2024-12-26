@@ -11,7 +11,7 @@ fun main() {
         val map = readLines(2023, 21, file)
 
         SingleStepCounter(map).printSequenceForSteps(file, "Limited", 6, 64)
-        BigStepCounter(map).printSequenceForSteps(file, "Infinite", 6, 10, 50, 1000, 5000, 26501365)
+        BigStepCounter(map).printSequenceForSteps(file, "Infinite", 6, 10, 5000, 26501365)
     }
 }
 
@@ -46,5 +46,6 @@ private fun List<String>.getCentral(): SingleField {
         row.withIndex().filter { (_, cell) -> cell == 'S' }.map { (x) -> x to y }
     }.first()
 
-    return SingleField.from(Context(this.map { it.toCharArray() }.toTypedArray(), mutableMapOf()), listOf(0L to start))
+    val context = Context(this.map { it.toCharArray() }.toTypedArray()).expandToAtLeast(80)
+    return SingleField.from(context, listOf(0L to start))
 }
