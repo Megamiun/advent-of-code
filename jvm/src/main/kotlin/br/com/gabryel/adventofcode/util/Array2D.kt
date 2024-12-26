@@ -27,6 +27,9 @@ operator fun IntArray2D.set(coord: Coordinate, item: Int) {
     this[coord.y()][coord.x()] = item
 }
 
+inline fun <reified T> Array2D<T?>.mapValues(map: (T) -> T) =
+    map { it.map { it?.let { map(it) } }.toTypedArray() }.toTypedArray()
+
 operator fun <T> Array2D<T>.get(coord: Coordinate) = getOrNull(coord.y())?.getOrNull(coord.x())
 
 operator fun CharArray2D.get(coord: Coordinate) = getOrNull(coord.y())?.getOrNull(coord.x())
@@ -36,6 +39,10 @@ operator fun LongArray2D.get(coord: Coordinate) = getOrNull(coord.y())?.getOrNul
 operator fun IntArray2D.get(coord: Coordinate) = getOrNull(coord.y())?.getOrNull(coord.x())
 
 fun LongArray2D.getSafe(coord: Coordinate) = this[coord.y()][coord.x()]
+
+fun <T> Array2D<T>.getAll() = asSequence().flatMap { it.asSequence() }
+
+fun <T> Array2D<T>.getAllEntries() = asSequence().flatMapIndexed { y, row -> row.asSequence().mapIndexedNotNull { x, item -> item?.let { (x to y) to item } } }
 
 fun LongArray2D.getAll() = asSequence().flatMap { it.asSequence() }
 

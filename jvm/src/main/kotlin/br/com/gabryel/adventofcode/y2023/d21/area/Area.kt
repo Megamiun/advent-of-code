@@ -8,15 +8,15 @@ typealias AreaState = Pair<Long, Area>
 
 interface Area {
     class Context(val map: CharArray2D, private val known: MutableMap<Pair<Int, List<StepState>>, Area> = mutableMapOf()) {
-        val levelFactor = 5
-
-        val halfLevelFactor = levelFactor / 2
+        val levelFactor = 4
 
         private val levelFactorFloat = levelFactor.toFloat()
 
         private val dimension = map.size
 
         val dimensions = map[0].size to map.size
+
+        val multiDimensions = levelFactor to levelFactor
 
         fun getLevelMultiplier(level: Int) = (levelFactorFloat.pow(level - 2)).toLong() * dimension
 
@@ -40,5 +40,5 @@ interface Area {
 
     fun expand(direction: Direction): Area
 
-    fun grow() = MultiField.growFrom(mapOf((0 to 0) to (0L to this)))
+    fun grow() = MultiField.growFrom(mapOf((context.multiDimensions / 2) to (0L to this)))
 }

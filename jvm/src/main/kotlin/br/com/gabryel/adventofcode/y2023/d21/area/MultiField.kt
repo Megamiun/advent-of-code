@@ -9,11 +9,11 @@ import kotlin.math.max
 
 class MultiField(
     override val context: Context,
-    private val matrix: Map<Coordinate, AreaState>,
+    private val matrix: Array2D<AreaState?>,
     override val level: Int
 ) : Area {
 
-    override val stepsToEnd = matrix.values.maxOf { (k, v) -> k + v.stepsToEnd }
+    override val stepsToEnd = matrix.getAll().filterNotNull().maxOf { (k, v) -> k + v.stepsToEnd }
 
     private val signalsCache = EnumMap<Direction, List<StepState>>(Direction::class.java)
     private val signalTimesCache = EnumMap<Direction, Long>(Direction::class.java)
@@ -27,12 +27,12 @@ class MultiField(
             val reference = areas.firstNotNullOf { it.value.second }
             val context = reference.context
 
-            val matrix = areas.mapValues { (_, data) -> data.first to data.second }.toMutableMap()
+            val matrix = Array(context.levelFactor) { y -> Array(context.levelFactor) { x -> areas[x to y] } }
 
             val toVisit = PriorityQueue(comparingLong(VisitKey::distance))
 
             toVisit += Direction.entries.flatMap { dir ->
-                matrix.entries.map { (coord, info) ->
+                areas.map { (coord, info) ->
                     val (distance, prevArea) = info
                     VisitKey(distance + prevArea.getTimeToSignal(dir), coord + dir, dir, prevArea)
                 }
@@ -40,7 +40,7 @@ class MultiField(
 
             while (toVisit.isNotEmpty()) {
                 val (distance, tile, dir, prevArea) = toVisit.remove()
-                if (!tile.isInBounds(context)) continue
+                if (tile !in context.multiDimensions) continue
 
                 if (tile !in matrix) {
                     val next = prevArea.expand(dir)
@@ -50,16 +50,12 @@ class MultiField(
                 }
             }
 
-            val inBounds = matrix.filterKeys { it.isInBounds(context) }
-            val minimal = inBounds.values.minOf { it.first }
+            val minimal = matrix.getAll().filterNotNull().minOf { it.first }
 
-            val corrected = inBounds.mapValues { (_, v) -> v.first - minimal to v.second }
+            val corrected = matrix.mapValues { (distance, area) -> distance - minimal to area }
 
             return MultiField(context, corrected, reference.level + 1)
         }
-
-        private infix fun Coordinate.isInBounds(context: Context) =
-            max(x().absoluteValue, y().absoluteValue) <= context.halfLevelFactor
     }
 
     override fun getSignals(direction: Direction) = signalsCache.getOrPut(direction) {
@@ -68,7 +64,7 @@ class MultiField(
 
             info.second.getSignals(direction).asSequence()
                 .map { signal -> (info.first + signal.first) to baseCoord + signal.second }
-        }.filterRedundant()
+        }.toList().filterRedundant()
     }
 
     override fun getTimeToSignal(direction: Direction) = signalTimesCache.getOrPut(direction) {
@@ -77,7 +73,7 @@ class MultiField(
     }
 
     override fun expand(direction: Direction) = context.get(this, direction) {
-        growFrom(filterAreas(direction).mapKeys { (coord) -> coord + (direction.inverse().vector * context.levelFactor) })
+        growFrom(filterAreas(direction).associate { (coord, value) -> coord + (direction.inverse().vector * context.levelFactor) to value })
     }
 
     override fun countPossibleAtStep(steps: Long) =
@@ -89,12 +85,16 @@ class MultiField(
         countPossibleCache(stepsToEnd - if (stepsToEnd % 2 == parity) 2 else 1)
 
     private fun countPossibleCache(steps: Long) = stepsCache.getOrPut(steps) {
-        matrix.values.sumOf { (start, cell) -> cell.countPossibleAtStep(steps - start) }
+        matrix.getAll().filterNotNull().sumOf { (start, cell) -> cell.countPossibleAtStep(steps - start) }
     }
 
-    private fun filterAreas(direction: Direction) = matrix.filter { (coord) ->
-        direction.vector.x() * context.halfLevelFactor in listOf(0, coord.x())
-                && direction.vector.y() * context.halfLevelFactor in listOf(0, coord.y())
+    private fun filterAreas(direction: Direction) = matrix.getAllEntries().filter { (coord) ->
+        when (direction) {
+            Direction.RIGHT -> coord.x() == context.levelFactor - 1
+            Direction.LEFT -> coord.x() == 0
+            Direction.DOWN -> coord.y() == context.levelFactor - 1
+            Direction.UP -> coord.y() == 0
+        }
     }
 
     override fun toString() = "[level: $level, stepsToEnd: $stepsToEnd]"

@@ -20,6 +20,8 @@ inline operator fun Coordinate.times(other: Int) = (x() * other) to (y() * other
 
 inline operator fun Coordinate.times(other: Long) = (x() * other).toInt() to (y() * other).toInt()
 
+inline operator fun Coordinate.div(other: Int) = (x() / other) to (y() / other)
+
 inline operator fun Coordinate.rem(other: Int) = (x() % other) to (y() % other)
 
 inline operator fun Coordinate.rem(other: Long) = (x() % other).toInt() to (y() % other).toInt()
