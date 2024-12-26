@@ -11,7 +11,7 @@ fun main() {
         val map = readLines(2023, 21, file)
 
         SingleStepCounter(map).printSequenceForSteps(file, "Limited", 6, 64)
-        BigStepCounter(map).printSequenceForSteps(file, "Infinite", 6, 10, 5000, 26501365)
+        BigStepCounter(map).printSequenceForSteps(file, "Infinite", 10, 50, 26501365)
     }
 }
 
