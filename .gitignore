@@ -39,6 +39,7 @@ out/
 
 ### temp ###
 *.temp
+.kotlin
 
 ### Profiling ###
 flamegraph.svg

@@ -35,10 +35,10 @@ Possibly out of date at the moment you look at it, but at the best effort basis:
 - ★★ d19 - [Rust](rust/src/y2024/d19)
 - ★★ d20 - [Rust](rust/src/y2024/d20)
 - ★★ d21 - [Rust](rust/src/y2024/d21)
-- ☆☆ d22
-- ☆☆ d23
-- ☆☆ d24
-- ☆☆ d25
+- ★★ d22 - [Rust](rust/src/y2024/d22)
+- ★★ d23 - [Rust](rust/src/y2024/d23)
+- ★★ d24 - [Rust](rust/src/y2024/d24)
+- ★★ d25 - [Rust](rust/src/y2024/d25)
 
 ### 2023
 
@@ -62,7 +62,7 @@ Possibly out of date at the moment you look at it, but at the best effort basis:
 - ★★ d18 - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2023/d18)
 - ★★ d19 - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2023/d19)
 - ★★ d20 - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2023/d20)
-- ★☆ d21 - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2023/d21)
+- ★★ d21 - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2023/d21)
 - ★★ d22 - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2023/d22)
 - ★★ d23 - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2023/d23)
 - ★☆ d24 - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2023/d24)
@@ -96,22 +96,20 @@ Possibly out of date at the moment you look at it, but at the best effort basis:
 - ☆☆ d24
 - ☆☆ d25
 
-# What is missing
+### 2021
+### 2020
+### 2019
+### 2018
+### 2017
+### 2016
+### 2015
 
-## 2023
+# TODO
 
-### Kotlin
-
-[ ] Make day 1 solve for both part 1 and 2\
-[ ] Solve day 8 efficiently(Using cycle lengths)\
-[ ] Beautify day 12\
-[ ] Finish missing days
-
-### Rust
-
-[ ] Port from Kotlin to study language\
-[ ] Beautify everything. This is my first experience with Rust
-
-## 2022
-
-[ ] A lot!
+[ ] Beautify Rust 2024 d14 onwards
+[ ] Implement 2024 d17 on Rust
+[ ] Beautify Kotlin 2023
+[ ] Port 2023 to Rust
+[ ] Start until 2022
+[ ] Add tests for AOC scenarios (Sample + Input)
+[ ] Add profiling results
