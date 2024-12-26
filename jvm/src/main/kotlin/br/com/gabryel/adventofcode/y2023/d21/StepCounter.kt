@@ -1,7 +1,6 @@
 package br.com.gabryel.adventofcode.y2023.d21
 
-import br.com.gabryel.adventofcode.util.logTimeSection
-import br.com.gabryel.adventofcode.util.readLines
+import br.com.gabryel.adventofcode.util.*
 import br.com.gabryel.adventofcode.y2023.d21.area.Area
 import br.com.gabryel.adventofcode.y2023.d21.area.Area.Context
 import br.com.gabryel.adventofcode.y2023.d21.area.SingleField
@@ -11,7 +10,7 @@ fun main() {
         val map = readLines(2023, 21, file)
 
         SingleStepCounter(map).printSequenceForSteps(file, "Limited", 6, 64)
-        BigStepCounter(map).printSequenceForSteps(file, "Infinite", 10, 50, 26501365)
+        BigStepCounter(map).printSequenceForSteps(file, "Infinite", 6, 10, 50, 26501365)
     }
 }
 
@@ -42,10 +41,9 @@ class BigStepCounter(private val map: List<String>) : StepCounter {
 }
 
 private fun List<String>.getCentral(): SingleField {
-    val start = withIndex().flatMap { (y, row) ->
-        row.withIndex().filter { (_, cell) -> cell == 'S' }.map { (x) -> x to y }
-    }.first()
+    val map = this.map { it.toCharArray() }.toTypedArray()
+    val context = Context(map)
 
-    val context = Context(this.map { it.toCharArray() }.toTypedArray())
+    val start = map.findFirst('S')
     return SingleField.from(context, listOf(0L to start))
 }

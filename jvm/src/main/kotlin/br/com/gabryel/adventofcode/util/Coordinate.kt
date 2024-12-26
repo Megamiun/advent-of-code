@@ -4,30 +4,30 @@ import kotlin.math.absoluteValue
 
 typealias Coordinate = Pair<Int, Int>
 
-fun Coordinate.x() = first
+inline fun Coordinate.x() = first
 
-fun Coordinate.y() = second
+inline fun Coordinate.y() = second
 
-infix fun Coordinate.getManhattanDistance(other: Coordinate) = (x() - other.x()).absoluteValue + (y() - other.y()).absoluteValue
+inline infix fun Coordinate.getManhattanDistance(other: Coordinate) = (x() - other.x()).absoluteValue + (y() - other.y()).absoluteValue
 
-infix fun Coordinate.distanceTo(other: Coordinate) = (x() - other.x()) to (y() - other.y())
+inline infix fun Coordinate.distanceTo(other: Coordinate) = (x() - other.x()) to (y() - other.y())
 
-operator fun Coordinate.plus(other: Coordinate) = (x() + other.x()) to (y() + other.y())
+inline operator fun Coordinate.plus(other: Coordinate) = (x() + other.x()) to (y() + other.y())
 
-operator fun Coordinate.plus(other: Direction) = this + other.vector
+inline operator fun Coordinate.plus(other: Direction) = this + other.vector
 
-operator fun Coordinate.times(other: Int) = (x() * other) to (y() * other)
+inline operator fun Coordinate.times(other: Int) = (x() * other) to (y() * other)
 
-operator fun Coordinate.times(other: Long) = (x() * other).toInt() to (y() * other).toInt()
+inline operator fun Coordinate.times(other: Long) = (x() * other).toInt() to (y() * other).toInt()
 
-operator fun Coordinate.rem(other: Int) = (x() % other) to (y() % other)
+inline operator fun Coordinate.rem(other: Int) = (x() % other) to (y() % other)
 
-operator fun Coordinate.rem(other: Long) = (x() % other).toInt() to (y() % other).toInt()
+inline operator fun Coordinate.rem(other: Long) = (x() % other).toInt() to (y() % other).toInt()
 
-fun Coordinate.getAdjacent() = Direction.entries.map { this + it }
+inline fun Coordinate.getAdjacent() = Direction.entries.map { this + it }
 
-infix fun Coordinate.bindTo(dimensions: Coordinate) = (x().mod(dimensions.x())) to (y().mod(dimensions.y()))
+inline infix fun Coordinate.bindTo(dimensions: Coordinate) = (x().mod(dimensions.x())) to (y().mod(dimensions.y()))
 
-operator fun Coordinate.contains(other: Coordinate) = other.x() in (0 until x()) && other.y() in (0 until y())
+inline operator fun Coordinate.contains(other: Coordinate) = other.x() in (0 until x()) && other.y() in (0 until y())
 
 val ZERO = 0 to 0
