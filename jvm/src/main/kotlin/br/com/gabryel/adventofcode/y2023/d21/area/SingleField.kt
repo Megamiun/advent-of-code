@@ -17,7 +17,7 @@ class SingleField(
 
     override val stepsToEnd = stepsMap.size.toLong()
 
-    override val firstOut = signals.values.minOf { it.minOf { it.first } }
+    override val firstSignal = signals.values.minOf { it.minOf { it.first } }
 
     override fun getSignals(direction: Direction) = signals[direction]!!
 
@@ -32,7 +32,7 @@ class SingleField(
         else if (steps < stepsToEnd) stepsMap[steps.toInt()]
         else getPossiblePerParity(steps % 2 == 0L)
 
-    override fun getPossiblePerParity(even: Boolean) =
+    private fun getPossiblePerParity(even: Boolean) =
         stepsMap[stepsMap.size - if (even) 2 else 1]
 
     companion object {

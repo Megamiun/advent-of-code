@@ -36,7 +36,7 @@ class SingleStepCounter(private val map: List<String>) : StepCounter {
 class BigStepCounter(private val map: List<String>) : StepCounter {
     override fun getPossibleTilesOn(steps: Long): Long {
         return generateSequence<Area>(map.getCentral()) { it.grow() }
-            .first { steps < it.firstOut }
+            .first { steps <= it.firstSignal }
             .countPossibleAtStep(steps)
     }
 }

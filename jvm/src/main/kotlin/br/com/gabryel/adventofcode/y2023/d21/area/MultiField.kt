@@ -11,9 +11,15 @@ data class MultiField(
     private val matrix: Map<Coordinate, AreaState>,
     override val level: Int
 ) : Area {
+
+    override val stepsToEnd = matrix.values.maxOf { (k, v) -> k + v.stepsToEnd }
+
     private val signalsCache = EnumMap<Direction, List<StepState>>(Direction::class.java)
     private val signalTimesCache = EnumMap<Direction, Long>(Direction::class.java)
     private val stepsCache = mutableMapOf<Long, Long>()
+    private val parityCache = longArrayOf(getPossiblePerParity(0), getPossiblePerParity(1))
+
+    override val firstSignal = Direction.entries.minOf(::getTimeToSignal)
 
     companion object {
         fun growFrom(areas: Map<Coordinate, AreaState>): Area {
@@ -56,15 +62,12 @@ data class MultiField(
             max(x().absoluteValue, y().absoluteValue) <= context.halfLevelFactor
     }
 
-    override val stepsToEnd = matrix.values.maxOf { (k, v) -> k + v.stepsToEnd }
-
-    override val firstOut = Direction.entries.minOf(::getTimeToSignal)
-
     override fun getSignals(direction: Direction) = signalsCache.getOrPut(direction) {
         val allSignals = filterAreas(direction).flatMap { (coord, info) ->
             val baseCoord = coord * context.getLevelMultiplier(level)
 
-            info.second.getSignals(direction).map { signal -> (info.first + signal.first) to baseCoord + signal.second }
+            info.second.getSignals(direction).asSequence()
+                .map { signal -> (info.first + signal.first) to baseCoord + signal.second }
         }
 
         allSignals.filter { (lDistance, lCoord) ->
@@ -83,12 +86,16 @@ data class MultiField(
         growFrom(filterAreas(direction).mapKeys { (coord) -> coord + (direction.inverse().vector * context.levelFactor) })
     }
 
-    override fun countPossibleAtStep(steps: Long) = stepsCache.getOrPut(steps) {
+    override fun countPossibleAtStep(steps: Long) =
+        if (steps >= stepsToEnd) parityCache[(steps % 2).toInt()]
+        else countPossibleCache(steps)
+
+    private fun getPossiblePerParity(parity: Long) =
+        countPossibleCache((stepsToEnd downTo 0).first { it % 2 == parity })
+
+    private fun countPossibleCache(steps: Long) = stepsCache.getOrPut(steps) {
         matrix.values.sumOf { (start, cell) -> cell.countPossibleAtStep(steps - start) }
     }
-
-    override fun getPossiblePerParity(even: Boolean) =
-        countPossibleAtStep(stepsToEnd - if (even) 2 else 1)
 
     private fun filterAreas(direction: Direction) = matrix.filter { (coord) ->
         direction.vector.x() * context.halfLevelFactor in listOf(0, coord.x()) && direction.vector.y() * context.halfLevelFactor in listOf(0, coord.y())

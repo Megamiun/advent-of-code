@@ -41,7 +41,7 @@ interface Area {
 
     val stepsToEnd: Long
 
-    val firstOut: Long
+    val firstSignal: Long
 
     val level: Int
 
@@ -54,6 +54,4 @@ interface Area {
     fun expand(direction: Direction): Area
 
     fun grow() = MultiField.growFrom(mapOf((0 to 0) to (0L to this)))
-
-    fun getPossiblePerParity(even: Boolean): Long
 }
