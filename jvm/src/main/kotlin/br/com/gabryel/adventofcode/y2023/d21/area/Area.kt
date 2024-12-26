@@ -8,7 +8,7 @@ typealias AreaState = Pair<Long, Area>
 
 interface Area {
     class Context(val map: CharArray2D, private val known: MutableMap<Pair<Int, List<StepState>>, Area> = mutableMapOf()) {
-        val levelFactor = 3
+        val levelFactor = 7
 
         val halfLevelFactor = levelFactor / 2
 
@@ -22,19 +22,6 @@ interface Area {
 
         fun get(area: Area, direction: Direction, calculate: () -> Area) =
             known.getOrPut(area.level to area.getSignals(direction)) { calculate() }
-
-        fun expandToAtLeast(width: Int): Context {
-            val multiplier = (width / dimension) + 1
-            val newDimension = dimension * multiplier
-
-            if (multiplier == 1) return this
-
-            val newMap = Array(newDimension) { y ->
-                CharArray(newDimension) { x -> map[(x to y) bindTo dimensions]!! }
-            }
-
-            return Context(newMap)
-        }
     }
 
     val context: Context

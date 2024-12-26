@@ -24,9 +24,7 @@ operator fun Coordinate.rem(other: Int) = (x() % other) to (y() % other)
 
 operator fun Coordinate.rem(other: Long) = (x() % other).toInt() to (y() % other).toInt()
 
-fun Coordinate.getAdjacent() = Direction.entries.map { this + it.vector }
-
-fun Coordinate.getAdjacentWithDir() = Direction.entries.map { this + it.vector to it }
+fun Coordinate.getAdjacent() = Direction.entries.map { this + it }
 
 infix fun Coordinate.bindTo(dimensions: Coordinate) = (x().mod(dimensions.x())) to (y().mod(dimensions.y()))
 

@@ -46,6 +46,6 @@ private fun List<String>.getCentral(): SingleField {
         row.withIndex().filter { (_, cell) -> cell == 'S' }.map { (x) -> x to y }
     }.first()
 
-    val context = Context(this.map { it.toCharArray() }.toTypedArray()).expandToAtLeast(80)
+    val context = Context(this.map { it.toCharArray() }.toTypedArray())
     return SingleField.from(context, listOf(0L to start))
 }

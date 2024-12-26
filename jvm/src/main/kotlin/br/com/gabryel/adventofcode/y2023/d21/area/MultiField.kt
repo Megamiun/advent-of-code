@@ -32,7 +32,7 @@ class MultiField(
                 matrix[coord]!!.first + matrix[coord]!!.second.getTimeToSignal(dir)
             })
 
-            toVisit += matrix.keys.flatMap { coord -> coord.getAdjacentWithDir() }
+            toVisit += Direction.entries.flatMap { dir -> matrix.keys.map { coord -> coord to dir } }
 
             while (toVisit.isNotEmpty()) {
                 val (tile, direction) = toVisit.remove()
@@ -46,7 +46,7 @@ class MultiField(
 
                     matrix[newTile] = (prevDistance + prevArea.getTimeToSignal(direction)) to next
 
-                    toVisit += newTile.getAdjacentWithDir()
+                    toVisit += Direction.entries.map { newTile to it }
                 }
             }
 
