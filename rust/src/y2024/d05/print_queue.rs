@@ -1,6 +1,7 @@
 use crate::util::parse_num::parse_usize;
 use itertools::Itertools;
 
+#[allow(dead_code)]
 pub fn get_sum_of_correct_middle_points(lines: &[String]) -> usize {
     let (rules, instructions) = parse_inputs(lines);
 
@@ -10,6 +11,7 @@ pub fn get_sum_of_correct_middle_points(lines: &[String]) -> usize {
         .sum()
 }
 
+#[allow(dead_code)]
 pub fn get_sum_of_incorrect_middle_points(lines: &[String]) -> usize {
     let (rules, instructions) = parse_inputs(lines);
 

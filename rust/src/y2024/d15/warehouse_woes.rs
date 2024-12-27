@@ -8,6 +8,7 @@ use std::fmt::Formatter;
 use Cell::{Box, BoxL, BoxR};
 use Direction::{Down, Up};
 
+#[allow(dead_code)]
 pub fn move_robot_single([map, directions]: &[&[String]; 2]) -> usize {
     let mut map = Bounded::create_from(map, Cell::from);
 
@@ -20,6 +21,7 @@ pub fn move_robot_single([map, directions]: &[&[String]; 2]) -> usize {
     map.calculate()
 }
 
+#[allow(dead_code)]
 pub fn move_robot_wide([map, directions]: &[&[String]; 2]) -> usize {
     let mut map = Bounded::create_from(map, Cell::from).widen();
 

@@ -12,6 +12,7 @@ use std::sync::LazyLock;
 const TEN: LazyLock<UBig> = LazyLock::new(|| UBig::from(10u8));
 const OTHER_MULT: LazyLock<UBig> = LazyLock::new(|| UBig::from(2024u32));
 
+#[allow(dead_code)]
 pub fn stones_after_steps(lines: &[String], steps: usize) -> usize {
     let cache = get_solver_fx();
     // fx = ~18ms, std = ~23ms on my machine

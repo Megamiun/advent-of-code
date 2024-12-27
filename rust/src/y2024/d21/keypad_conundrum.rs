@@ -6,10 +6,12 @@ use std::cmp::min;
 use std::collections::HashMap;
 use std::sync::LazyLock;
 
+#[allow(dead_code)]
 pub fn get_sum_of_complexity(lines: &[String], robots: usize) -> usize {
     lines.iter().map(|line| Solver::new().get_complexity(line, robots)).sum()
 }
 
+#[allow(dead_code)]
 struct Solver {
     cache: FxHashMap<(String, usize), usize>,
 }

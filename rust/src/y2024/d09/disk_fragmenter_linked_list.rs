@@ -4,6 +4,7 @@ use itertools::Itertools;
 use std::fmt::{Debug, Formatter};
 use std::ptr::null_mut;
 
+#[allow(dead_code)]
 pub fn reorder_linked_list(lines: &[String]) -> usize {
     let mut list = SortedLinkedList::new();
 

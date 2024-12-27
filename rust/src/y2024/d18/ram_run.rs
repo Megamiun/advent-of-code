@@ -5,14 +5,16 @@ use crate::util::collections::key_indexed::key_priority_queue::KeyPriorityQueue;
 use rustc_hash::FxHashMap;
 use std::iter::successors;
 
+#[allow(dead_code)]
 pub fn find_min_steps_after(lines: &[String], dimensions: usize, bytes: usize) -> usize {
     let to_fall = lines.iter().map(parse).take(bytes).collect::<Vec<_>>();
 
     Bounded::create_using(dimensions, &to_fall)
         .get_min_path_for_exit()
-        .unwrap().len()
+        .unwrap().len() - 1
 }
 
+#[allow(dead_code)]
 pub fn find_min_blocker(lines: &[String], dimensions: usize) -> String {
     let to_fall = lines.iter().map(parse).collect::<Vec<_>>();
 

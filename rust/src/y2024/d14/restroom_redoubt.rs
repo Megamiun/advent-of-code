@@ -14,13 +14,13 @@ type MovingRobot = (Index2D, Diff);
 const EXTRACTOR: LazyLock<Regex> =
     LazyLock::new(|| Regex::new("(\\d+).(\\d+).{3}([-0-9]+).([-0-9]+)").unwrap());
 
-pub fn get_safety_score(lines: &[String]) -> usize {
-    let bounds = Index2D(101, 103);
+#[allow(dead_code)]
+pub fn get_safety_score(lines: &[String], bounds: &Index2D) -> usize {
     let half_x = bounds.0 / 2;
     let half_y = bounds.1 / 2;
     let seconds = 100;
 
-    let map = Bounded::from(bounds);
+    let map = Bounded::from(*bounds);
 
     let after_move = &lines.iter()
         .map(parse)
@@ -33,6 +33,7 @@ pub fn get_safety_score(lines: &[String]) -> usize {
         count(after_move, &|robot| robot.0 > half_x && robot.1 > half_y)
 }
 
+#[allow(dead_code)]
 pub fn get_similar_to_tree(lines: &[String]) -> usize {
     let bounds = Index2D(101, 103);
 

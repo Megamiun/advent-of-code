@@ -2,10 +2,12 @@ use crate::util::bounded::Bounded;
 use crate::util::coordinates::Index2D;
 use itertools::Itertools;
 
+#[allow(dead_code)]
 pub fn get_reachable_sum_for(lines: &[String]) -> usize {
     Bounded::from(lines).get_reachable_sum_for()
 }
 
+#[allow(dead_code)]
 pub fn get_trails_sum_for(lines: &[String]) -> usize {
     Bounded::from(lines).get_trails_sum_for()
 }

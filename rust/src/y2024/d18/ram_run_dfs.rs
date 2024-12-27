@@ -5,6 +5,7 @@ use crate::util::direction::Direction;
 use crate::util::direction::Direction::{Down, Left, Right, Up};
 use rustc_hash::FxHashSet;
 
+#[allow(dead_code)]
 pub fn find_min_blocker_dfs(lines: &[String], dimensions: usize) -> String {
     let to_fall = lines.iter().map(parse).collect::<Vec<_>>();
 

@@ -2,18 +2,22 @@ use rustc_hash::{FxBuildHasher, FxHashMap, FxHashSet};
 use std::iter::successors;
 use std::ops::BitXor;
 
-pub fn get_sum_of_secrets_after(lines: &[String], rounds: usize) -> usize {
+#[allow(dead_code)]
+pub fn get_sum_of_secrets_after(lines: &[String]) -> usize {
     lines.iter()
         .filter_map(|line| usize::from_str_radix(line, 10).ok())
-        .map(|seed| get_secret_numbers(seed).nth(rounds - 1).unwrap()).sum()
+        .map(|seed| get_secret_numbers(seed).nth(2000).unwrap()).sum()
 }
 
+#[allow(dead_code)]
 pub fn get_max_bananas_after_4_numbers(lines: &[String]) -> usize {
     let mut payout_per_seq_per_monkey = FxHashMap::with_capacity_and_hasher(3000, Default::default());
     
     lines.iter()
         .filter_map(|line| usize::from_str_radix(line, 10).ok())
         .for_each(|seed| populate_payouts(seed, &mut payout_per_seq_per_monkey));
+    
+    println!("{payout_per_seq_per_monkey:?}");
     
     *payout_per_seq_per_monkey.values().max().unwrap()
 }

@@ -6,6 +6,7 @@ use rustc_hash::{FxBuildHasher, FxHashMap, FxHashSet};
 use std::collections::{HashMap, HashSet};
 use std::hash::BuildHasher;
 
+#[allow(dead_code)]
 pub fn find_all_shortcuts_that_save_at_least(lines: &[String], limit: usize, min_saved: usize) -> usize {
     Bounded::from(lines)
         .into_distance_map()

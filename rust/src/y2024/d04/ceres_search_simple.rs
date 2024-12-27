@@ -6,6 +6,7 @@ static DIRECTIONS: &[Diff] = &[Diff(1, 1), Diff(1, 0), Diff(1, -1), Diff(0, 1), 
 
 static MAS: &[char] = &['M', 'A', 'S'];
 
+#[allow(dead_code)]
 pub fn find_all_xmas_simple(lines: &[String]) -> usize {
     Bounded::from(lines).find_all_xmas_simple()
 }

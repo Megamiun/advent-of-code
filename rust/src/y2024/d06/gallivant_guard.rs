@@ -12,6 +12,7 @@ impl Direction {
     }
 }
 
+#[allow(dead_code)]
 pub fn get_visited_count(lines: &[String]) -> usize {
     let maze = Bounded::from(lines);
     let (guard_pos, guard_dir) = maze.find_initial_guard_position();
@@ -19,6 +20,7 @@ pub fn get_visited_count(lines: &[String]) -> usize {
     maze.get_unique_guard_positions(guard_pos, guard_dir).len()
 }
 
+#[allow(dead_code)]
 pub fn get_loops_after_obstacle(lines: &[String]) -> usize {
     let maze = Bounded::from(lines);
     let (guard_pos, guard_dir) = maze.find_initial_guard_position();

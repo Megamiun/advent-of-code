@@ -1,32 +1,34 @@
-use crate::util::parse_num::parse_i64;
+use crate::util::parse_num::parse_usize;
 
-const OPERATORS: &[fn(i64, i64) -> i64] = &[
+const OPERATORS: &[fn(usize, usize) -> usize] = &[
     |a, b| a + b,
     |a, b| a * b
 ];
 
-const OPERATORS_EXTRA: &[fn(i64, i64) -> i64] = &[
+const OPERATORS_EXTRA: &[fn(usize, usize) -> usize] = &[
     |a, b| a + b,
     |a, b| a * b,
-    |a, b| a * 10_i64.pow(b.ilog10() + 1) + b
+    |a, b| a * 10_usize.pow(b.ilog10() + 1) + b
 ];
 
-pub fn with_basic_operators(lines: &[String]) -> i64 {
+#[allow(dead_code)]
+pub fn with_basic_operators(lines: &[String]) -> usize {
     run_with_operators(lines, OPERATORS)
 }
 
-pub fn with_extra_operators(lines: &[String]) -> i64 {
+#[allow(dead_code)]
+pub fn with_extra_operators(lines: &[String]) -> usize {
     run_with_operators(lines, OPERATORS_EXTRA)
 }
 
-fn run_with_operators(lines: &[String], ops: &[fn(i64, i64) -> i64]) -> i64 {
+fn run_with_operators(lines: &[String], ops: &[fn(usize, usize) -> usize]) -> usize {
     parse_inputs(lines)
         .filter(|(goal, numbers)| can_achieve_goal(*goal, numbers[0], &numbers[1..], ops))
         .map(|(goal, _)| goal)
         .sum()
 }
 
-fn can_achieve_goal(goal: i64, acc: i64, next: &[i64], ops: &[fn(i64, i64) -> i64]) -> bool {
+fn can_achieve_goal(goal: usize, acc: usize, next: &[usize], ops: &[fn(usize, usize) -> usize]) -> bool {
     if acc > goal {
         return false
     }
@@ -37,11 +39,11 @@ fn can_achieve_goal(goal: i64, acc: i64, next: &[i64], ops: &[fn(i64, i64) -> i6
     ops.iter().any(|op| can_achieve_goal(goal, op(acc, next[0]), &next[1..], ops))
 }
 
-fn parse_inputs(lines: &[String]) -> impl Iterator<Item=(i64, Vec<i64>)> + '_ {
+fn parse_inputs(lines: &[String]) -> impl Iterator<Item=(usize, Vec<usize>)> + '_ {
     lines.iter().map(|line| {
         let parts = line.split(": ").collect::<Vec<_>>();
-        let numbers = parts[1].split(" ").map(parse_i64).collect::<Vec<_>>();
+        let numbers = parts[1].split(" ").map(parse_usize).collect::<Vec<_>>();
 
-        (parse_i64(parts[0]), numbers)
+        (parse_usize(parts[0]), numbers)
     })
 }

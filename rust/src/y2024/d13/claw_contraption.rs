@@ -8,11 +8,13 @@ type XYPair = [f64; 2];
 
 const EXTRACTOR: LazyLock<Regex> = LazyLock::new(|| Regex::new("(\\d+).{4}(\\d+)").unwrap());
 
+#[allow(dead_code)]
 pub fn calculate(groups: &[&[String]]) -> usize {
     sum_groups(groups, &|a, b, goal|
         get_min_tokens(*a, *b, *goal, 100f64))
 }
 
+#[allow(dead_code)]
 pub fn calculate_with_error(groups: &[&[String]]) -> usize {
     let error = [10000000000000f64, 10000000000000f64];
 

@@ -7,10 +7,12 @@ use rustc_hash::{FxHashMap, FxHashSet};
 
 type Key = (Index2D, Direction);
 
+#[allow(dead_code)]
 pub fn get_min_path(lines: &[String]) -> usize {
     Bounded::from(lines).get_min_path()
 }
 
+#[allow(dead_code)]
 pub fn get_unique_best_spots(lines: &[String]) -> usize {
     Bounded::from(lines).get_unique_best_spots()
 }

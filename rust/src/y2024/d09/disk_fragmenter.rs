@@ -3,6 +3,7 @@ use itertools::{repeat_n, Itertools};
 use std::collections::VecDeque;
 use std::iter::repeat_with;
 
+#[allow(dead_code)]
 pub fn fragment(lines: &[String]) -> usize {
     let chuncked = get_file_space_pairs(lines);
 
@@ -20,6 +21,7 @@ pub fn fragment(lines: &[String]) -> usize {
         .sum()
 }
 
+#[allow(dead_code)]
 pub fn reorder(lines: &[String]) -> usize {
     let (files, blanks) = get_files_and_blanks(lines);
 

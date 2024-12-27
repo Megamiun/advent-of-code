@@ -4,6 +4,7 @@ use itertools::Itertools;
 use std::collections::HashMap;
 use std::iter::successors;
 
+#[allow(dead_code)]
 pub fn get_antinodes_for_single_jump(lines: &[String]) -> usize {
     let city = Bounded::from(lines);
     let anthem_positions = city.get_anthem_indices();
@@ -17,6 +18,7 @@ pub fn get_antinodes_for_single_jump(lines: &[String]) -> usize {
         .count()
 }
 
+#[allow(dead_code)]
 pub fn get_antinodes_for_repeated_jumps(lines: &[String]) -> usize {
     let city = Bounded::from(lines);
     let anthem_positions = city.get_anthem_indices();

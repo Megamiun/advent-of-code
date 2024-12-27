@@ -2,15 +2,17 @@ use crate::y2024::d24::parse::{parse, EdgeMap, Operator};
 use itertools::Itertools;
 use std::collections::HashMap;
 
-pub fn get_swappable_node_pairs_adder(groups: &[&[String]; 2], limit: usize) -> String {
+#[allow(dead_code)]
+pub fn get_swappable_node_pairs_adder(groups: &[&[String]; 2], pairs: usize) -> String {
     let (_, edges) = parse(groups);
 
     let zero_carry = get_result_for(&edges, "x00", "y00", "AND").unwrap();
 
-    get_swaps(1, zero_carry, limit, &edges).unwrap()
+    get_swaps(1, zero_carry, pairs, &edges).unwrap()
         .iter().sorted().join(",")
 }
 
+#[allow(dead_code)]
 fn get_swaps(level: usize, carry: &str, mistakes_left: usize, edges: &EdgeMap) -> Option<Vec<String>> {
     if edges.len() < 5 {
         return Some(vec![])

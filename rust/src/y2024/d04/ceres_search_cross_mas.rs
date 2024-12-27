@@ -20,6 +20,7 @@ static PERMUTATIONS: &[[(char, [Diff; 2]); 2]] = &[
     ],
 ];
 
+#[allow(dead_code)]
 pub fn find_all_cross_mas(lines: &[String]) -> usize {
     Bounded::from(lines).find_all_cross_mas()
 }

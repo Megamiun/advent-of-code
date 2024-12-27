@@ -10,26 +10,31 @@ static MAPPINGS: [(&str, u32); 9] = [
     ("nine", 9),
 ];
 
+#[allow(dead_code)]
 pub fn get_calibration_value_for(words: &[String]) -> u32 {
-    let points = words
-        .iter()
-        .map(|word| get_calibration_value(word))
-        .sum::<u32>();
-    points
+    words.iter()
+        .map(|word| get_calibration_value(word, &[]))
+        .sum()
 }
 
-fn get_calibration_value(value: &String) -> u32 {
-    let mut numbers = Vec::new();
+#[allow(dead_code)]
+pub fn get_calibration_value_for_written(words: &[String]) -> u32 {
+    words.iter()
+        .map(|word| get_calibration_value(word, &MAPPINGS))
+        .sum()
+}
 
-    for index in 0..value.len() {
-        let character = value.chars().nth(index).unwrap();
-        if character.is_numeric() {
-            numbers.push(character.to_digit(10).unwrap());
-            continue;
+fn get_calibration_value(value: &str, mappings: &[(&str, u32)]) -> u32 {
+    let mut numbers = Vec::new();
+    
+    for (index, char) in value.char_indices() {
+        if let Some(digit) = char.to_digit(10) {
+            numbers.push(digit)
         }
-        for mapping in MAPPINGS {
-            if matches(&value, index, mapping) {
-                numbers.push(mapping.1)
+
+        for (word, digit) in mappings {
+            if matches(&value, index, word) {
+                numbers.push(*digit)
             }
         }
     }
@@ -37,8 +42,8 @@ fn get_calibration_value(value: &String) -> u32 {
     (numbers.first().unwrap() * 10) + numbers.last().unwrap()
 }
 
-fn matches(value: &String, index: usize, mapping: (&str, u32)) -> bool {
-    let last = index + mapping.0.len();
+fn matches(value: &str, index: usize, mapping: &str) -> bool {
+    let last = index + mapping.len();
 
-    last < value.len() && &value[index..last] == mapping.0
+    last <= value.len() && &value[index..last] == mapping
 }

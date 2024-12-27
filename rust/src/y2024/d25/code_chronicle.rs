@@ -2,6 +2,7 @@ use crate::y2024::d25::code_chronicle::Schema::{Key, Lock};
 use itertools::Itertools;
 use std::ops::Index;
 
+#[allow(dead_code)]
 pub fn get_combos(groups: &[&[String]]) -> usize {
     let (locks, keys): (Vec<Schema>, Vec<Schema>) = groups.iter().copied().map(parse)
         .partition(|schema| matches!(schema, Key( .. )));

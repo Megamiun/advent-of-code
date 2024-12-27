@@ -4,11 +4,7 @@ use std::collections::HashMap;
 use std::hash::Hash;
 
 #[derive(PartialEq, Eq, Hash)]
-enum Color {
-    R,
-    G,
-    B,
-}
+enum Color { R, G, B }
 
 impl Color {
     const RED: &'static str = "red";
@@ -26,13 +22,30 @@ impl Color {
     }
 }
 
+#[allow(dead_code)]
+pub fn sum_valid(original: &[String], limits: &[usize; 3]) -> usize {
+    let limit_per_color = HashMap::from([
+        (&R, limits[0]),
+        (&G, limits[1]),
+        (&B, limits[2]),
+    ]);
+
+    original
+        .iter()
+        .map(|line| get_game_summary(line))
+        .filter(|(_, rounds)| is_within_limit(rounds, &limit_per_color))
+        .map(|(value, _)| value)
+        .sum()
+}
+
+#[allow(dead_code)]
 pub fn sum_minimum_power(rounds: &[String]) -> usize {
     rounds
         .iter()
         .map(|round| get_game_summary(round))
         .map(|(_, round)| get_minimum_for_colors(round))
         .map(|values| values.iter().fold(1, |acc, curr| acc * curr.1))
-        .sum::<usize>()
+        .sum()
 }
 
 fn get_minimum_for_colors(rounds: Vec<HashMap<&Color, usize>>) -> HashMap<&Color, usize> {
@@ -49,21 +62,6 @@ fn get_minimum_for_colors(rounds: Vec<HashMap<&Color, usize>>) -> HashMap<&Color
 
         map
     })
-}
-
-pub fn sum_valid(original: &[String], limits: &[usize]) -> usize {
-    let limit_per_color = HashMap::from([
-        (&R, limits[0]),
-        (&G, limits[1]),
-        (&B, limits[2]),
-    ]);
-
-    original
-        .iter()
-        .map(|line| get_game_summary(line))
-        .filter(|(_, rounds)| is_within_limit(rounds, &limit_per_color))
-        .map(|(value, _)| value)
-        .sum()
 }
 
 fn is_within_limit(maps: &[HashMap<&Color, usize>], limits: &HashMap<&Color, usize>) -> bool {

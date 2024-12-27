@@ -9,6 +9,7 @@ use Instruction::{Bst, Bxc, Bxl, Div, Jnz, Out};
 
 const EXTRACTOR: LazyLock<Regex> = LazyLock::new(|| Regex::new("(\\d+)").unwrap());
 
+#[allow(dead_code)]
 pub fn execute([registers, program]: &[&[String]; 2]) -> String {
     let mut registers = get_registers(registers);
     let program = get_program(&program[0]);
@@ -30,6 +31,7 @@ pub fn execute([registers, program]: &[&[String]; 2]) -> String {
     output.iter().map(|num| num.to_string()).collect::<Vec<_>>().join(",")
 }
 
+#[allow(dead_code)]
 pub fn find([registers, program]: &[&[String]; 2]) -> usize {
     let registers = get_registers(registers);
     let program = get_program(&program[0]);

@@ -3,6 +3,7 @@ use itertools::Itertools;
 use std::cmp::Reverse;
 use std::collections::HashMap;
 
+#[allow(dead_code)]
 pub fn define_z_output(groups: &[&[String]; 2]) -> usize {
     let (mut nodes, edges) = parse(groups);
     let z_bits = get_z_bits(&mut nodes, &edges);
@@ -18,6 +19,7 @@ pub fn define_z_output(groups: &[&[String]; 2]) -> usize {
     z_values
 }
 
+#[allow(dead_code)]
 fn get_z_bits<'a>(nodes: &mut HashMap<&'a str, bool>, edges: &'a EdgeMap) -> Vec<bool> {
     edges.iter()
         .filter(|(key, _)| key.starts_with("z"))

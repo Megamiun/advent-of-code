@@ -5,6 +5,8 @@ extern crate ibig;
 extern crate itertools;
 extern crate paste;
 extern crate regex;
+#[cfg(test)] 
+extern crate rstest;
 extern crate rustc_hash;
 
 use itertools::Itertools;
@@ -12,38 +14,39 @@ use std::fmt::Display;
 use std::fs::read_to_string;
 use std::time::Instant;
 
-pub mod y2023;
-pub mod y2024;
+mod y2023;
+mod y2024;
 pub mod util;
+pub mod testing;
 
-pub fn run_for_groups<T: Display>(year: u32, day: u32, solution: &str, files: &[&str], exec: impl Fn(&[&[String]]) -> T) {
-    run_for_files(year, day, solution, files, |lines| {
-        let groups = lines.split(|line| line.is_empty()).collect::<Vec<_>>();
-        exec(groups.as_slice())
-    })
-}
-
-pub fn run_for_n_groups<T: Display, const N: usize>(year: u32, day: u32, solution: &str, files: &[&str], exec: impl Fn(&[&[String]; N]) -> T) {
-    run_for_files(year, day, solution, files, |lines| {
+pub fn run_for_n_group<T: Display, const N: usize>(year: u32, day: u32, solution: &str, file: &str, exec: impl Fn(&[&[String]; N]) -> T) -> T {
+    run_for_file(year, day, solution, file, |lines| {
         let groups = lines.splitn(N, |line| line.is_empty()).collect_vec();
         exec(&groups.try_into().unwrap())
     })
 }
 
-pub fn run_for_files<T: Display>(year: u32, day: u32, solution: &str, files: &[&str], exec: impl Fn(&[String]) -> T) {
-    files.iter().for_each(|file| {
-        let key = format!("{file} - {solution}");
-        println!("-------------------");
-        println!("{key}");
-        println!("-------------------");
-        println!("-------------------");
-
-        let lines = read_lines(year, day, file);
-
-        println!();
-        
-        timed(&key, || exec(&lines));
+pub fn run_for_group<T: Display>(year: u32, day: u32, solution: &str, file: &str, exec: impl Fn(&[&[String]]) -> T) -> T {
+    run_for_file(year, day, solution, file, |lines| {
+        let groups = lines.split(|line| line.is_empty()).collect::<Vec<_>>();
+        exec(groups.as_slice())
     })
+}
+
+pub fn run_for_file<T: Display>(year: u32, day: u32, solution: &str, file: &str, exec: impl Fn(&[String]) -> T) -> T {
+    print_prelude(file, solution);
+    let lines = read_lines(year, day, file);
+    println!();
+
+    timed(&format!("{file} - {solution}"), || exec(&lines))
+}
+
+pub fn print_prelude(file: &str, solution: &str) {
+    println!("-------------------");
+    println!("-------------------");
+    println!("{}", format!("{file} - {solution}"));
+    println!("-------------------");
+    println!("-------------------");
 }
 
 pub fn read_lines(year: u32, day: u32, file: &str) -> Vec<String> {

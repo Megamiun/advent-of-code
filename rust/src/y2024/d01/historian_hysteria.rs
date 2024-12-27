@@ -2,6 +2,7 @@ use crate::util::parse_num::parse_i32;
 use itertools::Itertools;
 use std::collections::HashMap;
 
+#[allow(dead_code)]
 pub fn get_sum_of_distances(lines: &[String]) -> i32 {
     let (mut left, mut right) = get_columns(lines);
 
@@ -13,6 +14,7 @@ pub fn get_sum_of_distances(lines: &[String]) -> i32 {
         .sum()
 }
 
+#[allow(dead_code)]
 pub fn get_similarity_score(lines: &[String]) -> i32 {
     let (left, right) = get_columns(lines);
 

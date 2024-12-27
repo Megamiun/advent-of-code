@@ -7,10 +7,12 @@ use std::iter::successors;
 use std::ops::Add;
 use std::sync::LazyLock;
 
+#[allow(dead_code)]
 pub fn find_price_by_perimeter(lines: &[String]) -> usize {
     Bounded::from(lines).find_price_by_perimeter()
 }
 
+#[allow(dead_code)]
 pub fn find_price_by_sides(lines: &[String]) -> usize {
     Bounded::from(lines).find_price_by_sides()
 }

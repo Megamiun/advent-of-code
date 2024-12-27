@@ -3,6 +3,7 @@ use rustc_hash::FxHashMap;
 use std::collections::HashMap;
 use std::hash::BuildHasher;
 
+#[allow(dead_code)]
 pub fn get_lans_with_t(lines: &[String]) -> usize {
     let graph = get_graph(lines);
 
@@ -19,6 +20,7 @@ pub fn get_lans_with_t(lines: &[String]) -> usize {
         .unique().count()
 }
 
+#[allow(dead_code)]
 pub fn get_biggest_lan(lines: &[String]) -> String {
     let graph = get_graph(lines);
     let all_keys = graph.keys().collect::<Vec<_>>();

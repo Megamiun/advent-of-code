@@ -1,5 +1,6 @@
 use rustc_hash::FxHashMap;
 
+#[allow(dead_code)]
 pub fn get_possible_towels([available, goals]: &[&[String]; 2]) -> usize {
     let available = &available[0].split(", ").collect::<Vec<_>>();
 
@@ -9,6 +10,7 @@ pub fn get_possible_towels([available, goals]: &[&[String]; 2]) -> usize {
         .count()
 }
 
+#[allow(dead_code)]
 pub fn get_towels_arrangements([available, goals]: &[&[String]; 2]) -> usize {
     let available = &available[0].split(", ").collect::<Vec<_>>();
 

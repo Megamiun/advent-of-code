@@ -1,6 +1,7 @@
 use crate::util::parse_num::parse_i32;
 use itertools::Itertools;
 
+#[allow(dead_code)]
 pub fn count_safe(levels: &[String]) -> usize {
     levels
         .iter()
@@ -9,6 +10,7 @@ pub fn count_safe(levels: &[String]) -> usize {
         .count()
 }
 
+#[allow(dead_code)]
 pub fn count_safe_with_tolerance(levels: &[String]) -> usize {
     levels
         .iter()
