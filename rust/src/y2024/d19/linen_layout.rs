@@ -1,22 +1,23 @@
+use itertools::Itertools;
 use rustc_hash::FxHashMap;
 
 #[allow(dead_code)]
 pub fn get_possible_towels([available, goals]: &[&[String]; 2]) -> usize {
-    let available = &available[0].split(", ").collect::<Vec<_>>();
+    let available = &available[0].split(", ").collect_vec();
 
     Solver::new(available)
-        .count_valid_arrangements_for_all(goals)
-        .iter().filter(|&&arrangements| arrangements > 0)
+        .iterate_valid_arrangement_count(goals)
+        .filter(|&arrangements| arrangements > 0)
         .count()
 }
 
 #[allow(dead_code)]
 pub fn get_towels_arrangements([available, goals]: &[&[String]; 2]) -> usize {
-    let available = &available[0].split(", ").collect::<Vec<_>>();
+    let available = &available[0].split(", ").collect_vec();
 
     Solver::new(available)
-        .count_valid_arrangements_for_all(goals)
-        .iter().sum()
+        .iterate_valid_arrangement_count(goals)
+        .sum()
 }
 
 struct Solver {
@@ -25,7 +26,6 @@ struct Solver {
 }
 
 impl Solver {
-
     fn new(available: &[&str]) -> Solver {
         Solver {
             cache: FxHashMap::default(),
@@ -33,8 +33,8 @@ impl Solver {
         }
     }
 
-    fn count_valid_arrangements_for_all(&mut self, goals: &[String]) -> Vec<usize> {
-        goals.iter().map(|goal| self.count_valid_arrangements(goal)).collect()
+    fn iterate_valid_arrangement_count<'a>(&'a mut self, goals: &'a [String]) -> impl Iterator<Item=usize> + 'a {
+        goals.iter().map(|goal| self.count_valid_arrangements(goal))
     }
 
     fn count_valid_arrangements(&mut self, goal: &str) -> usize {
@@ -48,7 +48,7 @@ impl Solver {
         
         let valid = self.towels.iter()
             .filter_map(|towel| goal.strip_prefix(towel))
-            .collect::<Vec<_>>();
+            .collect_vec();
         
         let possible_arrangements = valid.iter()
             .map(|remaining| self.count_valid_arrangements(remaining))

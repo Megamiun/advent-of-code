@@ -49,16 +49,15 @@ impl Bounded<char> {
 
             if let Some(next) = maybe_next {
                 if next.1 != direction {
-                    if visited.contains(&curr) {
+                    if !visited.insert(curr) {
                         return true;
                     }
-                    visited.insert(curr);
                 }
 
                 curr = next
             } else {
                 return false
-            };
+            }
         }
     }
 

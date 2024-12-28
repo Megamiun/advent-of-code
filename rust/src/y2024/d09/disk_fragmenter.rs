@@ -11,36 +11,33 @@ pub fn fragment(lines: &[String]) -> usize {
         .flat_map(|(index, (file_size, _))| repeat_n(index, *file_size))
         .collect::<VecDeque<_>>();
 
-    chuncked.iter().map(|(file, blank)|
-        vec![
-            get_n(*file, || numbers.pop_front()),
-            get_n(*blank, || numbers.pop_back())
-        ]
-    ).flatten().flatten().enumerate()
+    chuncked.iter().flat_map(|(file, blank)| [
+        get_n(*file, || numbers.pop_front()),
+        get_n(*blank, || numbers.pop_back())
+    ]).flatten().enumerate()
         .map(|(index, value)| index * value)
         .sum()
 }
 
 #[allow(dead_code)]
 pub fn reorder(lines: &[String]) -> usize {
-    let (files, blanks) = get_files_and_blanks(lines);
+    let (files, mut blanks) = get_files_and_blanks(lines);
 
     files.iter().rev().map(|[start, file_size, index]| {
-        let first_blank = blanks.iter()
-            .filter(|blank| blank.borrow()[0] < *start)
-            .filter(|blank| blank.borrow()[1] >= *file_size)
+        let first_blank = blanks.iter_mut()
+            .filter(|blank| blank[0] < *start)
+            .filter(|blank| blank[1] >= *file_size)
             .nth(0);
 
-        match first_blank {
+        index * match first_blank {
             Some(blank_cell) => {
-                let mut mut_blank = blank_cell.borrow_mut();
-                let new_start = mut_blank[0];
-                mut_blank[0] += *file_size;
-                mut_blank[1] -= *file_size;
+                let new_start = blank_cell[0];
+                blank_cell[0] += *file_size;
+                blank_cell[1] -= *file_size;
                 
-                (new_start..new_start + *file_size).sum::<usize>() * index
+                (new_start..new_start + *file_size).sum::<usize>()
             },
-            _ => (*start..*start + *file_size).sum::<usize>() * index
+            _ => (*start..*start + *file_size).sum::<usize>()
         }
     }).sum()
 }

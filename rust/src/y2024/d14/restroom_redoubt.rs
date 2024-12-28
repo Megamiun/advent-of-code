@@ -4,15 +4,10 @@ use crate::util::parse_num::parse_i32;
 use itertools::Itertools;
 use num_traits::ToPrimitive;
 use regex::Regex;
-use rustc_hash::FxHashSet;
+use std::collections::LinkedList;
 use std::iter::successors;
-use std::sync::LazyLock;
 
 type MovingRobot = (Diff, Diff);
-
-const EXTRACTOR: LazyLock<Regex> =
-    LazyLock::new(|| Regex::new("(\\d+).(\\d+).{3}([-0-9]+).([-0-9]+)").unwrap());
-
 const FILLED: [&str; 2] = ["◼️", "◻️"];
 
 #[allow(dead_code)]
@@ -20,9 +15,13 @@ pub fn get_safety_score(lines: &[String], bounds: &Index2D) -> usize {
     let half_x = (bounds.0 / 2).to_i32().unwrap();
     let half_y = (bounds.1 / 2).to_i32().unwrap();
     let seconds = 100;
+    let regex = Regex::new("(\\d+),(\\d+).{3}([-0-9]+),([-0-9]+)").unwrap();
 
-    let after_move = &lines.iter().map(parse)
-        .map(|robot| bounds.as_diff().move_robot(&robot, seconds).0)
+    let diff = bounds.as_diff();
+    
+    let after_move = &lines.iter()
+        .map(|l| parse(l, &regex))
+        .map(|robot| diff.move_robot(&robot, seconds).0)
         .collect_vec();
     
     count(after_move, &|robot| robot.0 < half_x && robot.1 < half_y)
@@ -34,8 +33,11 @@ pub fn get_safety_score(lines: &[String], bounds: &Index2D) -> usize {
 #[allow(dead_code)]
 pub fn get_similar_to_tree(lines: &[String]) -> usize {
     let bounds = Diff(101, 103);
+    let regex = Regex::new("(\\d+),(\\d+).{3}([-0-9]+),([-0-9]+)").unwrap();
 
-    let initial_position = lines.iter().map(parse).collect::<Vec<_>>();
+    let initial_position = lines.iter()
+        .map(|l| parse(l, &regex))
+        .collect_vec();
 
     successors(Some(initial_position), |robots| {
         Some(
@@ -56,8 +58,8 @@ fn count<T>(positions: &Vec<T>, matches: &dyn Fn(&&T) -> bool) -> usize {
     positions.iter().filter(matches).count()
 }
 
-fn parse(line: &String) -> MovingRobot {
-    let (_, [x, y, diff_x, diff_y]) = EXTRACTOR.captures(line).unwrap().extract();
+fn parse(line: &String, regex: &Regex) -> MovingRobot {
+    let (_, [x, y, diff_x, diff_y]) = regex.captures(line).unwrap().extract();
 
     (Diff(parse_i32(x), parse_i32(y)), Diff(parse_i32(diff_x), parse_i32(diff_y)))
 }
@@ -79,8 +81,7 @@ impl Bounded<bool> {
     fn from(bounds: &Diff, robots: &[MovingRobot]) -> Bounded<bool> {
         let mut content = vec![vec![false; bounds.0 as usize]; bounds.1 as usize];
 
-        robots
-            .iter()
+        robots.iter()
             .for_each(|(Diff(x, y), _)| content[*y as usize][*x as usize] = true);
 
         Bounded {
@@ -101,40 +102,38 @@ impl Bounded<bool> {
     fn has_big_cluster(&self, robots: &[MovingRobot]) -> bool {
         let cluster_min_size = robots.len() / 3;
         let skippable = robots.len() - (robots.len() / 4);
+        
+        let mut visitable = self.clone();
 
         robots.iter()
             // As we are searching for a big cluster, doing that lightens the load a little
             // with low risk, as it is highly improbable that the whole cluster not distributed
             .skip(skippable)
-            .any(|(position, _)| self.capture_group_size(&Index2D::from_diff(position).unwrap()) > cluster_min_size)
+            .any(|(position, _)| self.capture_group_size(position, &mut visitable) > cluster_min_size)
     }
 
-    fn capture_group_size(&self, position: &Index2D) -> usize {
-        // This allows us not to do further allocation for lone robots, a pretty common scenario
-        let adjacent = self.find_adjacent(position);
-        if !adjacent.iter().all(|pos| self.find_safe(pos)) {
-            return 0;
-        }
-
-        let mut contained = FxHashSet::<Index2D>::default();
-        let mut to_visit = Vec::<Index2D>::new();
-
-        contained.insert(*position);
-        adjacent.iter().for_each(|pos| to_visit.push(*pos));
+    fn capture_group_size(&self, position: &Diff, visitable: &mut Bounded<bool>) -> usize {
+        let position = Index2D::from_diff(position).unwrap();
+        
+        let mut to_visit = LinkedList::from([position]);
+        let mut contained = 0usize;
+        visitable[&position] = false;
 
         while !to_visit.is_empty() {
-            let curr = to_visit.pop().unwrap();
+            let curr = to_visit.pop_front().unwrap();
+            contained += 1;
+            
+            let adjacent = visitable.find_adjacent_with_content(&curr)
+                .filter(|(_, &available)| available)
+                .map(|(next, _)| next)
+                .collect_vec();
 
-            if contained.contains(&curr) {
-                continue;
+            for next in adjacent {
+                visitable[&next] = false;
+                to_visit.push_front(next);
             }
-
-            contained.insert(curr);
-            self.find_adjacent_with_content(&curr)
-                .filter(|(_, &content)| content)
-                .for_each(|(next, _)| to_visit.push(next))
         }
 
-        contained.len()
+        contained
     }
 }

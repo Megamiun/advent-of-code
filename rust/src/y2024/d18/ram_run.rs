@@ -48,7 +48,7 @@ impl Bounded<bool> {
         while !to_visit.is_empty() {
             let (score, (curr, previous)) = to_visit.pop().unwrap();
 
-            if self.find_safe(&curr) || visited.contains_key(&curr) {
+            if *self.find_safe(&curr) || visited.contains_key(&curr) {
                 continue;
             }
 

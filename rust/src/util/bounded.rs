@@ -1,12 +1,29 @@
 use crate::util::coordinates::Index2D;
 use crate::util::direction::Direction;
+use itertools::Itertools;
 use std::collections::HashMap;
 use std::hash::BuildHasher;
+use std::ops::{Index, IndexMut};
 
+#[derive(Clone)]
 pub struct Bounded<T> {
     pub content: Vec<Vec<T>>,
     pub height: usize,
     pub width: usize,
+}
+
+impl<T: PartialEq> Index<&Index2D> for Bounded<T> {
+    type Output = T;
+
+    fn index(&self, index: &Index2D) -> &Self::Output {
+        self.find_safe(index)
+    }
+}
+
+impl<T: PartialEq> IndexMut<&Index2D> for Bounded<T> {
+    fn index_mut(&mut self, index: &Index2D) -> &mut Self::Output {
+        self.find_safe_mut(index)
+    }
 }
 
 impl From<&[String]> for Bounded<char> {
@@ -24,12 +41,12 @@ impl From<&[String]> for Bounded<char> {
     }
 }
 
-impl<T: Copy> From<&Vec<Vec<T>>> for Bounded<T> {
-    fn from(content: &Vec<Vec<T>>) -> Bounded<T> {
+impl<T> From<Vec<Vec<T>>> for Bounded<T> {
+    fn from(content: Vec<Vec<T>>) -> Bounded<T> {
         Bounded {
-            content: content.clone(),
             height: content.len(),
             width: content[0].len(),
+            content
         }
     }
 }
@@ -49,8 +66,7 @@ impl<T: Copy> Bounded<T> {
 impl<T: PartialEq + Copy> Bounded<Option<T>> {
     pub fn get_all_present_iter(&self) -> impl Iterator<Item=(Index2D, &T)> + '_ {
         self.content.iter().enumerate().flat_map(|(y, line)| {
-            line.iter()
-                .enumerate()
+            line.iter().enumerate()
                 .filter_map(move |(x, item)| Some((Index2D(x, y), item.as_ref()?)))
         })
     }
@@ -60,18 +76,25 @@ impl<T: PartialEq + Copy> Bounded<Option<T>> {
     }
 }
 
-impl<T: PartialEq + Copy> Bounded<T> {
+impl<T: PartialEq> Bounded<T> {
     pub fn create_from(map: &[String], get_cell: fn(char) -> T) -> Bounded<T> {
-        let new_map = map
-            .iter()
-            .map(|line| line.chars().map(|c| get_cell(c)).collect::<Vec<_>>())
-            .collect::<Vec<_>>();
+        let new_map = map.iter()
+            .map(|line| line.chars().map(|c| get_cell(c)).collect_vec())
+            .collect_vec();
 
-        Bounded::from(&new_map)
+        Bounded::from(new_map)
     }
 
-    pub fn find<'a>(&'a self, coord: &Index2D) -> Option<&'a T> {
+    pub fn find(&self, coord: &Index2D) -> Option<&T> {
         self.content.get(coord.1)?.get(coord.0)
+    }
+
+    pub fn find_safe(&self, coord: &Index2D) -> &T {
+        &self.content[coord.1][coord.0]
+    }
+
+    pub fn find_safe_mut(&mut self, coord: &Index2D) -> &mut T {
+        &mut self.content[coord.1][coord.0]
     }
 
     pub fn is_within(&self, Index2D(x, y): &Index2D) -> bool {
@@ -83,13 +106,11 @@ impl<T: PartialEq + Copy> Bounded<T> {
     }
 
     pub fn find_all(&self, item: &T) -> Vec<Index2D> {
-        (0..self.height)
-            .flat_map(|y| {
-                (0..self.width)
-                    .filter(move |&x| self.content[y][x] == *item)
-                    .map(move |x| Index2D(x, y))
-            })
-            .collect()
+        self.content.iter().enumerate().flat_map(|(y, row)| {
+            row.iter().enumerate()
+                .filter(|(_, curr)| *curr == item)
+                .map(move |(x, _)| Index2D(x, y))
+        }).collect_vec()
     }
 
     pub fn find_adjacent(&self, index: &Index2D) -> Vec<Index2D> {
@@ -97,6 +118,14 @@ impl<T: PartialEq + Copy> Bounded<T> {
             .iter()
             .filter_map(|dir| index + dir.get_dir())
             .filter(|adj| self.is_within(adj))
+            .collect()
+    }
+
+    pub fn find_adjacent_with_dir(&self, index: &Index2D) -> Vec<(Index2D, Direction)> {
+        Direction::VALUES
+            .iter()
+            .filter_map(|dir| Some(((index + dir.get_dir())?, *dir)))
+            .filter(|(adj, _)| self.is_within(adj))
             .collect()
     }
 
@@ -141,11 +170,5 @@ impl<T: PartialEq + Copy> Bounded<T> {
 
     pub fn set(&mut self, Index2D(x, y): &Index2D, value: T) {
         self.content[*y][*x] = value
-    }
-}
-
-impl<T: Copy> Bounded<T> {
-    pub fn find_safe(&self, coord: &Index2D) -> T {
-        self.content[coord.1][coord.0]
     }
 }

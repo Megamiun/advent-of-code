@@ -3,126 +3,106 @@ use crate::util::coordinates::Index2D;
 use crate::util::direction::Direction;
 use crate::util::direction::Direction::{Left, Right};
 use crate::y2024::d15::warehouse_woes::Cell::{Empty, Robot, Wall};
-use derive_more::Display;
-use std::fmt::Formatter;
+use itertools::Itertools;
 use Cell::{Box, BoxL, BoxR};
 use Direction::{Down, Up};
 
 #[allow(dead_code)]
 pub fn move_robot_single([map, directions]: &[&[String]; 2]) -> usize {
-    let mut map = Bounded::create_from(map, Cell::from);
-
-    let directions = directions
-        .iter()
-        .flat_map(|line| line.chars().map(|c| Direction::from_char(c)))
-        .collect::<Vec<_>>();
-
-    directions.iter().for_each(|dir| { map.move_robot(*dir); });
-    map.calculate()
+    move_robot(&mut Bounded::create_from(map, Cell::from), directions)
 }
 
 #[allow(dead_code)]
 pub fn move_robot_wide([map, directions]: &[&[String]; 2]) -> usize {
-    let mut map = Bounded::create_from(map, Cell::from).widen();
+    move_robot(&mut Bounded::create_from(map, Cell::from).widen(), directions)
+}
 
-    let directions = directions
-        .iter()
-        .flat_map(|line| line.chars().map(|c| Direction::from_char(c)))
-        .collect::<Vec<_>>();
+fn move_robot(map: &mut Bounded<Cell>, directions: &[String]) -> usize {
+    let directions = directions.iter()
+        .flat_map(|line| line.chars().map(|c| Direction::from_char(c)));
 
-    directions.iter().for_each(|dir| { map.move_robot(*dir); });
+    directions.fold(
+        map.find_first(&Robot).unwrap(),
+        |acc, dir| map.move_robot(&acc, dir));
+
     map.calculate()
 }
 
 impl Bounded<Cell> {
     fn widen(&self) -> Bounded<Cell> {
-        let content = self.content
-            .iter()
-            .map(|line| {
-                line.iter()
-                    .flat_map(|cell| cell.widen())
-                    .collect::<Vec<_>>()
-            })
-            .collect::<Vec<_>>();
+        let content = self.content.iter().map(|line| {
+            line.iter()
+                .flat_map(|cell| cell.widen())
+                .collect_vec()
+        }).collect_vec();
 
-        Bounded::from(&content)
+        Bounded::from(content)
     }
 
-    fn move_robot(&mut self, direction: Direction) -> Option<bool> {
-        let robot = self.find_first(&Robot)?;
-
+    fn move_robot(&mut self, robot: &Index2D, direction: Direction) -> Index2D {
         let is_horizontal = direction == Left || direction == Right;
-        if self.can_move(&robot, direction, is_horizontal)? {
+        if self.can_move(&robot, direction, is_horizontal) {
             self.push(&robot, direction, is_horizontal);
+            (robot + direction).unwrap()
+        } else {
+            *robot
         }
-        Some(true)
     }
 
-    fn push(
-        &mut self,
-        curr: &Index2D,
-        direction: Direction,
-        horizontal: bool,
-    ) -> Option<bool> {
-        let next = (curr + direction.get_dir())?;
-        let next_cell = *self.find(&next)?;
+    fn push(&mut self, curr: &Index2D, direction: Direction, horizontal: bool) {
+        let next = (curr + direction.get_dir()).unwrap();
+        let next_cell = *self.find_safe(&next);
 
         match next_cell {
             Box => self.push(&next, direction, horizontal),
             BoxL => {
                 if !horizontal {
-                    self.push(&next, direction, horizontal)?;
-                    self.push(&(next + Right.get_dir())?, direction, horizontal)
+                    self.push(&next, direction, horizontal);
+                    self.push(&(next + Right.get_dir()).unwrap(), direction, horizontal)
                 } else {
                     self.push(&next, direction, horizontal)
                 }
             }
             BoxR => {
                 if !horizontal {
-                    self.push(&next, direction, horizontal)?;
-                    self.push(&(next + Left.get_dir())?, direction, horizontal)
+                    self.push(&next, direction, horizontal);
+                    self.push(&(next + Left.get_dir()).unwrap(), direction, horizontal)
                 } else {
                     self.push(&next, direction, horizontal)
                 }
             }
-            _ => Some(true),
+            _ => { }
         };
 
-        let curr_cell = *self.find(&curr)?;
+        let curr_cell = *self.find_safe(&curr);
         self.set(&next, curr_cell);
-        self.set(&curr, Empty);
-        Some(true)
+        self.set(&curr, Empty)
     }
 
-    fn can_move(
-        &self,
-        curr: &Index2D,
-        direction: Direction,
-        horizontal: bool,
-    ) -> Option<bool> {
-        let next = (curr + direction.get_dir())?;
-        let next_cell = *self.find(&next)?;
+    fn can_move(&self, curr: &Index2D, direction: Direction, horizontal: bool) -> bool {
+        let next = (curr + direction.get_dir()).unwrap();
+        let next_cell = *self.find_safe(&next);
 
         match next_cell {
             Box => self.can_move(&next, direction, horizontal),
             BoxL => {
                 if !horizontal {
-                    self.can_move(&next, direction, horizontal)?;
-                    self.can_move(&(next + Right.get_dir())?, direction, horizontal)
+                    self.can_move(&next, direction, horizontal) &&
+                        self.can_move(&(next + Right.get_dir()).unwrap(), direction, horizontal)
                 } else {
                     self.can_move(&next, direction, horizontal)
                 }
             }
             BoxR => {
                 if !horizontal {
-                    self.can_move(&next, direction, horizontal)?;
-                    self.can_move(&(next + Left.get_dir())?, direction, horizontal)
+                    self.can_move(&next, direction, horizontal) &&
+                        self.can_move(&(next + Left.get_dir()).unwrap(), direction, horizontal)
                 } else {
                     self.can_move(&next, direction, horizontal)
                 }
             }
-            Wall => None,
-            _ => Some(true),
+            Wall => false,
+            _ => true
         }
     }
 
@@ -142,21 +122,6 @@ enum Cell {
     Wall,
     BoxL,
     BoxR,
-}
-
-impl Display for Cell {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        let char = match self {
-            Robot => '@',
-            Empty => ' ',
-            Box => 'O',
-            Wall => '#',
-            BoxL => '[',
-            BoxR => ']',
-        };
-
-        write!(f, "{char}")
-    }
 }
 
 impl From<char> for Cell {

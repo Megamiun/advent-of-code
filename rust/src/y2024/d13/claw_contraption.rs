@@ -3,11 +3,8 @@ use derive_more::Display;
 use itertools::Itertools;
 use num_traits::ToPrimitive;
 use regex::Regex;
-use std::sync::LazyLock;
 
 type XYPair = [f64; 2];
-
-const EXTRACTOR: LazyLock<Regex> = LazyLock::new(|| Regex::new("(\\d+).{4}(\\d+)").unwrap());
 
 #[allow(dead_code)]
 pub fn calculate(groups: &[&[String]]) -> usize {
@@ -24,7 +21,9 @@ pub fn calculate_with_error(groups: &[&[String]]) -> usize {
 }
 
 fn sum_groups(groups: &[&[String]], calculate: impl Fn(&XYPair, &XYPair, &XYPair) -> Option<usize>) -> usize {
-    groups.iter().map(parse_group)
+    let extractor = Regex::new("(\\d+).{4}(\\d+)").unwrap();
+    
+    groups.iter().map(|group| parse_group(group, &extractor))
         .filter_map(|[a, b, goal]| calculate(&a, &b, &goal))
         .sum()
 }
@@ -52,9 +51,9 @@ fn get_min_tokens(
     Some((a.to_usize()? * 3) + b.to_usize()?)
 }
 
-fn parse_group(group: &&[String]) -> [XYPair; 3] {
+fn parse_group(group: &[String], regex: &Regex) -> [XYPair; 3] {
     group.iter().map(|line| {
-        let (_, [x, y]) = EXTRACTOR.captures(line).unwrap().extract();
+        let (_, [x, y]) = regex.captures(line).unwrap().extract();
         [parse_f64(x), parse_f64(y)]
     }).collect_vec().try_into().unwrap()
 }

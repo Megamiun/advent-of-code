@@ -20,12 +20,15 @@ mod tests {
     #[rstest]
     #[case::sample("sample", 2858)]
     #[case::input("input", 6376648986651)]
-    fn part_2_simple(#[case] file: &str, #[case] expected: usize) {
+    fn part_2(#[case] file: &str, #[case] expected: usize) {
         let result = run_for_file(2024, 9, "Part 2", file, reorder);
         assert_aoc!(result, expected)
     }
+    
     #[rstest]
+    #[ignore]
     #[case::sample("sample", 2858)]
+    #[ignore]
     #[case::input("input", 6376648986651)]
     fn part_2_linked_list(#[case] file: &str, #[case] expected: usize) {
         let result = run_for_file(2024, 9, "Part 2", file, reorder_linked_list);

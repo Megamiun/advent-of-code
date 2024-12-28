@@ -1,8 +1,6 @@
-use std::cell::RefCell;
-
 pub type Metadata = [usize; 3];
 
-pub fn get_files_and_blanks(lines: &[String]) -> (Vec<Metadata>, Vec<RefCell<Metadata>>) {
+pub fn get_files_and_blanks(lines: &[String]) -> (Vec<Metadata>, Vec<Metadata>) {
     let file_pairs = get_file_space_pairs(lines);
 
     file_pairs.iter().enumerate().scan(0usize, |blank_end, (index, (file_size, blank_size))| {
@@ -13,7 +11,7 @@ pub fn get_files_and_blanks(lines: &[String]) -> (Vec<Metadata>, Vec<RefCell<Met
 
         Some((
             [file_start, *file_size, index],
-            RefCell::new([file_end, *blank_size, index])
+            [file_end, *blank_size, index]
         ))
     }).unzip()
 }

@@ -66,7 +66,7 @@ impl Bounded<char> {
 
             let next = next.unwrap();
             let next_char = self.find(&next);
-            if next_char.is_none() || *next_char.unwrap() != first {
+            if next_char.is_none() || next_char.unwrap() != first {
                 barriers.insert(Barrier::from(curr, dir));
                 continue
             }

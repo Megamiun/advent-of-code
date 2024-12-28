@@ -47,7 +47,7 @@ impl Bounded<char> {
             let (score, (from_key, to_key)) = to_visit.pop().unwrap();
 
             let (to, dir) = to_key;
-            if self.find_safe(&to) == '#' {
+            if self.find_safe(&to) == &'#' {
                 continue;
             }
 
