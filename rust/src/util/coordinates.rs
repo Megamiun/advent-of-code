@@ -13,9 +13,9 @@ impl Index2D {
         Diff(self.0 as i32, self.1 as i32)
     }
 
-    pub fn from_diff(Diff(x_diff, y_diff): Diff) -> Option<Index2D> {
-        let new_x = usize::try_from(x_diff);
-        let new_y = usize::try_from(y_diff);
+    pub fn from_diff(Diff(x_diff, y_diff): &Diff) -> Option<Index2D> {
+        let new_x = usize::try_from(*x_diff);
+        let new_y = usize::try_from(*y_diff);
 
         match (new_x, new_y) {
             (Ok(new_x_val), Ok(new_y_val)) => Some(Index2D(new_x_val, new_y_val)),
@@ -72,14 +72,14 @@ impl Rem<Index2D> for Index2D {
 impl Add<Diff> for Index2D {
     type Output = Option<Index2D>;
     fn add(self, other: Diff) -> Self::Output {
-        Self::from_diff(self.as_diff() + other)
+        Self::from_diff(&(self.as_diff() + other))
     }
 }
 
 impl Sub<Diff> for Index2D {
     type Output = Option<Index2D>;
     fn sub(self, other: Diff) -> Self::Output {
-        Self::from_diff(self.as_diff() - other)
+        Self::from_diff(&(self.as_diff() - other))
     }
 }
 

@@ -70,7 +70,7 @@ impl<T: PartialEq + Copy> Bounded<T> {
         Bounded::from(&new_map)
     }
 
-    pub fn find(&self, coord: &Index2D) -> Option<&T> {
+    pub fn find<'a>(&'a self, coord: &Index2D) -> Option<&'a T> {
         self.content.get(coord.1)?.get(coord.0)
     }
 
@@ -100,6 +100,12 @@ impl<T: PartialEq + Copy> Bounded<T> {
             .collect()
     }
 
+    pub fn find_adjacent_with_content<'a>(&'a self, index: &'a Index2D) -> impl Iterator<Item=(Index2D, &'a T)> {
+        Direction::VALUES.iter()
+            .filter_map(move |dir| index + dir.get_dir())
+            .filter_map(|adj| Some((adj, self.find(&adj)?)))
+    }
+
     pub fn get_all_coordinates_iter(&self) -> impl Iterator<Item=Index2D> + '_ {
         (0..self.height).flat_map(|y|
             (0..self.width).map(move |x| Index2D(x, y)))
@@ -124,7 +130,7 @@ impl<T: PartialEq + Copy> Bounded<T> {
         self.get_all_coordinates_with_content_iter().collect()
     }
 
-    pub fn print_by(&self, get_content: &dyn for<'b> Fn(&'b Index2D, &'b T) -> String) {
+    pub fn print_by(&self, get_content: &dyn for<'b> Fn(&'b Index2D, &'b T) -> &'b str) {
         self.content.iter().enumerate().for_each(|(y, line)| {
             line.iter()
                 .enumerate()

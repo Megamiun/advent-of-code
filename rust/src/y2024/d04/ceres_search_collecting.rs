@@ -16,7 +16,7 @@ impl Bounded<char> {
             self.content.clone(),
             self.collect_columns(),
             self.collect_diagonals()
-        ).inspect(|line| { println!("{line:?}");}).map(|line|
+        ).map(|line|
             line.windows(4)
                 .filter(|&window| window == XMAS || window == SAMX)
                 .count()
