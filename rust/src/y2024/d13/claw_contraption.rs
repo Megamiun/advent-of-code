@@ -21,8 +21,8 @@ pub fn calculate_with_error(groups: &[&[String]]) -> usize {
 }
 
 fn sum_groups(groups: &[&[String]], calculate: impl Fn(&XYPair, &XYPair, &XYPair) -> Option<usize>) -> usize {
-    let extractor = Regex::new("(\\d+).{4}(\\d+)").unwrap();
-    
+    let extractor = create_extractor();
+
     groups.iter().map(|group| parse_group(group, &extractor))
         .filter_map(|[a, b, goal]| calculate(&a, &b, &goal))
         .sum()
@@ -40,10 +40,10 @@ fn get_min_tokens(
     let b_x_div_y = x.b / y.b;
 
     let a_isolated = x.minus(y, &b_x_div_y);
-    
+
     let a = (a_isolated.goal / a_isolated.a).round();
     let b = ((x.goal - (x.a * a)) / x.b).round();
-    
+
     if a > limit || b > limit || !x.matches(a, b) || !y.matches(a, b) {
         return None
     }
@@ -51,9 +51,9 @@ fn get_min_tokens(
     Some((a.to_usize()? * 3) + b.to_usize()?)
 }
 
-fn parse_group(group: &[String], regex: &Regex) -> [XYPair; 3] {
+fn parse_group(group: &[String], extractor: &Regex) -> [XYPair; 3] {
     group.iter().map(|line| {
-        let (_, [x, y]) = regex.captures(line).unwrap().extract();
+        let (_, [x, y]) = extractor.captures(line).unwrap().extract();
         [parse_f64(x), parse_f64(y)]
     }).collect_vec().try_into().unwrap()
 }
@@ -74,8 +74,12 @@ impl Equation {
             goal: self.goal - (eq.goal * factor),
         }
     }
-    
+
     fn matches(&self, a: f64, b: f64) -> bool {
         self.goal == (self.a * a) + (self.b * b)
     }
+}
+
+fn create_extractor() -> Regex {
+    Regex::new("(\\d+).{4}(\\d+)").unwrap()
 }
