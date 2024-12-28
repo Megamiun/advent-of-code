@@ -40,6 +40,7 @@ out/
 ### temp ###
 *.temp
 .kotlin
+resources/*
 
 ### Profiling ###
 flamegraph.svg
