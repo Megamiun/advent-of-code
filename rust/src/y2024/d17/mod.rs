@@ -15,11 +15,10 @@ mod tests {
     }
 
     #[rstest]
-    #[case::sample("sample", 117440)]
+    #[case::sample("sample2", 117440)]
     #[case::input("input", 108107566389757)]
     fn part_2(#[case] file: &str, #[case] expected: usize) {
-        // let result = run_for_n_group(2024, 17, "Part 2", file, find);
-        // assert_aoc!(result, expected)
-        panic!("Not impl");
+        let result = run_for_n_group(2024, 17, "Part 2", file, find);
+        assert_aoc!(result, expected)
     }
 }

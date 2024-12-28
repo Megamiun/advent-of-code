@@ -1,3 +1,4 @@
+use num_traits::Num;
 use paste::paste;
 
 macro_rules! define_parse {
@@ -18,3 +19,5 @@ define_parse!(usize);
 define_parse!(u128);
 define_parse!(u64);
 define_parse!(u32);
+define_parse!(f64);
+define_parse!(f32);

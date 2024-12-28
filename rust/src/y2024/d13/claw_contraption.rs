@@ -1,6 +1,7 @@
+use crate::util::parse_num::parse_f64;
 use derive_more::Display;
 use itertools::Itertools;
-use num_traits::{Num, ToPrimitive};
+use num_traits::ToPrimitive;
 use regex::Regex;
 use std::sync::LazyLock;
 
@@ -10,7 +11,7 @@ const EXTRACTOR: LazyLock<Regex> = LazyLock::new(|| Regex::new("(\\d+).{4}(\\d+)
 
 #[allow(dead_code)]
 pub fn calculate(groups: &[&[String]]) -> usize {
-    sum_groups(groups, &|a, b, goal|
+    sum_groups(groups, |a, b, goal|
         get_min_tokens(*a, *b, *goal, 100f64))
 }
 
@@ -18,11 +19,11 @@ pub fn calculate(groups: &[&[String]]) -> usize {
 pub fn calculate_with_error(groups: &[&[String]]) -> usize {
     let error = [10000000000000f64, 10000000000000f64];
 
-    sum_groups(groups, &|a, b, goal|
-        get_min_tokens(*a, *b, [goal[0] +  error[0], goal[1] +  error[1]], f64::MAX))
+    sum_groups(groups, |a, b, goal|
+        get_min_tokens(*a, *b, [goal[0] + error[0], goal[1] + error[1]], f64::MAX))
 }
 
-fn sum_groups(groups: &[&[String]], calculate: &dyn Fn(&XYPair, &XYPair, &XYPair) -> Option<usize>) -> usize {
+fn sum_groups(groups: &[&[String]], calculate: impl Fn(&XYPair, &XYPair, &XYPair) -> Option<usize>) -> usize {
     groups.iter().map(parse_group)
         .filter_map(|[a, b, goal]| calculate(&a, &b, &goal))
         .sum()
@@ -54,12 +55,8 @@ fn get_min_tokens(
 fn parse_group(group: &&[String]) -> [XYPair; 3] {
     group.iter().map(|line| {
         let (_, [x, y]) = EXTRACTOR.captures(line).unwrap().extract();
-        [to_f64(x), to_f64(y)]
+        [parse_f64(x), parse_f64(y)]
     }).collect_vec().try_into().unwrap()
-}
-
-fn to_f64(x: &str) -> f64 {
-    f64::from_str_radix(x, 10).unwrap()
 }
 
 #[derive(Display)]

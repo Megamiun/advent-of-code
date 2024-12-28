@@ -1,8 +1,7 @@
+use itertools::Itertools;
 use num_traits::Euclid;
 use regex::Regex;
-use std::collections::LinkedList;
 use std::fmt::Debug;
-use std::iter::successors;
 use std::ops::BitXor;
 use std::sync::LazyLock;
 use Instruction::{Bst, Bxc, Bxl, Div, Jnz, Out};
@@ -32,53 +31,51 @@ pub fn execute([registers, program]: &[&[String]; 2]) -> String {
 }
 
 #[allow(dead_code)]
-pub fn find([registers, program]: &[&[String]; 2]) -> usize {
-    let registers = get_registers(registers);
+pub fn find([_, program]: &[&[String]; 2]) -> usize {
     let program = get_program(&program[0]);
 
-    successors(Some(0usize), |prev| Some(prev + 1)).filter(|a_value| {
-        let mut instructor_pointer = 0;
-        let mut registers = registers.clone();
-        registers[0] = *a_value;
+    let instructions = program.chunks(2)
+        .filter_map(|inst| Instruction::from(inst))
+        .collect_vec();
 
-        let mut queue = LinkedList::from_iter(program.iter());
-
-        loop {
-            let Some((new_ptr, new_output)) = run(&mut registers, &program, instructor_pointer) else {
-                return queue.is_empty()
-            };
-
-            instructor_pointer = new_ptr;
-            if let Some(value) = new_output {
-                if let Some(expected) = queue.pop_front() {
-                    if value != *expected {
-                        return false
-                    }
-                } else {
-                    return false
-                }
-            }
-        }
-    }).nth(0).unwrap()
+    find_quine(&instructions, &program.iter().rev().collect_vec(), 1).unwrap()
 }
 
-fn run(registers: &mut Vec<usize>, program: &Vec<usize>, instructor_pointer: usize) -> Option<(usize, Option<usize>)> {
+fn find_quine(instructions: &[Instruction], outputs: &[&usize], minimum: usize) -> Option<usize> {
+    if outputs.is_empty() {
+        return Some(minimum >> 3)
+    }
+
+    let expected = outputs[0];
+    
+    (minimum..minimum + 8).filter_map(|a_reg| {
+        let registers = &mut [a_reg, 0, 0];
+        
+        instructions.iter()
+            .filter_map(|instruction| instruction.apply(registers, 0).1)
+            .nth(0)
+            .filter(|result| result == expected)
+            .and_then(|_| find_quine(instructions, &outputs[1..], a_reg << 3))
+    }).nth(0)
+}
+
+fn run(registers: &mut [usize; 3], program: &[usize], instructor_pointer: usize) -> Option<(usize, Option<usize>)> {
     let instruction = Instruction::from(&program[instructor_pointer..])?;
     Some(instruction.apply(registers, instructor_pointer))
 }
 
-fn get_registers(lines: &[String]) -> Vec<usize> {
+fn get_registers(lines: &[String]) -> [usize; 3] {
     lines.iter().map(|line| {
         let (_, [num]) = EXTRACTOR.captures(line).unwrap().extract();
         usize::from_str_radix(num, 10).unwrap()
-    }).collect::<Vec<_>>()
+    }).collect_vec().try_into().unwrap()
 }
 
 fn get_program(line: &String) -> Vec<usize> {
     EXTRACTOR.captures_iter(line.as_str()).map(|capture| {
         let (_, [num]) = capture.extract();
         usize::from_str_radix(num, 10).unwrap()
-    }).collect::<Vec<_>>()
+    }).collect_vec()
 }
 
 #[derive(Debug)]
@@ -109,9 +106,9 @@ impl Instruction {
         Some(inst)
     }
 
-    fn apply(&self, registers: &mut Vec<usize>, pointer: usize) -> (usize, Option<usize>) {
+    fn apply(&self, registers: &mut [usize; 3], pointer: usize) -> (usize, Option<usize>) {
         match self {
-            Div(register, combo) => registers[*register] = registers[0] / 2usize.pow(Self::combo_value(registers, *combo) as u32),
+            Div(index, combo) => registers[*index] = registers[0] / 2usize.pow(Self::combo_value(registers, *combo) as u32),
             Bxl(literal) => registers[1] = registers[1].bitxor(literal),
             Bst(combo) => registers[1] = Self::combo_value(registers, *combo) % 8,
             Bxc => registers[1] = registers[1].bitxor(registers[2]),
@@ -124,7 +121,7 @@ impl Instruction {
         (pointer + 2, None)
     }
 
-    fn combo_value(registers: &Vec<usize>, value: usize) -> usize {
+    fn combo_value(registers: &[usize; 3], value: usize) -> usize {
         let (data_type, right) = value.div_rem_euclid(&4);
         match data_type {
             0 => right,

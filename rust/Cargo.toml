@@ -7,6 +7,9 @@ edition = "2021"
 [profile.release]
 debug = true
 
+[profile.test]
+inherits = "release"
+
 [dependencies]
 regex = "1.11.1"
 derive_more = { version = "1.0.0", features = ["display", "from"] }
