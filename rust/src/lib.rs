@@ -34,19 +34,16 @@ pub fn run_for_group<T: Display>(year: u32, day: u32, solution: &str, file: &str
 }
 
 pub fn run_for_file<T: Display>(year: u32, day: u32, solution: &str, file: &str, exec: impl Fn(&[String]) -> T) -> T {
-    print_prelude(file, solution);
+    println!("-------------------");
+    println!("-------------------");
+    println!("{}", file);
+    println!("-------------------");
+    println!("-------------------");
+    
     let lines = read_lines(year, day, file);
     println!();
 
     timed(&format!("{file} - {solution}"), || exec(&lines))
-}
-
-pub fn print_prelude(file: &str, solution: &str) {
-    println!("-------------------");
-    println!("-------------------");
-    println!("{}", format!("{file} - {solution}"));
-    println!("-------------------");
-    println!("-------------------");
 }
 
 pub fn read_lines(year: u32, day: u32, file: &str) -> Vec<String> {

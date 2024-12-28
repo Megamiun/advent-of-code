@@ -6,7 +6,9 @@ Those are my solutions to the [Advent of Code](https://adventofcode.com) 2022-20
 
 ## Inputs
 
-Just visit the folder equivalent to the day in the [resources folder](resources), at y[year]/d[day].
+The Advent of Code creator [asks](git@github.com:Megamiun/advent-of-code-resources.git) that participants don't post their inputs, so I have removed mine and maintain them in a private repo that only I have access. Unfortunately, this means that I am the only person that can run the tests D:
+
+If you have shared your inputs, please consider deleting them from history, I have done so via [git-filter-repo](https://github.com/newren/git-filter-repo).
 
 ## Solutions
 
@@ -106,10 +108,9 @@ Possibly out of date at the moment you look at it, but at the best effort basis:
 
 # TODO
 
-[ ] Beautify Rust 2024 d14 onwards
-[ ] Implement 2024 d17 on Rust
-[ ] Beautify Kotlin 2023
-[ ] Port 2023 to Rust
-[ ] Start until 2022
-[ ] Add tests for AOC scenarios (Sample + Input)
-[ ] Add profiling results
+[ ] Beautify Rust 2024 d14 onwards\
+[ ] Beautify Kotlin 2023\
+[ ] Port 2023 to Rust\
+[ ] Start 2015~2022\
+[ ] Add tests for AOC scenarios (Sample + Input)\
+[ ] Add profiling results\
