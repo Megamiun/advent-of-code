@@ -18,7 +18,7 @@ interface Area {
 
         val multiDimensions = levelFactor to levelFactor
 
-        fun getLevelMultiplier(level: Int) = (levelFactorFloat.pow(level - 2)).toLong() * dimension
+        fun getLevelMultiplier(level: Int) = (levelFactorFloat.pow(level - 2)).toInt() * dimension
 
         fun get(area: Area, direction: Direction, calculate: () -> Area) =
             known.getOrPut(area.level to area.getSignals(direction)) { calculate() }

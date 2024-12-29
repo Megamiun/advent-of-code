@@ -6,7 +6,7 @@ Those are my solutions to the [Advent of Code](https://adventofcode.com) 2022-20
 
 ## Inputs
 
-The Advent of Code creator [asks](git@github.com:Megamiun/advent-of-code-resources.git) that participants don't post their inputs, so I have removed mine and maintain them in a private repo that only I have access. Unfortunately, this means that I am the only person that can run the tests D:
+The Advent of Code creator [asks](https://www.reddit.com/r/adventofcode/wiki/troubleshooting/no_asking_for_inputs/) that participants don't post their inputs, so I have removed mine and maintain them in a private repo that only I have access. Unfortunately, this means that I am the only person that can run the tests D:
 
 If you have shared your inputs, please consider deleting them from history, I have done so via [git-filter-repo](https://github.com/newren/git-filter-repo).
 
@@ -67,8 +67,8 @@ Possibly out of date at the moment you look at it, but at the best effort basis:
 - ★★ d21 - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2023/d21)
 - ★★ d22 - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2023/d22)
 - ★★ d23 - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2023/d23)
-- ★☆ d24 - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2023/d24)
-- ★☆ d25 - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2023/d25)
+- ★★ d24 - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2023/d24)
+- ★★ d25 - [Kotlin](jvm/src/main/kotlin/br/com/gabryel/adventofcode/y2023/d25)
 
 ### 2022
 
