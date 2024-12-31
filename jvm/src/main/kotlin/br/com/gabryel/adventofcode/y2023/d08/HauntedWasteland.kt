@@ -6,7 +6,7 @@ import kotlin.time.measureTimedValue
 private val directionRegex = """[0-9A-Z]+""".toRegex()
 
 fun main() {
-    listOf("sample", "sample2", "sample3", "input").forEach { file ->
+    listOf("sample", "sample-2", "sample-3", "input").forEach { file ->
         val lines = readLines(2023, 8, file)
         val directions = lines[0]
 

@@ -8,7 +8,7 @@ mod tests {
 
     #[rstest]
     #[case::sample("sample", 1)]
-    #[case::sample("sample2", 36)]
+    #[case::sample("sample-2", 36)]
     #[case::input("input", 719)]
     fn part_1(#[case] file: &str, #[case] expected: usize) {
         let result = run_for_file(2024, 10, "Part 1", file, get_reachable_sum_for);
@@ -16,7 +16,7 @@ mod tests {
     }
 
     #[rstest]
-    #[case::sample("sample2", 81)]
+    #[case::sample("sample-2", 81)]
     #[case::input("input", 1530)]
     fn part_2(#[case] file: &str, #[case] expected: usize) {
         let result = run_for_file(2024, 10, "Part 2", file, get_trails_sum_for);

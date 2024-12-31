@@ -1,20 +1,6 @@
 package br.com.gabryel.adventofcode.y2023.d02
 
 import br.com.gabryel.adventofcode.y2023.d02.Color.*
-import br.com.gabryel.adventofcode.util.readLines
-
-fun main() {
-    listOf("sample1", "input").forEach {
-        val games = readLines(2023, 2, it)
-        val limits = readLines(2023, 2, "$it-limits")
-
-        val sumValid = games.sumValid(limits)
-        println("[Valid Games   ][$it]: $sumValid")
-
-        val sumMinimum = games.sumMinimumPower()
-        println("[Minimum Values][$it]: $sumMinimum")
-    }
-}
 
 private enum class Color(val value: String) { R("red"), G("green"), B("blue") }
 
@@ -24,27 +10,26 @@ private val emptyColorMap = mapOf(
     B to 0
 )
 
-private fun List<String>.sumMinimumPower(): Int {
-    return map(::getGameSummary)
-        .map { (_, rounds) -> rounds.getMinimumForColors() }
-        .sumOf { it.values.reduce(Int::times) }
-}
-
-private fun List<Map<Color, Int>>.getMinimumForColors() = fold(emptyColorMap) { acc, curr ->
-    acc.mapValues { (color, previous) -> maxOf(previous, curr[color] ?: 0) }
-}
-
-private fun List<String>.sumValid(limits: List<String>): Int {
-    val (redLimit, greenLimit, blueLimit) = limits.map { it.toInt() }
+fun getSumOfValidCubeConumdrumGames(lines: List<String>, limits: List<Int>): Int {
+    val (redLimit, greenLimit, blueLimit) = limits
     val limitsByColor = mapOf(
         R to redLimit,
         G to greenLimit,
         B to blueLimit,
     )
 
-    return map(::getGameSummary)
+    return lines.map(::getGameSummary)
         .filter { (_, rounds) -> rounds.isWithinLimit(limitsByColor) }
         .sumOf { it.first }
+}
+
+fun getMinimumSetOfCubesForCubeConundrum(lines: List<String>) =
+    lines.map(::getGameSummary)
+        .map { (_, rounds) -> rounds.getMinimumForColors() }
+        .sumOf { it.values.reduce(Int::times) }
+
+private fun List<Map<Color, Int>>.getMinimumForColors() = fold(emptyColorMap) { acc, curr ->
+    acc.mapValues { (color, previous) -> maxOf(previous, curr[color] ?: 0) }
 }
 
 private fun List<Map<Color, Int>>.isWithinLimit(limits: Map<Color, Int>) = all { round ->

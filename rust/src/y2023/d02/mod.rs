@@ -7,7 +7,7 @@ mod tests {
     use rstest::rstest;
 
     #[rstest]
-    #[case::sample("sample1", 8)]
+    #[case::sample("sample", 8)]
     #[case::input("input", 2256)]
     fn part_1(#[case] file: &str, #[case] expected: usize) {
         let result = run_for_file(2023, 2, "Part 1", file, |lines| sum_valid(lines, &[12, 13, 14]));
@@ -15,7 +15,7 @@ mod tests {
     }
 
     #[rstest]
-    #[case::sample("sample1", 2286)]
+    #[case::sample("sample", 2286)]
     #[case::input("input", 74229)]
     fn part_2(#[case] file: &str, #[case] expected: usize) {
         let result = run_for_file(2023, 2, "Part 2", file, sum_minimum_power);

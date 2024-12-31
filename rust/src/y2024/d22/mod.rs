@@ -15,7 +15,7 @@ mod tests {
     }
 
     #[rstest]
-    #[case::sample("sample2", 23)]
+    #[case::sample("sample-2", 23)]
     #[case::input("input", 1405)]
     fn part_2(#[case] file: &str, #[case] expected: usize) {
         let result = run_for_file(2024, 22, "Part 2", file, get_max_bananas_after_4_numbers);

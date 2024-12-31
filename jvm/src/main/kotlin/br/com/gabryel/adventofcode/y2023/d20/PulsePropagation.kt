@@ -4,7 +4,7 @@ import br.com.gabryel.adventofcode.util.readLines
 import java.util.concurrent.atomic.AtomicInteger
 
 fun main() {
-    listOf("sample", "sample2", "input").forEach { file ->
+    listOf("sample", "sample-2", "input").forEach { file ->
         val spec = readLines(2023, 20, file)
 
         println("[Signal Multiplication][$file] ${spec.getSignalMultiplication()}")

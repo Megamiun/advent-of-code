@@ -3,7 +3,7 @@ package br.com.gabryel.adventofcode.y2023.d10
 import br.com.gabryel.adventofcode.util.readLines
 
 fun main() {
-    listOf("sample", "sample2", "sample3", "sample4", "sample5", "sample6", "sample7", "sample8", "input").forEach { file ->
+    listOf("sample", "sample-2", "sample-3", "sample-4", "sample-5", "sample-6", "sample-7", "sample-8", "input").forEach { file ->
         val map = readLines(2023, 10, file).map { it.toCharArray() }.toTypedArray()
 
         println("[Biggest Distance  ][$file] ${MaximumDistance(map).maxDistance}")

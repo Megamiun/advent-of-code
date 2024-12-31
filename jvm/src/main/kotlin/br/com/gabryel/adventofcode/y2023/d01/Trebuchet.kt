@@ -1,17 +1,6 @@
 package br.com.gabryel.adventofcode.y2023.d01
 
-import br.com.gabryel.adventofcode.util.readLines
-
-fun main() {
-    listOf("sample1", "sample2", "input").forEach {
-        val lines = readLines(2023, 1, it)
-
-        val result = lines.sumCalibrations()
-        println("[$it]: $result")
-    }
-}
-
-private val substitutions = listOf(
+private val SUBSTITUTIONS = listOf(
     "one" to 1,
     "two" to 2,
     "three" to 3,
@@ -23,13 +12,16 @@ private val substitutions = listOf(
     "nine" to 9
 )
 
-private fun List<String>.sumCalibrations() =
-    map(String::get_calibration_value).sum()
+fun sumTrebuchetCalibrations(lines: List<String>) =
+    lines.sumOf(String::getCalibrationValue)
 
-private fun String.get_calibration_value(): Int {
+fun sumTrebuchetCalibrationsWithWrittenNumbers(lines: List<String>) =
+    lines.sumOf { it.getCalibrationValue(SUBSTITUTIONS) }
+
+private fun String.getCalibrationValue(substitutions: List<Pair<String, Int>> = emptyList()): Int {
     val numbers = windowed(5, partialWindows = true) { window ->
-        window.first().digitToIntOrNull() ?:
-            substitutions.firstOrNull { (key) -> window.startsWith(key) }?.second
+        window.first().digitToIntOrNull()
+            ?: substitutions.firstOrNull { (key) -> window.startsWith(key) }?.second
     }.filterNotNull()
 
     return (numbers.first() * 10) + numbers.last()

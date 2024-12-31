@@ -7,7 +7,7 @@ mod tests {
     use rstest::rstest;
 
     #[rstest]
-    #[case::sample("sample1", 142)]
+    #[case::sample("sample", 142)]
     #[case::input("input", 54697)]
     fn part_1(#[case] file: &str, #[case] expected: u32) {
         let result = run_for_file(2023, 1, "Part 1", file, get_calibration_value_for);
@@ -15,7 +15,7 @@ mod tests {
     }
 
     #[rstest]
-    #[case::sample("sample2", 281)]
+    #[case::sample("sample-2", 281)]
     #[case::input("input", 54885)]
     fn part_2(#[case] file: &str, #[case] expected: u32) {
         let result = run_for_file(2023, 1, "Part 2", file, get_calibration_value_for_written);

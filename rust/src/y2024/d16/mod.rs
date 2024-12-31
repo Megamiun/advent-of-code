@@ -8,7 +8,7 @@ mod tests {
 
     #[rstest]
     #[case::sample("sample", 7036)]
-    #[case::sample2("sample2", 11048)]
+    #[case::sample2("sample-2", 11048)]
     #[case::input("input", 98416)]
     fn part_1(#[case] file: &str, #[case] expected: usize) {
         let result = run_for_file(2024, 16, "Part 1", file, get_min_path);
@@ -17,7 +17,7 @@ mod tests {
 
     #[rstest]
     #[case::sample("sample", 45)]
-    #[case::sample2("sample2", 64)]
+    #[case::sample2("sample-2", 64)]
     #[case::input("input", 471)]
     fn part_2(#[case] file: &str, #[case] expected: usize) {
         let result = run_for_file(2024, 16, "Part 2", file, get_unique_best_spots);

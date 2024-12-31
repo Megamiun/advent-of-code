@@ -12,14 +12,33 @@ import java.text.DecimalFormat
 import java.util.*
 import kotlin.math.*
 
-fun countFutureIntersections(file: List<String>, min: Long, max: Long): Int {
-    val hailstones = file.map { it.toHailStone() }
+fun countHailstoneFutureIntersections(lines: List<String>, min: Long, max: Long): Int {
+    val hailstones = lines.map { it.toHailStone() }
 
     return hailstones.countFutureIntersections(min.toDouble().rangeTo(max.toDouble()))
 }
 
-fun getSumOf(file: List<String>): Long {
-    val hailstones = file.map { it.toHailStone() }
+/**
+ * This one is a doozy, I wasn't able to solve it in the original year and was only able to finish it on 2024
+ * with some support. And in contrast with day 21, which was super hard for me, this one needed a lot more
+ * mathematical basis than I had to solve.
+ *
+ * For reference:
+ * - https://www.youtube.com/watch?v=nP2ahZs40U8
+ * - https://github.com/werner77/AdventOfCode/blob/master/src/main/kotlin/com/behindmedia/adventofcode/year2023/day24/Day24.kt
+ *
+ * Although I took some shortcuts and liberties over his code for performance, I was only able to solve
+ * this problem with this video's help
+ *
+ * Also, there is this more efficient mathematical solution, but I am against using magic which I don't understand
+ * and can't explain when I am trying to learn:
+ * - https://github.com/zebalu/advent-of-code-2023/blob/4f68f96a841d85c7c797ebbc003f9edc5f65672c/aoc2023/src/main/java/io/github/zebalu/aoc2023/days/Day24.java
+ * - https://github.com/DeadlyRedCube/AdventOfCode/blob/1f9d0a3e3b7e7821592244ee51bce5c18cf899ff/2023/AOC2023/D24.h#L66-L294
+ *
+ * Maybe if I go into linear algebra someday?
+ */
+fun getSumOfRockInitialPositions(lines: List<String>): Long {
+    val hailstones = lines.map { it.toHailStone() }
 
     return hailstones.findMatching(X, Y).mapNotNull { (position, delta) ->
         println("$position - $delta")
