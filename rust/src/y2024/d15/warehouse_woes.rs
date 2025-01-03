@@ -75,8 +75,8 @@ impl Bounded<Cell> {
         };
 
         let curr_cell = *self.find_safe(&curr);
-        self.set(&next, curr_cell);
-        self.set(&curr, Empty)
+        self[&next] = curr_cell;
+        self[&curr] = Empty;
     }
 
     fn can_move(&self, curr: &Index2D, direction: Direction, horizontal: bool) -> bool {

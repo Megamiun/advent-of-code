@@ -55,7 +55,7 @@ impl<T: Copy> Bounded<T> {
         let mut new_content = vec![vec![None; width]; height];
 
         for (Index2D(x, y), value) in content {
-            new_content[*y as usize][*x as usize] = Some(*value); 
+            new_content[*y][*x] = Some(*value); 
         }
 
         Bounded { content: new_content, height, width }
@@ -101,15 +101,15 @@ impl<T: PartialEq> Bounded<T> {
     }
 
     pub fn find_first(&self, item: &T) -> Option<Index2D> {
-        self.find_all(item).get(0).copied()
+        self.find_all_iter(item).nth(0)
     }
 
-    pub fn find_all(&self, item: &T) -> Vec<Index2D> {
+    pub fn find_all_iter<'a>(&'a self, item: &'a T) -> impl Iterator<Item=Index2D> + 'a {
         self.content.iter().enumerate().flat_map(|(y, row)| {
             row.iter().enumerate()
-                .filter(|(_, curr)| *curr == item)
+                .filter(|(_, curr)| **curr == *item)
                 .map(move |(x, _)| Index2D(x, y))
-        }).collect_vec()
+        })
     }
 
     pub fn find_adjacent(&self, index: &Index2D) -> Vec<Index2D> {
@@ -130,7 +130,7 @@ impl<T: PartialEq> Bounded<T> {
 
     pub fn find_adjacent_with_content<'a>(&'a self, index: &'a Index2D) -> impl Iterator<Item=(Index2D, &'a T)> {
         Direction::VALUES.iter()
-            .filter_map(move |dir| index + dir.get_dir())
+            .filter_map(|dir| *index + dir)
             .filter_map(|adj| Some((adj, self.find(&adj)?)))
     }
 
@@ -144,14 +144,11 @@ impl<T: PartialEq> Bounded<T> {
     }
 
     pub fn get_all_coordinates_with_content_iter(&self) -> impl Iterator<Item=(Index2D, &T)> {
-        self.content
-            .iter()
-            .enumerate()
-            .flat_map(|(y, line)| {
-                line.iter()
-                    .enumerate()
-                    .map(move |(x, item)| (Index2D(x, y), item))
-            })
+        self.content.iter().enumerate().flat_map(|(y, line)| {
+            line.iter()
+                .enumerate()
+                .map(move |(x, item)| (Index2D(x, y), item))
+        })
     }
 
     pub fn get_all_coordinates_with_content(&self) -> Vec<(Index2D, &T)> {
@@ -165,9 +162,5 @@ impl<T: PartialEq> Bounded<T> {
                 .for_each(move |(x, item)| print!("{}", get_content(&Index2D(x, y), item)));
             println!()
         })
-    }
-
-    pub fn set(&mut self, Index2D(x, y): &Index2D, value: T) {
-        self.content[*y][*x] = value
     }
 }

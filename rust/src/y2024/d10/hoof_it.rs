@@ -14,14 +14,14 @@ pub fn get_trails_sum_for(lines: &[String]) -> usize {
 
 impl Bounded<char> {
     fn get_reachable_sum_for(&self) -> usize {
-        self.find_all(&'0').iter()
-            .map(|position| self.get_reachable(0, position).iter().unique().count())
+        self.find_all_iter(&'0')
+            .map(|position| self.get_reachable(0, &position).iter().unique().count())
             .sum()
     }
     
     fn get_trails_sum_for(&self) -> usize {
-        self.find_all(&'0').iter()
-            .flat_map(|position| self.get_reachable(0, position))
+        self.find_all_iter(&'0')
+            .flat_map(|position| self.get_reachable(0, &position))
             .count()
     }
 
