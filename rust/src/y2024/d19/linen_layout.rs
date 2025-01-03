@@ -1,11 +1,12 @@
 use itertools::Itertools;
 use rustc_hash::FxHashMap;
+use std::cell::RefCell;
 
 #[allow(dead_code)]
 pub fn get_possible_towels([available, goals]: &[&[String]; 2]) -> usize {
     let available = &available[0].split(", ").collect_vec();
 
-    Solver::new(available)
+    Solver::new(available, goals.len())
         .iterate_valid_arrangement_count(goals)
         .filter(|&arrangements| arrangements > 0)
         .count()
@@ -15,46 +16,43 @@ pub fn get_possible_towels([available, goals]: &[&[String]; 2]) -> usize {
 pub fn get_towels_arrangements([available, goals]: &[&[String]; 2]) -> usize {
     let available = &available[0].split(", ").collect_vec();
 
-    Solver::new(available)
+    Solver::new(available, goals.len())
         .iterate_valid_arrangement_count(goals)
         .sum()
 }
 
-struct Solver {
-    cache: FxHashMap<String, usize>,
-    towels: Vec<String>,
+struct Solver<'a> {
+    cache: RefCell<FxHashMap<String, usize>>,
+    towels: &'a[&'a str],
 }
 
-impl Solver {
-    fn new(available: &[&str]) -> Solver {
+impl<'a> Solver<'a> {
+    fn new(available: &'a[&'a str], goals: usize) -> Solver<'a> {
         Solver {
-            cache: FxHashMap::default(),
-            towels: available.iter().map(|s| s.to_string()).collect(),
+            cache: RefCell::new(FxHashMap::with_capacity_and_hasher(goals * 2, Default::default())),
+            towels: available
         }
     }
 
-    fn iterate_valid_arrangement_count<'a>(&'a mut self, goals: &'a [String]) -> impl Iterator<Item=usize> + 'a {
+    fn iterate_valid_arrangement_count(&'a mut self, goals: &'a [String]) -> impl Iterator<Item=usize> + 'a {
         goals.iter().map(|goal| self.count_valid_arrangements(goal))
     }
 
-    fn count_valid_arrangements(&mut self, goal: &str) -> usize {
+    fn count_valid_arrangements(&self, goal: &str) -> usize {
         if goal.is_empty() {
             return 1
-        }   
+        }
         
-        if let Some(size) = self.cache.get(goal) {
+        if let Some(size) = self.cache.borrow().get(goal) {
             return *size
         }
         
         let valid = self.towels.iter()
             .filter_map(|towel| goal.strip_prefix(towel))
-            .collect_vec();
-        
-        let possible_arrangements = valid.iter()
             .map(|remaining| self.count_valid_arrangements(remaining))
             .sum();
 
-        self.cache.insert(goal.to_string(), possible_arrangements);
-        possible_arrangements
+        self.cache.borrow_mut().insert(goal.to_string(), valid);
+        valid
     }
 }

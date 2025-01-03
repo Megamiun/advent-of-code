@@ -22,7 +22,7 @@ pub fn stones_after_steps(lines: &[String], steps: usize) -> usize {
         .split(" ")
         .map(|number| UBig::from_str_radix(number, 10).unwrap())
         .map(|number| cache.apply_rules(steps, &number))
-        .sum::<usize>()
+        .sum()
 }
 
 struct Solver<T: BuildHasher> {

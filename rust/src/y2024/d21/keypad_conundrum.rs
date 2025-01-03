@@ -5,6 +5,7 @@ use rustc_hash::FxHashMap;
 use std::cmp::min;
 use std::collections::HashMap;
 use std::sync::LazyLock;
+use itertools::Itertools;
 
 #[allow(dead_code)]
 pub fn get_sum_of_complexity(lines: &[String], robots: usize) -> usize {
@@ -25,7 +26,7 @@ impl Solver {
         let numeric = NUMERIC.to_owned();
         let directional = DIRECTIONAL.to_owned();
         let layers = [&numeric].iter().chain(vec![&directional; robots].iter())
-            .copied().collect::<Vec<_>>();
+            .copied().collect_vec();
 
         let numerical_part = line.strip_suffix('A').unwrap();
         let numerical_value = usize::from_str_radix(numerical_part, 10).unwrap();

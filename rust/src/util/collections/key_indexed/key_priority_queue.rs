@@ -1,5 +1,5 @@
-use std::fmt::Debug;
 use crate::util::collections::key_indexed::keyable::Keyable;
+use std::fmt::Debug;
 
 #[derive(Debug)]
 pub struct KeyPriorityQueue<V>
@@ -16,7 +16,7 @@ where
     V::Key: Ord + Copy + Debug,
 {
     pub fn new() -> KeyPriorityQueue<V> {
-        KeyPriorityQueue { delegate: vec![] }
+        KeyPriorityQueue { delegate: Vec::with_capacity(64) }
     }
 
     pub fn is_empty(&self) -> bool {
@@ -35,18 +35,20 @@ where
     }
 
     pub fn push(&mut self, item: &V) {
-        self.push_ordered(&item.get_key(), item, 0, self.delegate.iter().len())
+        self.push_ordered(&item.get_key(), item, 0, self.delegate.len())
     }
 
     fn push_ordered(&mut self, key: &V::Key, item: &V, start: usize, end: usize) {
         if start >= end {
-            self.delegate.insert(start, (*key, vec![*item]));
+            let mut values = Vec::with_capacity(16);
+            values.push(*item);
+            self.delegate.insert(start, (*key, values));
             return;
         }
 
         let half = (end + start) / 2;
 
-        if let Some((index_key, index_list)) = &mut self.delegate.get_mut(half) {
+        if let Some((index_key, index_list)) = self.delegate.get_mut(half) {
             if key == index_key {
                 index_list.push(*item)
             } else if key >= index_key {

@@ -35,7 +35,7 @@ impl Bounded<bool> {
 
     fn get_a_path_rec(&self, curr: &Index2D, goal: &Index2D, visited: &mut FxHashSet<Index2D>) -> Option<Vec<Index2D>> {
         let curr_content = self.find(curr);
-        if curr_content.is_none() || *curr_content.unwrap() || visited.contains(curr) {
+        if curr_content.is_none() || *curr_content.unwrap() || !visited.insert(*curr) {
             return None
         }
         
@@ -43,18 +43,15 @@ impl Bounded<bool> {
             return Some(vec![*curr])
         }
         
-        visited.insert(*curr);
+        let mut traverse = |a: &Index2D, b: &Direction| 
+            Some(self.get_a_path_rec(&(a + b.get_dir())?, goal, visited)?);
         
-        let mut traverse = |a: &Index2D, b: &Direction| {
-            Some(self.get_a_path_rec(&(a + b.get_dir())?, goal, visited)?)
-        };
-        
-        let mut vec = traverse(curr, &Right)
+        let mut path = traverse(curr, &Right)
             .or_else(|| traverse(curr, &Down))
             .or_else(|| traverse(curr, &Left))
             .or_else(|| traverse(curr, &Up))?;
         
-        vec.push(*curr);
-        Some(vec)
+        path.push(*curr);
+        Some(path)
     }
 }

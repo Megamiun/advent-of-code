@@ -64,6 +64,15 @@ impl Bounded<Option<usize>> {
             .count()
     }
 
+    fn get_diffs(limit: usize) -> Vec<(Diff, usize)> {
+        let mut diffs = FxHashSet::<(Diff, usize)>::default();
+
+        Direction::VALUES.iter().for_each(|dir|
+            Self::generate_outwards(&mut diffs, &(Diff(0, 0) + dir.get_dir()), 1, limit - 1, *dir));
+
+        diffs.iter().copied().collect()
+    }
+
     fn generate_outwards(diffs: &mut HashSet<(Diff, usize), impl BuildHasher>, diff: &Diff, distance: usize, remaining: usize, to: Direction) {
         if !diffs.insert((*diff, distance)) || remaining == 0 {
             return;
@@ -72,14 +81,5 @@ impl Bounded<Option<usize>> {
         for dir in [to, to.get_clockwise()].iter() {
             Self::generate_outwards(diffs, &(diff + dir.get_dir()), distance + 1, remaining - 1, to)
         }
-    }
-
-    fn get_diffs(limit: usize) -> Vec<(Diff, usize)> {
-        let mut diffs = FxHashSet::<(Diff, usize)>::default();
-
-        Direction::VALUES.iter().for_each(|dir|
-            Self::generate_outwards(&mut diffs, &(Diff(0, 0) + dir.get_dir()), 1, limit - 1, *dir));
-        
-        diffs.iter().copied().collect::<Vec<_>>()
     }
 }

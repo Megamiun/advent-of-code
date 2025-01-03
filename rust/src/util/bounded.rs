@@ -28,9 +28,8 @@ impl<T: PartialEq> IndexMut<&Index2D> for Bounded<T> {
 
 impl From<&[String]> for Bounded<char> {
     fn from(content: &[String]) -> Bounded<char> {
-        let new_content = content
-            .iter()
-            .map(|line| line.chars().collect::<Vec<_>>())
+        let new_content = content.iter()
+            .map(|line| line.chars().collect_vec())
             .collect();
 
         Bounded {
@@ -56,7 +55,7 @@ impl<T: Copy> Bounded<T> {
         let mut new_content = vec![vec![None; width]; height];
 
         for (Index2D(x, y), value) in content {
-            new_content[*y][*x] = Some(*value); 
+            new_content[*y as usize][*x as usize] = Some(*value); 
         }
 
         Bounded { content: new_content, height, width }

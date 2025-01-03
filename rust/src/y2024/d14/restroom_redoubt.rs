@@ -1,10 +1,9 @@
-use crate::util::bounded::Bounded;
+use crate::util::array_bounded::ArrayBounded;
 use crate::util::coordinates::{Diff, Index2D};
 use crate::util::parse_num::parse_i32;
 use itertools::Itertools;
 use num_traits::ToPrimitive;
 use regex::Regex;
-use std::collections::LinkedList;
 use std::iter::successors;
 
 type MovingRobot = (Diff, Diff);
@@ -40,13 +39,11 @@ pub fn get_similar_to_tree(lines: &[String]) -> usize {
         .collect_vec();
 
     successors(Some(initial_position), |robots| {
-        Some(
-            robots.iter()
-                .map(|robot| bounds.move_robot(robot, 1))
-                .collect_vec()
-        )
+        Some(robots.iter()
+            .map(|robot| bounds.move_robot(robot, 1))
+            .collect_vec())
     }).enumerate().filter_map(|(second, robots)| {
-        Some((second, Bounded::from(&bounds, &robots)))
+        Some((second, ArrayBounded::<bool, 101, 103>::from(&robots)))
             .take_if(|(_, map)| map.has_big_cluster(&robots))
     })
         .inspect(|(second, map)| map.print(*second))
@@ -76,18 +73,14 @@ impl Diff {
     }
 }
 
-impl Bounded<bool> {
-    fn from(bounds: &Diff, robots: &[MovingRobot]) -> Bounded<bool> {
-        let mut content = vec![vec![false; bounds.0 as usize]; bounds.1 as usize];
+impl<const WIDTH: usize, const HEIGHT: usize> ArrayBounded<bool, WIDTH, HEIGHT> {
+    fn from(robots: &[MovingRobot]) -> ArrayBounded<bool, WIDTH, HEIGHT> {
+        let mut content = [[false; WIDTH]; HEIGHT];
 
         robots.iter()
             .for_each(|(Diff(x, y), _)| content[*y as usize][*x as usize] = true);
 
-        Bounded {
-            content,
-            height: bounds.1 as usize,
-            width: bounds.0 as usize,
-        }
+        ArrayBounded { content }
     }
 
     fn print(&self, second: usize) {
@@ -111,15 +104,17 @@ impl Bounded<bool> {
             .any(|(position, _)| self.capture_group_size(position, &mut visitable) > cluster_min_size)
     }
 
-    fn capture_group_size(&self, position: &Diff, visitable: &mut Bounded<bool>) -> usize {
+    fn capture_group_size(&self, position: &Diff, visitable: &mut ArrayBounded<bool, WIDTH, HEIGHT>) -> usize {
         let position = Index2D::from_diff(position).unwrap();
 
-        let mut to_visit = LinkedList::from([position]);
+        let mut to_visit = Vec::with_capacity(32);
+        to_visit.push(position);
+        
         let mut contained = 0usize;
         visitable[&position] = false;
 
         while !to_visit.is_empty() {
-            let curr = to_visit.pop_front().unwrap();
+            let curr = to_visit.pop().unwrap();
             contained += 1;
 
             let adjacent = visitable.find_adjacent_with_content(&curr)
@@ -129,7 +124,7 @@ impl Bounded<bool> {
 
             for next in adjacent {
                 visitable[&next] = false;
-                to_visit.push_front(next);
+                to_visit.push(next);
             }
         }
 

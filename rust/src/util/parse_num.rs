@@ -4,6 +4,7 @@ use paste::paste;
 macro_rules! define_parse {
     ($num_type:ty) => {
         paste! {
+            #[inline]
             pub fn [<parse_ $num_type>](num: &str) -> $num_type {
                 $num_type::from_str_radix(num, 10).unwrap()
             }

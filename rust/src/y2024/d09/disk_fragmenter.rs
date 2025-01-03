@@ -25,8 +25,7 @@ pub fn reorder(lines: &[String]) -> usize {
 
     files.iter().rev().map(|[start, file_size, index]| {
         let first_blank = blanks.iter_mut()
-            .filter(|blank| blank[0] < *start)
-            .filter(|blank| blank[1] >= *file_size)
+            .filter(|blank| blank[0] < *start && blank[1] >= *file_size)
             .nth(0);
 
         index * match first_blank {

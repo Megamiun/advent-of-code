@@ -34,13 +34,14 @@ impl Into<char> for Direction {
 
 impl Direction {
     pub const VALUES: [Direction; 4] = [Up, Right, Down, Left];
+    pub const DIR_VALUES: [Diff; 4] = [Diff(0, -1), Diff(1, 0), Diff(0, 1), Diff(-1, 0)];
     
-    pub fn get_dir(&self) -> Diff {
+    pub fn get_dir(&self) -> &'static Diff {
         match self {
-            Up => Diff(0, -1),
-            Right =>  Diff(1, 0),
-            Down => Diff(0, 1),
-            Left =>  Diff(-1, 0)
+            Up => &Self::DIR_VALUES[0],
+            Right =>  &Self::DIR_VALUES[1],
+            Down => &Self::DIR_VALUES[2],
+            Left => &Self::DIR_VALUES[3]
         }
     }
 

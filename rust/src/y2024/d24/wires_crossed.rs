@@ -25,7 +25,7 @@ fn get_z_bits<'a>(nodes: &mut HashMap<&'a str, bool>, edges: &'a EdgeMap) -> Vec
         .filter(|(key, _)| key.starts_with("z"))
         .sorted_by_key(|(key, _)| Reverse(*key))
         .map(|(key, _)| get_bit(nodes, edges, key))
-        .collect_vec()
+        .collect()
 }
 
 fn get_bit<'a>(nodes: &mut HashMap<&'a str, bool>, edges: &'a EdgeMap, key: &'a str) -> bool {

@@ -14,18 +14,16 @@ impl Index2D {
     }
 
     pub fn from_diff(Diff(x_diff, y_diff): &Diff) -> Option<Index2D> {
-        let new_x = usize::try_from(*x_diff);
-        let new_y = usize::try_from(*y_diff);
+        let new_x = x_diff.to_usize()?;
+        let new_y = y_diff.to_usize()?;
 
-        match (new_x, new_y) {
-            (Ok(new_x_val), Ok(new_y_val)) => Some(Index2D(new_x_val, new_y_val)),
-            _ => None,
-        }
+        Some(Index2D(new_x, new_y))
     }
 }
 
 impl Add<Direction> for Index2D {
     type Output = Option<Index2D>;
+    
     fn add(self, other: Direction) -> Self::Output {
         self + other.get_dir()
     }
@@ -33,6 +31,7 @@ impl Add<Direction> for Index2D {
 
 impl Add<Index2D> for Index2D {
     type Output = Index2D;
+    
     fn add(self, other: Index2D) -> Self::Output {
         Self(self.0 + other.0, self.1 + other.1)
     }
@@ -40,6 +39,7 @@ impl Add<Index2D> for Index2D {
 
 impl Sub<Index2D> for Index2D {
     type Output = Diff;
+    
     fn sub(self, other: Index2D) -> Self::Output {
         Diff(self.0 as i32 - other.0 as i32, self.1 as i32 - other.1 as i32)
     }
@@ -49,7 +49,7 @@ impl Mul<usize> for Index2D {
     type Output = Index2D;
 
     fn mul(self, rhs: usize) -> Self::Output {
-        Index2D(self.0 * rhs, self.1 * rhs)
+        Self(self.0 * rhs, self.1 * rhs)
     }
 }
 
@@ -57,7 +57,7 @@ impl Div<usize> for Index2D {
     type Output = Index2D;
 
     fn div(self, rhs: usize) -> Self::Output {
-        Index2D(self.0 / rhs, self.1 / rhs)
+        Self(self.0 / rhs, self.1 / rhs)
     }
 }
 
@@ -65,12 +65,13 @@ impl Rem<Index2D> for Index2D {
     type Output = Index2D;
 
     fn rem(self, rhs: Index2D) -> Self::Output {
-        Index2D(self.0 % rhs.0, self.1 % rhs.1)
+        Self(self.0 % rhs.0, self.1 % rhs.1)
     }
 }
 
 impl Add<Diff> for Index2D {
     type Output = Option<Index2D>;
+
     fn add(self, other: Diff) -> Self::Output {
         Self::from_diff(&(self.as_diff() + other))
     }
@@ -78,6 +79,7 @@ impl Add<Diff> for Index2D {
 
 impl Sub<Diff> for Index2D {
     type Output = Option<Index2D>;
+
     fn sub(self, other: Diff) -> Self::Output {
         Self::from_diff(&(self.as_diff() - other))
     }
@@ -89,6 +91,7 @@ pub struct Diff(pub i32, pub i32);
 
 impl Add<Direction> for Diff {
     type Output = Diff;
+
     fn add(self, other: Direction) -> Self::Output {
         self + other.get_dir()
     }
@@ -96,6 +99,7 @@ impl Add<Direction> for Diff {
 
 impl Add<Diff> for Diff {
     type Output = Diff;
+
     fn add(self, other: Diff) -> Self::Output {
         Diff(self.0 + other.0, self.1 + other.1)
     }
@@ -103,6 +107,7 @@ impl Add<Diff> for Diff {
 
 impl Sub<Diff> for Diff {
     type Output = Diff;
+
     fn sub(self, other: Diff) -> Self::Output {
         Diff(self.0 - other.0, self.1 - other.1)
     }
@@ -110,8 +115,9 @@ impl Sub<Diff> for Diff {
 
 impl Add<Index2D> for Diff {
     type Output = Diff;
+
     fn add(self, other: Index2D) -> Self::Output {
-        self + other.as_diff()
+        Diff(self.0 - other.0 as i32, self.1 - other.1 as i32)
     }
 }
 
