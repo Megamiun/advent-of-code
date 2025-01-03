@@ -2,7 +2,7 @@ use crate::util::parse_num::parse_usize;
 use itertools::Itertools;
 
 #[allow(dead_code)]
-pub fn get_sum_of_correct_middle_points(lines: &[String]) -> usize {
+pub fn get_sum_of_correct_middle_points(lines: &[&[String]; 2]) -> usize {
     let (rules, instructions) = parse_inputs(lines);
 
     instructions.iter()
@@ -12,7 +12,7 @@ pub fn get_sum_of_correct_middle_points(lines: &[String]) -> usize {
 }
 
 #[allow(dead_code)]
-pub fn get_sum_of_incorrect_middle_points(lines: &[String]) -> usize {
+pub fn get_sum_of_incorrect_middle_points(lines: &[&[String]; 2]) -> usize {
     let (rules, instructions) = parse_inputs(lines);
 
     instructions.iter()
@@ -23,7 +23,7 @@ pub fn get_sum_of_incorrect_middle_points(lines: &[String]) -> usize {
 }
 
 fn fix_instruction(rules: &[(usize, usize)], instruction: &[usize]) -> Vec<usize> {
-    let mut copy = instruction.iter().copied().collect::<Vec<_>>();
+    let mut copy = instruction.to_vec();
     let mut has_changes = true;
 
     while has_changes {
@@ -54,27 +54,21 @@ fn is_valid(instruction: &[usize], rule: &(usize, usize)) -> bool {
 }
 
 fn get_positions(instruction: &[usize], (pre, pos): &(usize, usize)) -> Option<(usize, usize)> {
-    let pre_position = instruction.iter().position(|v| v == pre);
-    let post_position = instruction.iter().position(|v| v == pos);
+    let pre_index = instruction.iter().position(|v| v == pre)?;
+    let post_index = instruction.iter().position(|v| v == pos)?;
 
-    match (pre_position, post_position) {
-        (Some(pre_index), Some(post_index)) => Option::from((pre_index, post_index)),
-        _ => None,
-    }
+    Some((pre_index, post_index))
 }
 
-fn parse_inputs(lines: &[String]) -> (Vec<(usize, usize)>, Vec<Vec<usize>>) {
-    let grouped = lines
-        .split(|line| line.is_empty())
-        .take(2)
+fn parse_inputs(lines: &[&[String]; 2]) -> (Vec<(usize, usize)>, Vec<Vec<usize>>) {
+    let rules = lines[0].iter()
+        .map(|line| line.split("|").map(parse_usize).collect_vec())
+        .map(|content| (content[0], content[1]))
         .collect_vec();
 
-    let rules = grouped[0].iter()
-        .map(|line| line.split("|").map(parse_usize).collect_vec())
-        .map(|content| (content[0], content[1]));
-
-    let instructions = grouped[1].iter()
-        .map(|line| line.split(",").map(parse_usize).collect_vec());
+    let instructions = lines[1].iter()
+        .map(|line| line.split(",").map(parse_usize).collect_vec())
+        .collect_vec();
     
-    (rules.collect(), instructions.collect())
+    (rules, instructions)
 }
