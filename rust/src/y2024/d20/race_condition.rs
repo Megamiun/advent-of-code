@@ -1,6 +1,6 @@
-use crate::util::coordinates::{Diff, Index2D};
 use crate::util::bounded::Bounded;
 use crate::util::collections::key_indexed::key_priority_queue::KeyPriorityQueue;
+use crate::util::coordinates::{Diff, Index2D};
 use crate::util::direction::Direction;
 use rustc_hash::{FxBuildHasher, FxHashMap, FxHashSet};
 use std::collections::{HashMap, HashSet};
@@ -28,14 +28,16 @@ impl Bounded<char> {
         while !to_visit.is_empty() {
             let (score, curr) = to_visit.pop().unwrap();
 
-            if self.find_safe(&curr) == &'#' || distances.contains_key(&curr) {
+            if distances.contains_key(&curr) {
                 continue;
             }
 
             distances.insert(curr, score);
 
-            for adj in self.find_adjacent(&curr) {
-                to_visit.push(&(score + 1, adj));
+            for (adj, content) in self.find_adjacent_with_content(&curr) {
+                if content != &'#' {
+                    to_visit.push(&(score + 1, adj));
+                }
             }
         }
 

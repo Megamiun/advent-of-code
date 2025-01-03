@@ -55,7 +55,7 @@ impl<T: Copy> Bounded<T> {
         let mut new_content = vec![vec![None; width]; height];
 
         for (Index2D(x, y), value) in content {
-            new_content[*y][*x] = Some(*value); 
+            new_content[*y][*x] = Some(*value);
         }
 
         Bounded { content: new_content, height, width }
@@ -112,20 +112,11 @@ impl<T: PartialEq> Bounded<T> {
         })
     }
 
-    pub fn find_adjacent(&self, index: &Index2D) -> Vec<Index2D> {
+    pub fn find_adjacent_iter<'a>(&'a self, index: &'a Index2D) -> impl Iterator<Item=Index2D> + '_ {
         Direction::VALUES
             .iter()
-            .filter_map(|dir| index + dir.get_dir())
+            .filter_map(|dir| *index + dir)
             .filter(|adj| self.is_within(adj))
-            .collect()
-    }
-
-    pub fn find_adjacent_with_dir(&self, index: &Index2D) -> Vec<(Index2D, Direction)> {
-        Direction::VALUES
-            .iter()
-            .filter_map(|dir| Some(((index + dir.get_dir())?, *dir)))
-            .filter(|(adj, _)| self.is_within(adj))
-            .collect()
     }
 
     pub fn find_adjacent_with_content<'a>(&'a self, index: &'a Index2D) -> impl Iterator<Item=(Index2D, &'a T)> {

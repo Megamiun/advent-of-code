@@ -34,7 +34,7 @@ impl<T: PartialEq, const WIDTH: usize, const HEIGHT: usize> ArrayBounded<T, WIDT
         &mut self.content[coord.1][coord.0]
     }
 
-    pub fn find_adjacent_with_content<'a>(&'a self, index: &'a Index2D) -> impl Iterator<Item=(Index2D, &'a T)> {
+    pub fn find_adjacent_with_content_iter<'a>(&'a self, index: &'a Index2D) -> impl Iterator<Item=(Index2D, &'a T)> {
         Direction::VALUES.iter()
             .filter_map(|dir| *index + dir)
             .filter_map(|adj| Some((adj, self.find(&adj)?)))
@@ -47,9 +47,5 @@ impl<T: PartialEq, const WIDTH: usize, const HEIGHT: usize> ArrayBounded<T, WIDT
                 .for_each(move |(x, item)| print!("{}", get_content(&Index2D(x, y), item)));
             println!()
         })
-    }
-
-    pub fn set(&mut self, Index2D(x, y): &Index2D, value: T) {
-        self.content[*y][*x] = value
     }
 }

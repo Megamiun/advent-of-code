@@ -61,7 +61,7 @@ fn parse(line: &String, extractor: &Regex) -> MovingRobot {
 }
 
 impl Diff {
-    fn move_robot(&self, (previous, diff): &MovingRobot, amount: usize) -> MovingRobot {
+    fn move_robot(&self, (previous, diff): &MovingRobot, amount: i32) -> MovingRobot {
         (self.constrains_to(&((diff * amount) + previous)), *diff)
     }
 
@@ -111,19 +111,19 @@ impl<const WIDTH: usize, const HEIGHT: usize> ArrayBounded<bool, WIDTH, HEIGHT> 
         to_visit.push(position);
         
         let mut contained = 0usize;
-        visitable[&position] = false;
 
         while !to_visit.is_empty() {
             let curr = to_visit.pop().unwrap();
-            contained += 1;
+            if visitable[&curr] {
+                visitable[&curr] = false;
+                contained += 1;
+            }
 
-            let adjacent = visitable.find_adjacent_with_content(&curr)
+            let adjacent = visitable.find_adjacent_with_content_iter(&curr)
                 .filter(|(_, &available)| available)
-                .map(|(next, _)| next)
-                .collect_vec();
+                .map(|(next, _)| next);
 
             for next in adjacent {
-                visitable[&next] = false;
                 to_visit.push(next);
             }
         }

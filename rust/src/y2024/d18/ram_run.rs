@@ -1,7 +1,7 @@
-use crate::util::coordinates::Index2D;
-use crate::y2024::d18::parse::parse;
 use crate::util::bounded::Bounded;
 use crate::util::collections::key_indexed::key_priority_queue::KeyPriorityQueue;
+use crate::util::coordinates::Index2D;
+use crate::y2024::d18::parse::parse;
 use rustc_hash::FxHashMap;
 use std::iter::successors;
 
@@ -48,7 +48,7 @@ impl Bounded<bool> {
         while !to_visit.is_empty() {
             let (score, (curr, previous)) = to_visit.pop().unwrap();
 
-            if *self.find_safe(&curr) || visited.contains_key(&curr) {
+            if visited.contains_key(&curr) {
                 continue;
             }
 
@@ -58,8 +58,10 @@ impl Bounded<bool> {
                 return Some(successors(Some(end), |prev| visited[prev]).collect());
             }
 
-            for adj in self.find_adjacent(&curr) {
-                to_visit.push(&(score + 1, (adj, Some(curr))));
+            for (adj, content) in self.find_adjacent_with_content(&curr) {
+                if !*content {
+                    to_visit.push(&(score + 1, (adj, Some(curr))));
+                }
             }
         }
 

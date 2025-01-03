@@ -33,9 +33,9 @@ impl Bounded<char> {
         let next = curr + 1;
         let next_char = char::from_digit(next, 10).unwrap();
 
-        self.find_adjacent(position)
-            .iter().filter(|&adj| self.find_safe(adj) == &next_char)
-            .flat_map(|adj| self.get_reachable(next, adj))
+        self.find_adjacent_with_content(position)
+            .filter(|(_, content)| *content == &next_char)
+            .flat_map(|(adj, _)| self.get_reachable(next, &adj))
             .collect()
     }
 }

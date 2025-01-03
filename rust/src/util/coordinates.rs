@@ -129,6 +129,14 @@ impl Mul<usize> for Diff {
     }
 }
 
+impl Mul<i32> for Diff {
+    type Output = Diff;
+
+    fn mul(self, rhs: i32) -> Self::Output {
+        Diff(self.0 * rhs, self.1 * rhs)
+    }
+}
+
 impl Div<usize> for Diff {
     type Output = Diff;
 
@@ -137,12 +145,22 @@ impl Div<usize> for Diff {
     }
 }
 
+impl Div<i32> for Diff {
+    type Output = Diff;
+
+    fn div(self, rhs: i32) -> Self::Output {
+        Diff(self.0 / rhs, self.1 / rhs)
+    }
+}
+
 forward_ref_binop! { impl Sub for Diff }
 forward_ref_binop! { impl Add for Diff }
 forward_ref_binop! { impl Add for Diff, Index2D }
 forward_ref_binop! { impl Add for Diff, Direction }
 forward_ref_binop! { impl Mul for Diff, usize }
+forward_ref_binop! { impl Mul for Diff, i32 }
 forward_ref_binop! { impl Div for Diff, usize }
+forward_ref_binop! { impl Div for Diff, i32 }
 
 forward_ref_binop! { impl Sub for Index2D }
 forward_ref_binop! { impl Sub for Index2D, Diff }

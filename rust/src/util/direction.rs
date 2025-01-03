@@ -36,6 +36,7 @@ impl Direction {
     pub const VALUES: [Direction; 4] = [Up, Right, Down, Left];
     pub const DIR_VALUES: [Diff; 4] = [Diff(0, -1), Diff(1, 0), Diff(0, 1), Diff(-1, 0)];
     
+    #[inline]
     pub fn get_dir(&self) -> &'static Diff {
         match self {
             Up => &Self::DIR_VALUES[0],
