@@ -5,8 +5,7 @@ import br.com.gabryel.adventofcode.util.takeUntilNextBlankLine
 fun generateSourceToDestination(lines: List<String>): Long {
     val iterator = lines.listIterator()
 
-    val neededSeeds = iterator.takeUntilNextBlankLine(hasHeader = false)
-        .first()
+    val neededSeeds = iterator.takeUntilNextBlankLine(hasHeader = false).first()
         .removePrefix("seeds: ")
         .split(" ")
         .map { it.toLong() }

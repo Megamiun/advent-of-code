@@ -5,25 +5,16 @@ import kotlin.math.pow
 
 typealias Card = Triple<Int, List<Int>, List<Int>>
 
-fun main() {
-    listOf("sample1", "input").forEach { file ->
-        val cards = readLines(2023, 4, file)
-
-        println("[Card Power    ][$file] ${sumCardsValues(cards)}")
-        println("[Card Recursive][$file] ${sumCardsRecursive(cards)}")
-    }
-}
-
 private val regex = "(\\d+): (.*) \\| (.*)".toRegex()
 
-private fun sumCardsValues(cards: List<String>) = cards
+fun sumCardsValues(cards: List<String>) = cards
     .map(String::getCard)
     .map { (_, player, winning) -> player.getIntersectionCountWith(winning) }
     .filter { it != 0 }
     .sumOf { 2.0.pow(it.toDouble() - 1) }
     .toInt()
 
-private fun sumCardsRecursive(cards: List<String>): Int {
+fun sumCardsRecursive(cards: List<String>): Int {
     val convertedCards = cards.map(String::getCard)
     return sumCardsRecursive(convertedCards)
 }

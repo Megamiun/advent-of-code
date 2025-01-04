@@ -3,15 +3,12 @@ package br.com.gabryel.adventofcode.y2023.d08
 data class NodeStep(val node: String, val step: Long)
 data class NodePosition(val node: String, val step: Int)
 
-class MultiStepMap(
-    private val directions: String,
-    private val MAPPINGS: Map<String, Pair<String, String>>
-) {
+class MultiStepMap(private val directions: String, private val mappings: Map<String, Pair<String, String>>) {
 
     private val toZCache = HashMap<String, Array<NodePosition?>>()
 
     fun findStepsToArrive(): Long {
-        val startingPoints = MAPPINGS.entries
+        val startingPoints = mappings.entries
             .filter { it.key.endsWith('A') }
             .map { NodeStep(it.key, 0L) }
 
@@ -36,8 +33,7 @@ class MultiStepMap(
         val cached = toZCache[node]?.get(directionPosition)
 
         if (cached != null)
-            return cached
-                .let { (newNode, offset) -> NodeStep(newNode, step + offset) }
+            return cached.let { (newNode, offset) -> NodeStep(newNode, step + offset) }
 
         cacheStepsUntilNextZ(node, directionPosition)
         return toZCache[node]?.get(directionPosition)!!
@@ -56,7 +52,7 @@ class MultiStepMap(
             return
         }
 
-        val nextDestination = getNextDestinationByPosition(directions, MAPPINGS, current, position)
+        val nextDestination = getNextDestinationByPosition(directions, mappings, current, position)
 
         if (nextDestination.endsWith('Z')) {
             previousSteps.add(NodePosition(nextDestination, 1))
@@ -88,6 +84,5 @@ class MultiStepMap(
     private fun Sequence<List<NodeStep>>.extractFirstMatchingStep() =
         drop(1)
             .map { paths -> paths.map { it.step }.distinct() }
-            .first { it.count() == 1 }
-            .first()
+            .firstNotNullOf { it.singleOrNull() }
 }

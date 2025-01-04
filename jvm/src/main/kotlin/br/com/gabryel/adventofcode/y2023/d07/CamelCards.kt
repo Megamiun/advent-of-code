@@ -1,7 +1,5 @@
 package br.com.gabryel.adventofcode.y2023.d07
 
-import br.com.gabryel.adventofcode.util.readLines
-
 private val order = (listOf('A', 'K', 'Q', 'J', 'T') + ('9' downTo '2'))
     .mapIndexed { index, card -> card to index }
     .toMap()
@@ -10,19 +8,14 @@ private val orderWithJoker = (listOf('A', 'K', 'Q', 'T') + ('9' downTo '2') + 'J
     .mapIndexed { index, card -> card to index }
     .toMap()
 
-fun main() {
-    listOf("sample", "input").forEach { file ->
-        val games = readLines(2023, 7, file)
-            .map { it.split(" ") }
-            .map { (cards, bet) -> cards to bet.toInt() }
+fun findSimple(lines: List<String>) =
+    lines.parse().findRankedSum(::findWinLevel, order)
 
-        println("[Ranked Bets            ][$file] ${findRankedSum(games, ::findWinLevel, order)}")
-        println("[Ranked Bets With Jokers][$file] ${findRankedSum(games, ::findWinLevelWithJokers, orderWithJoker)}")
-    }
-}
+fun findJokers(lines: List<String>) =
+    lines.parse().findRankedSum(::findWinLevelWithJokers, orderWithJoker)
 
-private fun findRankedSum(games: List<Pair<String, Int>>, findWinLevel: String.() -> Int, cardMapper: Map<Char, Int>) =
-    games.sortedByDescending { (cards) ->
+private fun List<Pair<String, Int>>.findRankedSum(findWinLevel: String.() -> Int, cardMapper: Map<Char, Int>) =
+    sortedByDescending { (cards) ->
         val level = cards.findWinLevel()
         val normalizedByStrength = cards.normalizeByStrength(cardMapper)
 
@@ -59,3 +52,6 @@ private fun defineWinLevel(first: Int, second: Int) =
 
 private fun String.normalizeByStrength(mapper: Map<Char, Int>) = map(mapper::get)
     .joinToString("") { "$it".padStart(2, '0') }
+
+private fun List<String>.parse() =
+    map { it.split(" ") }.map { (cards, bet) -> cards to bet.toInt() }

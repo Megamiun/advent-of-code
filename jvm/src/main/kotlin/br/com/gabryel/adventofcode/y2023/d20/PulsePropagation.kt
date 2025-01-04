@@ -1,5 +1,6 @@
 package br.com.gabryel.adventofcode.y2023.d20
 
+import br.com.gabryel.adventofcode.util.leastCommonMultiplier
 import br.com.gabryel.adventofcode.util.readLines
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -92,15 +93,6 @@ private fun Map<String, Connection>.registerOnConjunction() {
             .filterIsInstance<Conjunction>()
             .forEach { it.registerInput(name) }
     }
-}
-
-private fun List<Long>.leastCommonMultiplier() = reduce { acc, curr -> leastCommonMultiplier(acc, curr) }
-
-private fun leastCommonMultiplier(a: Long, b: Long) = (a * b) / greatestCommonDivisor(a, b)
-
-private fun greatestCommonDivisor(a: Long, b: Long): Long {
-    if (b == 0L) return a
-    return greatestCommonDivisor(b, a % b)
 }
 
 private class CycleInfo(private val connections: List<Connection>) {
