@@ -2,7 +2,6 @@ package br.com.gabryel.adventofcode.y2023.d06
 
 import kotlin.math.log10
 import kotlin.math.pow
-import kotlin.math.roundToInt
 
 fun getProductOfPossibilities(lines: List<String>) =  lines.parse()
     .map { (time, record) -> calculateWinPossibilities(time, record) }

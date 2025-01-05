@@ -7,7 +7,7 @@ import org.hamcrest.MatcherAssert.assertThat
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 
-class IfYouGiveASeedAFertilizerTest {
+class IfYouGiveASeedFertilizerTest {
     private val files = listOf("sample", "input")
         .associateWith { readLines(2023, 5, it, keepBlanks = true) }
 

@@ -18,11 +18,9 @@ infix fun Coordinate.distanceTo(other: Coordinate) = (x() - other.x()) to (y() -
 
 operator fun Coordinate.plus(other: Coordinate) = (x() + other.x()) to (y() + other.y())
 
-fun DoubleCoordinate.plusa(other: Coordinate) = (x() + other.x()) to (y() + other.y())
-
 operator fun Coordinate.plus(other: Direction) = this + other.vector
 
-fun DoubleCoordinate.plusa(other: Direction) = this.plusa(other.vector)
+fun DoubleCoordinate.plusDouble(other: Direction) = (x() + other.vector.x()) to (y() + other.vector.y())
 
 operator fun <T: Number> TCoordinate<T>.times(other: Int) = (x().toInt() * other) to (x().toInt() * other)
 

@@ -11,8 +11,7 @@ private typealias PointWithDisplacement = Pair<Long, Long>
 fun generateSourceToDestinationRanged(lines: List<String>): Long {
     val iterator = lines.listIterator()
 
-    val neededSeeds = iterator.takeUntilNextBlankLine(hasHeader = false)
-        .first()
+    val neededSeeds = iterator.takeUntilNextBlankLine(hasHeader = false).first()
         .removePrefix("seeds: ")
         .split(" ")
         .chunked(2) { (start, range) -> start.toLong() until  start.toLong() + range.toLong() }

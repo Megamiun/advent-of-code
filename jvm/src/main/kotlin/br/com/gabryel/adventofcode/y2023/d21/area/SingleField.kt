@@ -50,15 +50,13 @@ class SingleField(
             while (toVisit.isNotEmpty()) {
                 val (distance, tile) = toVisit.removeFirst()
 
-                if (tile !in context.dimensions || distances.getSafe(tile) != UNFILLED)
+                if (tile !in context.dimensions || distances[tile] != UNFILLED)
                     continue
 
                 distances[tile] = distance
 
                 val newDistance = distance + 1
-                for ((coord, typeDir) in context.map.findAdjacent(tile)) {
-                    val (char, dir) = typeDir
-
+                for ((coord, char, dir) in context.map.findAdjacent(tile)) {
                     when (char.getType()) {
                         GROUND -> toVisit += newDistance to coord
                         OUTSIDE -> allSignals.computeIfAbsent(dir) { mutableListOf() } +=
@@ -75,7 +73,7 @@ class SingleField(
         private fun LongArray2D.createStepCounter(): LongArray {
             val stepsMap = getAll().filter { it != UNFILLED }.groupingBy { it }.eachCount()
 
-            return (0..stepsMap.keys.max()).asSequence()
+            return (0..stepsMap.keys.max())
                 .map { stepsMap[it] ?: 0 }.chunked(2)
                 .scan(listOf(0L, 0L)) { (acc1, acc2), result ->
                     listOf(acc1 + result[0], acc2 + (result.getOrNull(1) ?: 0))

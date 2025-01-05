@@ -15,6 +15,7 @@ fun findGhostStepsToArrive(lines: List<String>): Long {
         .map { findStepsToArrive(lines[0], mappings, it) { current -> current.last() == 'Z' }.toLong() }
         .leastCommonMultiplier()
 }
+
 private tailrec fun findStepsToArrive(
     directions: String,
     choice: Map<String, Pair<String, String>>,

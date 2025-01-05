@@ -1,9 +1,8 @@
 package br.com.gabryel.adventofcode.y2023.d04
 
-import br.com.gabryel.adventofcode.util.readLines
 import kotlin.math.pow
 
-typealias Card = Triple<Int, List<Int>, List<Int>>
+private typealias Card = Triple<Int, List<Int>, List<Int>>
 
 private val regex = "(\\d+): (.*) \\| (.*)".toRegex()
 

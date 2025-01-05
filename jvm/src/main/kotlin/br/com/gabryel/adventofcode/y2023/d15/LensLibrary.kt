@@ -1,21 +1,13 @@
 package br.com.gabryel.adventofcode.y2023.d15
 
-import br.com.gabryel.adventofcode.util.readLines
+private typealias IndexMap = Array<MutableList<Pair<String, Int>>>
 
-typealias IndexMap = Array<MutableList<Pair<String, Int>>>
+fun findSumOfLensHashes(lines: List<String>) = lines[0].split(",").sumOf(String::calculateHash)
 
-fun main() {
-    listOf("sample", "input").forEach { file ->
-        val instructions = readLines(2023, 15, file).map { it.split(",") }.first()
-
-        println("[Instruction Hash][$file] ${instructions.sumOf { it.calculateHash() }}")
-        println("[Focal Power     ][$file] ${instructions.findFocalPower()}")
-    }
-}
-
-private fun List<String>.findFocalPower(): Int {
+fun findFocalPower(lines: List<String>): Int {
+    val instructions = lines[0].split(",")
     val boxes: IndexMap = Array(256) { mutableListOf() }
-    boxes.apply(this)
+    boxes.apply(instructions)
 
     return boxes.indices.sumOf { boxIndex ->
         val boxValue = boxIndex + 1

@@ -1,10 +1,7 @@
 package br.com.gabryel.adventofcode.y2023.d24
 
+import br.com.gabryel.adventofcode.util.*
 import br.com.gabryel.adventofcode.util.Direction.*
-import br.com.gabryel.adventofcode.util.DoubleCoordinate
-import br.com.gabryel.adventofcode.util.plusa
-import br.com.gabryel.adventofcode.util.x
-import br.com.gabryel.adventofcode.util.y
 import br.com.gabryel.adventofcode.y2023.d24.Vector3D.Dimension
 import br.com.gabryel.adventofcode.y2023.d24.Vector3D.Dimension.*
 import java.math.RoundingMode.HALF_EVEN
@@ -40,35 +37,29 @@ fun countHailstoneFutureIntersections(lines: List<String>, min: Long, max: Long)
 fun getSumOfRockInitialPositions(lines: List<String>): Long {
     val hailstones = lines.map { it.toHailStone() }
 
-    return hailstones.findMatching(X, Y).mapNotNull { (position, delta) ->
-        println("$position - $delta")
-        val hailstone0 = Hailstone(
+    return hailstones.findMatching(X, Y).map { (position, delta) ->
+        val stone = Hailstone(
             Vector3D(position.x().toDouble(), position.y().toDouble(), 0.0),
             Vector3D(delta.x().toDouble(), delta.y().toDouble(), 0.0),
         )
 
-        println("$hailstone0\n")
-        val intersectionTimes = hailstones.map { hailstone ->
-            val t = -(hailstone.position[X] - hailstone0.position[X]) / (hailstone.velocity[X] - hailstone0.velocity[X])
-            t to hailstone.position[Z] + (t * hailstone.velocity[Z])
-        }.asSequence()
-
-        if (intersectionTimes.any { it.first < 0 }) {
-            return@mapNotNull null
-        }
-
-        val positionZ = intersectionTimes.windowed(2, 2) { (f, s) ->
-            val timeDiff = f.first - s.first
-            val diff = f.second - s.second
-            val dz = (diff / timeDiff)
-
-            (dz to f.second - (f.first * dz))
-        }.firstOrNull()?.second ?: return@mapNotNull null
-
-        println(positionZ.roundToInt())
+        val positionZ = hailstones.getPositionZ(stone)
 
         position.x().roundToLong() + position.y().roundToLong() + positionZ.roundToLong()
     }.first()
+}
+
+private fun List<Hailstone>.getPositionZ(stone: Hailstone): Double {
+    val (hailstone1, hailstone2) = map { hailstone ->
+        val time = -(hailstone.position[X] - stone.position[X]) / (hailstone.velocity[X] - stone.velocity[X])
+        time to hailstone.position[Z] + (time * hailstone.velocity[Z])
+    }.take(2)
+
+    val timeDiff = hailstone1.first - hailstone2.first
+    val diff = hailstone1.second - hailstone2.second
+    val diffZ = (diff / timeDiff)
+
+    return hailstone1.second - (hailstone1.first * diffZ)
 }
 
 private fun List<Hailstone>.countFutureIntersections(
@@ -188,8 +179,8 @@ private fun Double.stringified(): String {
 }
 
 private fun List<Hailstone>.findMatching(d1: Dimension, d2: Dimension): Sequence<Pair<DoubleCoordinate, DoubleCoordinate>> {
-    val intersections = 8
-    val neededToPass = min(size -2, 6)
+    val intersections = 4
+    val neededToPass = min(size - 1, 2)
 
     return generateSpiralSequence().mapNotNull { (v1, v2) ->
         val base = this[0]
@@ -218,6 +209,6 @@ private fun Pair<Double, Vector3D>.areTooFar(right: Pair<Double, Vector3D>, d1: 
     (second[d1] - right.second[d1]).absoluteValue > tolerance || (second[d2] - right.second[d2]).absoluteValue > tolerance
 
 private fun generateSpiralSequence() = generateSequence(1) { it + 1 }.flatMap {
-    sequenceOf(1 to UP, ((it * 2) - 1) to RIGHT, it * 2 to DOWN, it * 2 to LEFT, it * 2 to UP)
-        .flatMap { (amount, dir) -> (1..amount).asSequence().map { dir } }
-}.scan(0.0 to 0.0) { acc, dir -> acc.plusa(dir) }
+    listOf(1 to UP, ((it * 2) - 1) to RIGHT, it * 2 to DOWN, it * 2 to LEFT, it * 2 to UP)
+        .flatMap { (amount, dir) -> (1..amount).map { dir } }
+}.scan(0.0 to 0.0) { acc, dir -> acc.plusDouble(dir) }

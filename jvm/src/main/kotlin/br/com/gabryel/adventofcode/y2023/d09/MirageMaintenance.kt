@@ -1,27 +1,18 @@
 package br.com.gabryel.adventofcode.y2023.d09
 
-import br.com.gabryel.adventofcode.util.readLines
+fun findNextNumberInNextLayer(lines: List<String>) =
+    findMissingNumber(lines) { last() + it }
 
-fun main() {
-    listOf("sample", "input").forEach { file ->
-        val lines = readLines(2023, 9, file)
-            .map { it.split(" ").map { it.toInt() } }
+fun findPreviousNumberInNextLayer(lines: List<String>) =
+    findMissingNumber(lines) { first() - it }
 
-        println("[Forward ][$file] ${lines.sumOf(::findNextNumberInNextLayer)}")
-        println("[Backward][$file] ${lines.sumOf(::findPreviousNumberInNextLayer)}")
-    }
-}
+private fun findMissingNumber(lines: List<String>, getMissing: List<Int>.(Int) -> Int) =
+    lines.sumOf { line -> findMissingValueInNextLayer(line.split(" ").map(String::toInt), getMissing) }
 
-private fun findNextNumberInNextLayer(layer: List<Int>) =
-    findMissingValueInNextLayer(layer) { last() + it }
-
-private fun findPreviousNumberInNextLayer(layer: List<Int>) =
-    findMissingValueInNextLayer(layer) { first() - it }
-
-private fun findMissingValueInNextLayer(layer: List<Int>, applying: List<Int>.(Int) -> Int): Int {
+private fun findMissingValueInNextLayer(layer: List<Int>, getMissing: List<Int>.(Int) -> Int): Int {
     if (layer.all { it == 0 }) return 0
 
     val nextLayer = layer.windowed(2).map { (l, r) -> r - l }
-    val nextLayerMissing = findPreviousNumberInNextLayer(nextLayer)
-    return layer.applying(nextLayerMissing)
+    val nextLayerMissing = findMissingValueInNextLayer(nextLayer, getMissing)
+    return layer.getMissing(nextLayerMissing)
 }
