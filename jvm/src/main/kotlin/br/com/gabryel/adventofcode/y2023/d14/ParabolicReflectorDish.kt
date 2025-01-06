@@ -1,6 +1,7 @@
 package br.com.gabryel.adventofcode.y2023.d14
 
 import br.com.gabryel.adventofcode.util.CharArray2D
+import br.com.gabryel.adventofcode.util.toCharArray2D
 
 fun calculateStressAfterSingleMovement(lines: List<String>) =
     StressCalculator(lines).getStressAfterSingleMovement()
@@ -17,13 +18,13 @@ private class StressCalculator(private val terrain: List<String>) {
 
     private val betweenCubeRocksColRanges = terrain.getSquareRocksPerColumn().getRanges(columns.last + 1)
 
-    fun getStressAfterSingleMovement() = terrain.map { it.toCharArray() }.toTypedArray().run {
+    fun getStressAfterSingleMovement() = terrain.toCharArray2D().run {
         moveVertical(down = false)
         calculateStressForState()
     }
 
     fun getStressAfterRotations(remaining: Int) =
-        terrain.map { it.toCharArray() }.toTypedArray().getStressAfterRotations(remaining)
+        terrain.toCharArray2D().getStressAfterRotations(remaining)
 
     private tailrec fun CharArray2D.getStressAfterRotations(
         remaining: Int,

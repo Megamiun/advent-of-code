@@ -1,89 +1,71 @@
 package br.com.gabryel.adventofcode.y2023.d17
 
-import br.com.gabryel.adventofcode.y2023.d17.Direction.*
-import br.com.gabryel.adventofcode.util.readLines
-import java.util.PriorityQueue
+import br.com.gabryel.adventofcode.util.*
+import br.com.gabryel.adventofcode.util.Direction.*
+import java.util.*
 
-fun main() {
-    listOf("sample", "input").forEach { file ->
-        val lines = readLines(2023, 17, file).map { it.map { it.digitToInt() } }
-
-        println("[Minimum Heat Loss - Basic][$file] ${MinimumHeatLoss(lines, 1, 3).minimumHeatLoss}")
-        println("[Minimum Heat Loss - Ultra][$file] ${MinimumHeatLoss(lines, 4, 10).minimumHeatLoss}")
-    }
+fun getMinimumHeatLoss(groups: List<String>, min: Int, max: Int): Int {
+    val map = groups.map { lines -> lines.map { it.digitToInt() }.toIntArray() }.toTypedArray()
+    return MinimumHeatLoss(map, min, max).minimumHeatLoss
 }
 
 private class MinimumHeatLoss(
-    private val map: List<List<Int>>,
+    private val map: IntArray2D,
     private val minConsecutive: Int, 
     private val maxConsecutive: Int
 ) {
-    
-    private val visited = mutableSetOf<String>()
-
-    private val queue = PriorityQueue(compareBy(Path::heatLoss)).also {
-        it.addIfViable(0, 1, RIGHT)
-        it.addIfViable(1, 0, DOWN)
-    }
+    private val end = map[0].lastIndex to map.lastIndex
 
     val minimumHeatLoss by lazy { calculateMinimumHeatLoss() }
 
     private fun calculateMinimumHeatLoss(): Int {
+        val visited = mutableSetOf<Triple<Coordinate, Direction, Int>>()
+
+        val queue = PriorityQueue(compareBy(Path::heatLoss)).apply {
+            addPath(0 to 0, RIGHT)
+            addPath(0 to 0, DOWN)
+        }
+
         while (queue.isNotEmpty()) {
             val current = queue.remove()
-            val x = current.x
-            val y = current.y
 
-            if (x == map.lastIndex && y == map.first().lastIndex)
+            val position = current.position
+            val direction = current.direction
+
+            if (position == end)
                 return current.heatLoss
 
-            val key = "$x;$y;${current.direction};${current.consecutive}"
+            val key = Triple(position, direction, current.consecutive)
             if (key in visited) continue
-            visited.add(key)
+            visited += key
 
-            queue.addIfViable(x, y + 1, RIGHT, current)
-            queue.addIfViable(x, y - 1, LEFT, current)
-            queue.addIfViable(x + 1, y, DOWN, current)
-            queue.addIfViable(x - 1, y, UP, current)
+            if (current.consecutive < maxConsecutive) {
+                queue.addPath(position, direction, current)
+            }
+
+            if (current.consecutive >= minConsecutive) {
+                queue.addPath(position, direction.clockwise(), current)
+                queue.addPath(position, direction.counterClockwise(), current)
+            }
         }
 
         return -1
     }
 
-    private fun PriorityQueue<Path>.addIfViable(x: Int, y: Int, direction: Direction, previous: Path? = null) {
-        if (direction.inverse == previous?.direction) return
-        val tileHeatLoss = map.getOrNull(x)?.getOrNull(y) ?: return
+    private fun PriorityQueue<Path>.addPath(position: Coordinate, direction: Direction, current: Path? = null) {
+        val newPosition = position + direction
+        val tileHeatLoss = map.getOrNull(newPosition) ?: return
 
-        val path = Path(x, y, tileHeatLoss, direction, previous)
-        if (path.consecutive > maxConsecutive) return
-
-        val couldPreviousTurn = previous != null && previous.consecutive < minConsecutive
-        if (couldPreviousTurn && previous?.direction != direction) return
-
-        add(path)
+        add(Path(newPosition, tileHeatLoss, direction, current))
     }
 }
 
 private data class Path(
-    val x: Int,
-    val y: Int,
+    val position: Coordinate,
     val tileHeatLoss: Int,
     val direction: Direction,
     val previous: Path? = null
 ) {
     val heatLoss: Int = (previous?.heatLoss ?: 0) + tileHeatLoss
     val consecutive: Int = if (previous?.direction == direction) previous.consecutive + 1 else 1
-}
-
-private enum class Direction {
-    UP, DOWN, RIGHT, LEFT;
-
-    val inverse by lazy {
-        when (this) {
-            UP -> DOWN
-            DOWN -> UP
-            LEFT -> RIGHT
-            RIGHT -> LEFT
-        }
-    }
 }

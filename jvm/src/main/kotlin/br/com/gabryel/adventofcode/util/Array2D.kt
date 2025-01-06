@@ -10,7 +10,17 @@ typealias LongArray2D = Array<LongArray>
 
 typealias Adjacency<T> = Triple<Coordinate, T, Direction>
 
+fun List<String>.toCharArray2D() = Array(size) { y -> CharArray(first().length) { x -> this[y][x] } }
+
 fun CharArray2D.findAdjacent(coordinate: Coordinate) = Direction.entries.mapNotNull { dir ->
+    val newPosition = coordinate + dir.vector
+    val content = this.getOrNull(newPosition)
+        ?: return@mapNotNull null
+
+    Adjacency(newPosition, content, dir)
+}
+
+fun IntArray2D.findAdjacent(coordinate: Coordinate) = Direction.entries.mapNotNull { dir ->
     val newPosition = coordinate + dir.vector
     val content = this.getOrNull(newPosition)
         ?: return@mapNotNull null
@@ -45,11 +55,16 @@ fun <T> Array2D<T>.getOrNull(coord: Coordinate) =
 fun CharArray2D.getOrNull(coord: Coordinate) =
     getOrNull(coord.y())?.getOrNull(coord.x())
 
+fun IntArray2D.getOrNull(coord: Coordinate) =
+    getOrNull(coord.y())?.getOrNull(coord.x())
+
 operator fun <T> Array2D<T>.get(coord: Coordinate) = this[coord.y()][coord.x()]
 
 operator fun CharArray2D.get(coord: Coordinate) = this[coord.y()][coord.x()]
 
 operator fun LongArray2D.get(coord: Coordinate) = this[coord.y()][coord.x()]
+
+operator fun IntArray2D.get(coord: Coordinate) = this[coord.y()][coord.x()]
 
 fun <T> Array2D<T>.getAll() = asSequence().flatMap { it.asSequence() }
 
@@ -60,5 +75,9 @@ fun <T> Array2D<T>.getAllEntries() = asSequence().flatMapIndexed { y, row ->
 fun LongArray2D.getAll() = asSequence().flatMap { it.asSequence() }
 
 fun CharArray2D.findFirst(content: Char) = asSequence().withIndex().firstNotNullOf { (y, item) ->
+    item.withIndex().firstOrNull { (_, value) -> value == content }?.let { (x) -> x to y }
+}
+
+fun CharArray2D.findFirstOrNull(content: Char) = asSequence().withIndex().firstNotNullOfOrNull { (y, item) ->
     item.withIndex().firstOrNull { (_, value) -> value == content }?.let { (x) -> x to y }
 }
