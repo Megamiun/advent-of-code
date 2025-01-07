@@ -19,7 +19,7 @@ private class MinimumHeatLoss(
     val minimumHeatLoss by lazy { calculateMinimumHeatLoss() }
 
     private fun calculateMinimumHeatLoss(): Int {
-        val visited = mutableSetOf<Triple<Coordinate, Direction, Int>>()
+        val visited = mutableSetOf<String>()
 
         val queue = PriorityQueue(compareBy(Path::heatLoss)).apply {
             addPath(0 to 0, RIGHT)
@@ -35,13 +35,12 @@ private class MinimumHeatLoss(
             if (position == end)
                 return current.heatLoss
 
-            val key = Triple(position, direction, current.consecutive)
+            val key = "$position$direction${current.consecutive}"
             if (key in visited) continue
             visited += key
 
-            if (current.consecutive < maxConsecutive) {
+            if (current.consecutive < maxConsecutive)
                 queue.addPath(position, direction, current)
-            }
 
             if (current.consecutive >= minConsecutive) {
                 queue.addPath(position, direction.clockwise(), current)

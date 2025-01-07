@@ -1,7 +1,7 @@
 package br.com.gabryel.adventofcode.y2023.d22
 
-import br.com.gabryel.adventofcode.y2023.displace
-import br.com.gabryel.adventofcode.y2023.intersects
+import br.com.gabryel.adventofcode.util.displace
+import br.com.gabryel.adventofcode.util.intersects
 import br.com.gabryel.adventofcode.util.readLines
 
 

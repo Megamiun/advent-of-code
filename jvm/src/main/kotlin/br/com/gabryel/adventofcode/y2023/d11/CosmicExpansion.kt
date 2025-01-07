@@ -1,7 +1,7 @@
 package br.com.gabryel.adventofcode.y2023.d11
 
 import br.com.gabryel.adventofcode.util.CharArray2D
-import br.com.gabryel.adventofcode.y2023.size
+import br.com.gabryel.adventofcode.util.size
 
 fun calculateCosmicExpansionMinimumDistanceOfPairs(lines: List<String>, scale: Long) =
     lines.map { it.toCharArray() }.toTypedArray().calculateMinimumDistanceOfPairs(scale)

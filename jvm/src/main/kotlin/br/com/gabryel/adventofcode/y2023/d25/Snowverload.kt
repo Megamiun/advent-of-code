@@ -1,6 +1,5 @@
 package br.com.gabryel.adventofcode.y2023.d25
 
-import br.com.gabryel.adventofcode.y2023.logTimed
 import br.com.gabryel.adventofcode.util.readLines
 import kotlin.math.max
 import kotlin.math.min
@@ -105,7 +104,6 @@ private fun updateShortestPaths(nodes: Int, minDistances: Array<IntArray>, path:
     while (changed) {
         changed = false
         iterations++
-        logTimed("Starting Warshaw Iteration #$iterations")
 
         (0 until nodes).forEach { start ->
             (0 until nodes).forEach { end ->
@@ -127,14 +125,10 @@ private fun updateShortestPaths(nodes: Int, minDistances: Array<IntArray>, path:
                 }
             }
 
-            if (start % (nodes / 5) == 0 && start != 0) {
-                val done = String.format("%.0f", (100 * start.toDouble() / nodes))
-                logTimed("Warshaw Iteration #$iterations $done% finished. Sending signal to check again.")
+            if (start % (nodes / 5) == 0 && start != 0)
                 yield(iterations)
-            }
         }
 
-        logTimed("Warshaw Iteration #$iterations finished. Sending signal to check again.")
         yield(iterations)
     }
 }

@@ -22,11 +22,11 @@ operator fun Coordinate.plus(other: Direction) = this + other.vector
 
 fun DoubleCoordinate.plusDouble(other: Direction) = (x() + other.vector.x()) to (y() + other.vector.y())
 
-operator fun <T: Number> TCoordinate<T>.times(other: Int) = (x().toInt() * other) to (x().toInt() * other)
+operator fun <T: Number> TCoordinate<T>.times(other: Int) = (x().toInt() * other) to (y().toInt() * other)
 
-operator fun <T: Number> TCoordinate<T>.times(other: Long) = (x().toLong() * other) to (x().toLong() * other)
+operator fun <T: Number> TCoordinate<T>.times(other: Long) = (x().toLong() * other) to (y().toLong() * other)
 
-operator fun <T: Number> TCoordinate<T>.div(other: Long) = (x().toLong() * other).toInt() to (x().toLong() * other).toInt()
+operator fun <T: Number> TCoordinate<T>.div(other: Long) = (x().toLong() * other).toInt() to (y().toLong() * other).toInt()
 
 operator fun <T: Number> TCoordinate<T>.div(other: Int): Coordinate = (x().toInt() / other) to (y().toInt() / other)
 
