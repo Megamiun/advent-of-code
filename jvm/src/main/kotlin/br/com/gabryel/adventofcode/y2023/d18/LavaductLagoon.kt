@@ -7,9 +7,12 @@ private typealias Line = Pair<Int, Direction>
 
 private data class LineReport(
     val open: List<IntRange> = emptyList(),
-    private val everything: List<IntRange> = open
+    private val removed: Int = 0,
+    private val openTotal: Int = open.sumOf { it.size() }
 ) {
-    val lineTotal = everything.sumOf { it.size().toLong() }
+    val lineTotal = openTotal + removed
+
+    fun replicateOpen() = copy(removed = 0)
 }
 
 private val extractor = """(.) (\d+) \(#(.*)\)""".toRegex()
@@ -32,8 +35,8 @@ private fun List<Line>.getFilled(): Long {
     val min = bordersByRow.keys.min()
     val max = bordersByRow.keys.max()
 
-    return (min..max).scan(LineReport()) { report, row ->
-        val points = bordersByRow[row] ?: return@scan LineReport(report.open)
+    return (min..max).asSequence().scan(LineReport()) { report, row ->
+        val points = bordersByRow[row] ?: return@scan report.replicateOpen()
 
         val borders = points.sorted().chunked(2).map { it[0]..it[1] }
         val (removals, additions) = borders
@@ -44,8 +47,8 @@ private fun List<Line>.getFilled(): Long {
             acc.flatMap { range -> range.removeInclusive(removed).filter { it.size() > 1 } }
         }
 
-        LineReport(open, everything)
-    }.sumOf { it.lineTotal }
+        LineReport(open, (removals.sumOf { it.size() } - removals.size))
+    }.sumOf { it.lineTotal.toLong() } + 1
 }
 
 private fun List<Line>.getMapBorderCoordinates() =
