@@ -20,17 +20,20 @@ private class LongWalk(lines: List<String>, private val canClimbSlopes: Boolean)
 
     fun findLongestPath() = findLongestRouteToEndFrom(1 to 0)
 
-    private fun findLongestRouteToEndFrom(from: Coordinate, visited: MutableSet<Coordinate> = mutableSetOf()): Int {
-        if (from == end) return 0
+    private fun findLongestRouteToEndFrom(
+        from: Coordinate,
+        visited: BooleanArray2D = Array(nodeMap.size) { BooleanArray(nodeMap[0].size) }
+    ): Int {
         if (from in visited) return Int.MIN_VALUE
+        if (from == end) return 0
 
-        visited += from
+        visited[from] = true
 
         val result = nodeMap[from]!!.maxOf { (nextNode, distance) ->
             distance + findLongestRouteToEndFrom(nextNode, visited)
         }
 
-        visited -= from
+        visited[from] = false
         return result
     }
 
@@ -45,7 +48,10 @@ private class LongWalk(lines: List<String>, private val canClimbSlopes: Boolean)
             populate(next)
     }
 
-    private tailrec fun Coordinate.findNextIntersection(direction: Direction, distance: Int = 1): Pair<Coordinate, Int>? {
+    private tailrec fun Coordinate.findNextIntersection(
+        direction: Direction,
+        distance: Int = 1
+    ): Pair<Coordinate, Int>? {
         val inverse = direction.inverse()
         val movable = getAdjacentMovable().filter { it.second != inverse }
 

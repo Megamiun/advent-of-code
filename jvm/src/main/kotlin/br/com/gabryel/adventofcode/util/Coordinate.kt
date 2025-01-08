@@ -8,6 +8,8 @@ typealias Coordinate = Pair<Int, Int>
 
 typealias DoubleCoordinate = Pair<Double, Double>
 
+data class IntCoordinate(val x: Int, val y: Int)
+
 fun <T> TCoordinate<T>.x() = first
 
 fun <T> TCoordinate<T>.y() = second
@@ -15,6 +17,10 @@ fun <T> TCoordinate<T>.y() = second
 infix fun Coordinate.getManhattanDistance(other: Coordinate) = (x() - other.x()).absoluteValue + (y() - other.y()).absoluteValue
 
 infix fun Coordinate.distanceTo(other: Coordinate) = (x() - other.x()) to (y() - other.y())
+
+operator fun IntCoordinate.plus(other: Coordinate) = IntCoordinate(x + other.x(), y + other.y())
+
+operator fun IntCoordinate.plus(other: Direction) = IntCoordinate(x + other.vector.x(), y + other.vector.y())
 
 operator fun Coordinate.plus(other: Coordinate) = (x() + other.x()) to (y() + other.y())
 

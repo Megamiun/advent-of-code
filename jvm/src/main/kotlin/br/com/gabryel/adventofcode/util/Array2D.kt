@@ -2,6 +2,8 @@ package br.com.gabryel.adventofcode.util
 
 typealias Array2D<T> = Array<Array<T>>
 
+typealias BooleanArray2D = Array<BooleanArray>
+
 typealias CharArray2D = Array<CharArray>
 
 typealias IntArray2D = Array<IntArray>
@@ -33,9 +35,21 @@ fun IntArray2D.findAdjacent(coordinate: Coordinate) = Direction.entries.mapNotNu
     Adjacency(newPosition, content, dir)
 }
 
+operator fun <T> Array2D<T>.contains(coord: IntCoordinate) = this[coord] != null
+
 operator fun <T> Array2D<T>.contains(coord: Coordinate) = this[coord] != null
 
+operator fun BooleanArray2D.contains(coord: Coordinate) = this[coord]
+
+operator fun <T> Array2D<T>.set(coord: IntCoordinate, item: T) {
+    this[coord.y][coord.x] = item
+}
+
 operator fun <T> Array2D<T>.set(coord: Coordinate, item: T) {
+    this[coord.y()][coord.x()] = item
+}
+
+operator fun BooleanArray2D.set(coord: Coordinate, item: Boolean) {
     this[coord.y()][coord.x()] = item
 }
 
@@ -54,8 +68,14 @@ operator fun IntArray2D.set(coord: Coordinate, item: Int) {
 inline fun <reified T> Array2D<T?>.mapValues(map: (T) -> T) =
     map { it.map { it?.let { map(it) } }.toTypedArray() }.toTypedArray()
 
+fun <T> Array2D<T>.getOrNull(coord: IntCoordinate) =
+    getOrNull(coord.y)?.getOrNull(coord.x)
+
 fun <T> Array2D<T>.getOrNull(coord: Coordinate) =
     getOrNull(coord.y())?.getOrNull(coord.x())
+
+fun CharArray2D.getOrNull(coord: IntCoordinate) =
+    getOrNull(coord.y)?.getOrNull(coord.x)
 
 fun CharArray2D.getOrNull(coord: Coordinate) =
     getOrNull(coord.y())?.getOrNull(coord.x())
@@ -63,7 +83,11 @@ fun CharArray2D.getOrNull(coord: Coordinate) =
 fun IntArray2D.getOrNull(coord: Coordinate) =
     getOrNull(coord.y())?.getOrNull(coord.x())
 
+operator fun <T> Array2D<T>.get(coord: IntCoordinate) = this[coord.y][coord.x]
+
 operator fun <T> Array2D<T>.get(coord: Coordinate) = this[coord.y()][coord.x()]
+
+operator fun BooleanArray2D.get(coord: Coordinate) = this[coord.y()][coord.x()]
 
 operator fun CharArray2D.get(coord: Coordinate) = this[coord.y()][coord.x()]
 

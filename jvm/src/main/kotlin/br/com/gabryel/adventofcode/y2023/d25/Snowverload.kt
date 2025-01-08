@@ -1,9 +1,10 @@
 package br.com.gabryel.adventofcode.y2023.d25
 
+import br.com.gabryel.adventofcode.util.*
 import kotlin.math.max
 import kotlin.math.min
 
-private val EMPTY = IntArray(0)
+private typealias Mapping = Pair<Int, Int>
 
 private val wordFinder = "\\w+".toRegex()
 
@@ -22,62 +23,76 @@ fun getProductsOfSnowverload(lines: List<String>): Int {
     return Context(connections, nodes.size).findProductOfSplitGroups()
 }
 
-private class Context(private val edges: List<Pair<Int, Int>>, private val numberOfNodes: Int) {
+private class Context(private val edges: List<Mapping>, private val numberOfNodes: Int) {
+    private val connectionsMap = initializeConnectionsMap()
     private val minDistances = initializeMinDistances()
     private val paths = initializePaths()
-    private val maxEdgesToCheck = 300
+    private val maxEdgesToCheck = 40
 
-    fun findProductOfSplitGroups() = updatePaths().firstNotNullOf { searchCuttableCables() }
+    fun findProductOfSplitGroups() = updatePaths().drop(3)
+        .firstNotNullOf { searchCuttableCables() }
 
     private fun searchCuttableCables(): Int? {
         val frequency = sortEdgesByFrequency()
         val lastToCheck = min(maxEdgesToCheck, frequency.size - 1)
+        val connections = connectionsMap.map { it.toMutableList() }
 
         (0..lastToCheck).forEach { first ->
+            val wire1 = frequency[first]
+            connections.disconnect(wire1)
             (first + 1..lastToCheck).forEach { second ->
+                val wire2 = frequency[second]
+                connections.disconnect(wire2)
                 (second + 1..lastToCheck).forEach { third ->
-                    val reducedEdges = edges - setOf(frequency[first], frequency[second], frequency[third])
+                    val wire3 = frequency[third]
+                    connections.disconnect(wire3)
 
-                    val newConnectionsMap = (0 until numberOfNodes).associateWith { node ->
-                        reducedEdges.filter { it.first == node }.map { it.second } +
-                                reducedEdges.filter { it.second == node }.map { it.first }
-                    }
-
-                    val visitedNodes = BooleanArray(numberOfNodes).apply {
+                    val reachableNodes = BooleanArray(numberOfNodes).apply {
                         set(0, true)
                     }
 
-                    val toVisit = ArrayList<Int>().apply {
+                    val toVisit = ArrayList<Int>(numberOfNodes).apply {
                         add(0)
                     }
 
                     while (toVisit.isNotEmpty()) {
                         val current = toVisit.removeLast()
-                        val nextVisits = newConnectionsMap[current]!!
-                            .filterNot { visitedNodes[it] }
 
-                        nextVisits.forEach {
-                            visitedNodes[it] = true
+                        for (next in connections[current]) {
+                            if (!reachableNodes[next]) {
+                                reachableNodes[next] = true
+                                toVisit += next
+                            }
                         }
-
-                        toVisit += nextVisits
                     }
 
-                    if (visitedNodes.any { !it })
-                        return visitedNodes.count { it } * visitedNodes.count { !it }
+                    if (reachableNodes.any { !it })
+                        return reachableNodes.count { it } * reachableNodes.count { !it }
+
+                    connections.reconnect(wire3)
                 }
+                connections.reconnect(wire2)
             }
+            connections.reconnect(wire1)
         }
 
         return null
     }
 
-    private fun sortEdgesByFrequency() = paths.flatten().reversed()
-        .flatMapIndexed { index, values ->
-            values.asSequence().take(index).windowed(2) { (l, r) -> sortedIndices(l, r) }
-        }
-        .groupingBy { it }.eachCount().entries
-        .sortedByDescending { it.value }
+    private fun List<MutableList<Int>>.disconnect(wire: Mapping) {
+        this[wire.x()] -= wire.y()
+        this[wire.y()] -= wire.x()
+    }
+
+    private fun List<MutableList<Int>>.reconnect(wire: Mapping) {
+        this[wire.x()] += wire.y()
+        this[wire.y()] += wire.x()
+    }
+
+    private fun sortEdgesByFrequency() = paths.reversed()
+        .flatMapIndexed { from, allTo -> allTo.take(from).flatten() }
+        .groupingBy { it }.eachCount()
+        .entries.sortedByDescending { it.value }
         .map { it.key }
 
     private fun updatePaths() = sequence {
@@ -86,18 +101,17 @@ private class Context(private val edges: List<Pair<Int, Int>>, private val numbe
             changed = false
 
             for (start in 0 until numberOfNodes) {
-                for (end in 0 until numberOfNodes) {
-                    if (start == end) continue
-
-                    var minDistance = minDistances[start][end]
-                    var minIntermediate: Int? = null
+                for (end in start + 1 until numberOfNodes) {
+                    val startToEnd = start to end
+                    var minDistance = minDistances[startToEnd]
+                    var minIntermediate = end
 
                     for (intermediate in 0 until numberOfNodes) {
                         val toIntermediate = minDistances[start][intermediate]
-                        val fromIntermediate = minDistances[intermediate][end]
+                        if (toIntermediate >= minDistance) continue
 
-                        if (toIntermediate == Int.MAX_VALUE || fromIntermediate == Int.MAX_VALUE)
-                            continue
+                        val fromIntermediate = minDistances[intermediate][end]
+                        if (fromIntermediate >= minDistance) continue
 
                         val candidate = toIntermediate + fromIntermediate
                         if (minDistance > candidate) {
@@ -106,21 +120,35 @@ private class Context(private val edges: List<Pair<Int, Int>>, private val numbe
                         }
                     }
 
-                    if (minIntermediate != null) {
-                        minDistances[start][end] = minDistance
-                        minDistances[end][start] = minDistance
-                        paths[start][end] = paths[start][minIntermediate] + paths[minIntermediate][end]
-                        paths[end][start] = (paths[start][end].dropLast(1).reversed() + start).toIntArray()
+                    if (updateRecursive(start, minIntermediate, end, minDistance, 7))
                         changed = true
-                    }
                 }
 
-                if (start % 200 == 0 && start != 0)
-                    yield(true)
+                yield(Unit)
             }
-
-            yield(true)
         }
+    }
+
+    private fun updateRecursive(start: Int, intermediate: Int, end: Int, distance: Int, levels: Int): Boolean {
+        if (minDistances[start][end] <= distance) return false
+
+        val fullPath = paths[start][intermediate] + paths[intermediate][end]
+        minDistances[end][start] = distance
+        minDistances[start][end] = distance
+        paths[end][start] = fullPath
+        paths[start][end] = fullPath
+
+        if (levels == 0) return true
+
+        for (next in 0 until numberOfNodes) {
+            if (next == start || next == end) continue
+
+            val endToNext = minDistances[end][next]
+            if (endToNext != Int.MAX_VALUE)
+                updateRecursive(start, end, next, distance + endToNext, levels - 1)
+        }
+
+        return true
     }
 
     private fun initializeMinDistances() = Array(numberOfNodes) { IntArray(numberOfNodes) { Int.MAX_VALUE } }.apply {
@@ -132,11 +160,17 @@ private class Context(private val edges: List<Pair<Int, Int>>, private val numbe
         }
     }
 
-    private fun initializePaths() = Array(numberOfNodes) { Array(numberOfNodes) { EMPTY } }.apply {
-        edges.forEach { (l, r) ->
-            this[l][r] = intArrayOf(r)
-            this[r][l] = intArrayOf(l)
+    private fun initializePaths() =
+        Array(numberOfNodes) { Array(numberOfNodes) { emptyList<Mapping>() } }.apply {
+            edges.forEach { edge ->
+                val (l, r) = edge
+                this[l][r] = listOf(edge)
+                this[r][l] = listOf(edge)
+            }
         }
+
+    private fun initializeConnectionsMap() = (0 until numberOfNodes).map { node ->
+        edges.mapNotNull { if (it.first == node) it.second else if (it.second == node) it.first else null }
     }
 }
 
