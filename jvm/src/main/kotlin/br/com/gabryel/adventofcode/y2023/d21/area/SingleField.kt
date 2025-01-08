@@ -6,7 +6,7 @@ import br.com.gabryel.adventofcode.y2023.d21.area.CellType.*
 import java.util.*
 import kotlin.collections.ArrayDeque
 
-private const val UNFILLED = -1L
+private const val UNFILLED = -1
 
 class SingleField(
     override val context: Context,
@@ -16,7 +16,7 @@ class SingleField(
 
     override val level = 1
 
-    override val stepsToEnd = stepsMap.size.toLong()
+    override val stepsToEnd = stepsMap.size
 
     override val firstSignal = signals.values.minOf { it.minOf { it.first } }
 
@@ -28,18 +28,18 @@ class SingleField(
         from(context, getSignals(direction))
     }
 
-    override fun countPossibleAtStep(steps: Long) =
+    override fun countPossibleAtStep(steps: Int) =
         if (steps < 0) 0
-        else if (steps < stepsToEnd) stepsMap[steps.toInt()]
-        else getPossiblePerParity(steps % 2 == 0L)
+        else if (steps < stepsToEnd) stepsMap[steps]
+        else getPossiblePerParity(steps % 2 == 0)
 
     private fun getPossiblePerParity(even: Boolean) =
-        stepsMap[stepsMap.size - if ((stepsToEnd % 2 == 0L) == even) 2 else 1]
+        stepsMap[stepsMap.size - if (stepsToEnd % 2 == 0 == even) 2 else 1]
 
     companion object {
         fun from(context: Context, starts: List<StepState>): SingleField {
             val minTime = starts.minOf { it.first }
-            val distances = Array(context.map.size) { LongArray(context.map.size) { UNFILLED } }
+            val distances = Array(context.map.size) { IntArray(context.map.size) { UNFILLED } }
 
             val toVisit = ArrayDeque<StepState>().apply {
                 this += starts.map { (startTime, start) -> (startTime - minTime) to start }
@@ -56,7 +56,7 @@ class SingleField(
                 distances[tile] = distance
 
                 val newDistance = distance + 1
-                for ((coord, char, dir) in context.map.findAdjacent(tile)) {
+                for ((coord, char, dir) in context.map.findAdjacentWithNulls(tile)) {
                     when (char.getType()) {
                         GROUND -> toVisit += newDistance to coord
                         OUTSIDE -> allSignals.computeIfAbsent(dir) { mutableListOf() } +=
@@ -70,7 +70,7 @@ class SingleField(
             return SingleField(context, signals, distances.createStepCounter())
         }
 
-        private fun LongArray2D.createStepCounter(): LongArray {
+        private fun IntArray2D.createStepCounter(): LongArray {
             val stepsMap = getAll().filter { it != UNFILLED }.groupingBy { it }.eachCount()
 
             return (0..stepsMap.keys.max())

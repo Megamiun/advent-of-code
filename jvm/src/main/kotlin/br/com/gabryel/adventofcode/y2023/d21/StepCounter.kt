@@ -5,35 +5,25 @@ import br.com.gabryel.adventofcode.y2023.d21.area.Area
 import br.com.gabryel.adventofcode.y2023.d21.area.Area.Context
 import br.com.gabryel.adventofcode.y2023.d21.area.SingleField
 
-fun main() {
-    listOf("sample", "input").forEach { file ->
-        val map = readLines(2023, 21, file)
+fun countStepsFor(lines: List<String>, steps: Int) =
+    SingleStepCounter(lines).getPossibleTilesOn(steps)
 
-        SingleStepCounter(map).printSequenceForSteps(file, "Limited", 6, 64)
-        BigStepCounter(map).printSequenceForSteps(file, "Infinite", 6, 10, 50, 26501365)
-    }
-}
+fun countStepsForInfinite(lines: List<String>, steps: Int) =
+    BigStepCounter(lines).getPossibleTilesOn(steps)
 
-private fun StepCounter.printSequenceForSteps(file: String, type: String, vararg printable: Long) {
-    printable.forEach { steps ->
-        logTimeSection("[Walkable Tiles - $type][$file][$steps]") {
-            println("[Walkable Tiles - $type][$file][$steps] ${getPossibleTilesOn(steps)}")
-        }
-    }
-}
 
 interface StepCounter {
-    fun getPossibleTilesOn(steps: Long): Long
+    fun getPossibleTilesOn(steps: Int): Long
 }
 
 class SingleStepCounter(private val map: List<String>) : StepCounter {
-    override fun getPossibleTilesOn(steps: Long): Long {
+    override fun getPossibleTilesOn(steps: Int): Long {
         return map.getCentral().countPossibleAtStep(steps)
     }
 }
 
 class BigStepCounter(private val map: List<String>) : StepCounter {
-    override fun getPossibleTilesOn(steps: Long): Long {
+    override fun getPossibleTilesOn(steps: Int): Long {
         return generateSequence<Area>(map.getCentral()) { it.grow() }
             .first { steps <= it.firstSignal }
             .countPossibleAtStep(steps)
@@ -45,5 +35,5 @@ private fun List<String>.getCentral(): SingleField {
     val context = Context(map)
 
     val start = map.findFirst('S')
-    return SingleField.from(context, listOf(0L to start))
+    return SingleField.from(context, listOf(0 to start))
 }

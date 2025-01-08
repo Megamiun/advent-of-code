@@ -1,134 +1,143 @@
 package br.com.gabryel.adventofcode.y2023.d25
 
-import br.com.gabryel.adventofcode.util.readLines
 import kotlin.math.max
 import kotlin.math.min
 
-private const val EDGES_TO_CHECK_PER_ITERATION = 15
+private val EMPTY = IntArray(0)
 
-fun main() {
-    listOf("sample", "input").forEach { file ->
-        val lines = readLines(2023, 25, file)
+private val wordFinder = "\\w+".toRegex()
 
-        val nodes = lines.flatMap { "\\w+".toRegex().findAll(it).map { it.value } }
-            .distinct()
-            .mapIndexed { index, word -> word to index }
-            .toMap()
+fun getProductsOfSnowverload(lines: List<String>): Int {
+    val nodes = lines.flatMap { wordFinder.findAll(it).map { it.value } }
+        .distinct()
+        .mapIndexed { index, word -> word to index }
+        .toMap()
 
-        val connections = lines.flatMap {
-            val (left, others) = it.split(": ")
-            others.split(" ").map { min(nodes[it]!!, nodes[left]!!) to max(nodes[it]!!, nodes[left]!!) }
-        }
-
-        println("[Product Of Groups][$file] ${getProductOfGroups(connections, nodes)}")
+    val connections = lines.flatMap { line ->
+        val (left, others) = line.split(": ")
+        val nodeLeft = nodes[left]!!
+        others.split(" ").map { sortedIndices(nodeLeft, nodes[it]!!) }
     }
+
+    return Context(connections, nodes.size).findProductOfSplitGroups()
 }
 
-private fun getProductOfGroups(edges: List<Pair<Int, Int>>, nodes: Map<String, Int>) =
-    getMostUsedPerIteration(edges, nodes.size)
-        .map { findProductOfGroups(it, nodes.size) }
-        .filter { it != 0 }
-        .first()
+private class Context(private val edges: List<Pair<Int, Int>>, private val numberOfNodes: Int) {
+    private val minDistances = initializeMinDistances()
+    private val paths = initializePaths()
+    private val maxEdgesToCheck = 300
 
-private fun findProductOfGroups(edges: List<Pair<Int, Int>>, nodeNumber: Int): Int {
-    (0..EDGES_TO_CHECK_PER_ITERATION).forEach { first ->
-        (first + 1..EDGES_TO_CHECK_PER_ITERATION).forEach { second ->
-            (second + 1..EDGES_TO_CHECK_PER_ITERATION).forEach { third ->
-                val toRemove = setOf(first, second, third)
-                val newConnections = edges.filterIndexed { index, _ -> index !in toRemove }
+    fun findProductOfSplitGroups() = updatePaths().firstNotNullOf { searchCuttableCables() }
 
-                val newConnectionsMap = (0 until nodeNumber).associateWith { node ->
-                    newConnections.filter { it.first == node }.map { it.second } +
-                            newConnections.filter { it.second == node }.map { it.first }
-                }
+    private fun searchCuttableCables(): Int? {
+        val frequency = sortEdgesByFrequency()
+        val lastToCheck = min(maxEdgesToCheck, frequency.size - 1)
 
-                val visitedNodes = BooleanArray(nodeNumber).apply {
-                    set(0, true)
-                }
-                val toVisit = ArrayDeque<Int>().apply {
-                    add(0)
-                }
+        (0..lastToCheck).forEach { first ->
+            (first + 1..lastToCheck).forEach { second ->
+                (second + 1..lastToCheck).forEach { third ->
+                    val reducedEdges = edges - setOf(frequency[first], frequency[second], frequency[third])
 
-                while (toVisit.isNotEmpty()) {
-                    val current = toVisit.removeFirst()
-
-                    val nextVisits = newConnectionsMap[current]!!
-                        .filterNot { visitedNodes[it] }
-
-                    nextVisits.forEach {
-                        visitedNodes[it] = true
+                    val newConnectionsMap = (0 until numberOfNodes).associateWith { node ->
+                        reducedEdges.filter { it.first == node }.map { it.second } +
+                                reducedEdges.filter { it.second == node }.map { it.first }
                     }
 
-                    toVisit.addAll(nextVisits)
-                }
+                    val visitedNodes = BooleanArray(numberOfNodes).apply {
+                        set(0, true)
+                    }
 
-                if (visitedNodes.any { !it })
-                    return visitedNodes.count { it } * visitedNodes.count { !it }
+                    val toVisit = ArrayList<Int>().apply {
+                        add(0)
+                    }
+
+                    while (toVisit.isNotEmpty()) {
+                        val current = toVisit.removeLast()
+                        val nextVisits = newConnectionsMap[current]!!
+                            .filterNot { visitedNodes[it] }
+
+                        nextVisits.forEach {
+                            visitedNodes[it] = true
+                        }
+
+                        toVisit += nextVisits
+                    }
+
+                    if (visitedNodes.any { !it })
+                        return visitedNodes.count { it } * visitedNodes.count { !it }
+                }
             }
         }
-    }
-    return 0
-}
 
-private fun getMostUsedPerIteration(edges: List<Pair<Int, Int>>, nodes: Int): Sequence<List<Pair<Int, Int>>> {
-    val minDistances = Array(nodes) { IntArray(nodes) { Int.MAX_VALUE } }
-    val paths = Array(nodes) { index -> Array(nodes) { intArrayOf() } }
-
-    edges.forEach { (first, second) ->
-        minDistances[first][second] = 1
-        minDistances[second][first] = 1
-        paths[first][second] = intArrayOf(second)
-        paths[second][first] = intArrayOf(first)
+        return null
     }
 
-    (0 until nodes).forEach {
-        minDistances[it][it] = 0
-    }
+    private fun sortEdgesByFrequency() = paths.flatten().reversed()
+        .flatMapIndexed { index, values ->
+            values.asSequence().take(index).windowed(2) { (l, r) -> sortedIndices(l, r) }
+        }
+        .groupingBy { it }.eachCount().entries
+        .sortedByDescending { it.value }
+        .map { it.key }
 
-    return updateShortestPaths(nodes, minDistances, paths)
-        .map { paths.sortEdgesByFrequency() }
-        .map { it + (edges - it) }
-}
+    private fun updatePaths() = sequence {
+        var changed = true
+        while (changed) {
+            changed = false
 
-private fun Array<Array<IntArray>>.sortEdgesByFrequency() = flatten()
-    .flatMap { it.asSequence().windowed(2) { (l, r) -> min(l, r) to max(l, r) } }
-    .groupingBy { it }
-    .eachCount()
-    .entries
-    .sortedByDescending { it.value }
-    .map { it.key }
+            for (start in 0 until numberOfNodes) {
+                for (end in 0 until numberOfNodes) {
+                    if (start == end) continue
 
-private fun updateShortestPaths(nodes: Int, minDistances: Array<IntArray>, path: Array<Array<IntArray>>) = sequence {
-    var iterations = 0
-    var changed = true
-    while (changed) {
-        changed = false
-        iterations++
+                    var minDistance = minDistances[start][end]
+                    var minIntermediate: Int? = null
 
-        (0 until nodes).forEach { start ->
-            (0 until nodes).forEach { end ->
-                (0 until nodes).forEach { intermediate ->
-                    val toIntermediate = minDistances[start][intermediate]
-                    val fromIntermediate = minDistances[intermediate][end]
+                    for (intermediate in 0 until numberOfNodes) {
+                        val toIntermediate = minDistances[start][intermediate]
+                        val fromIntermediate = minDistances[intermediate][end]
 
-                    if (toIntermediate == Int.MAX_VALUE || fromIntermediate == Int.MAX_VALUE)
-                        return@forEach
+                        if (toIntermediate == Int.MAX_VALUE || fromIntermediate == Int.MAX_VALUE)
+                            continue
 
-                    val candidate = toIntermediate + fromIntermediate
-                    if (minDistances[start][end] > candidate) {
-                        minDistances[start][end] = candidate
-                        minDistances[end][start] = candidate
-                        path[start][end] = path[start][intermediate] + path[intermediate][end]
-                        path[end][start] = (path[start][end].dropLast(1).reversed() + start).toIntArray()
+                        val candidate = toIntermediate + fromIntermediate
+                        if (minDistance > candidate) {
+                            minDistance = candidate
+                            minIntermediate = intermediate
+                        }
+                    }
+
+                    if (minIntermediate != null) {
+                        minDistances[start][end] = minDistance
+                        minDistances[end][start] = minDistance
+                        paths[start][end] = paths[start][minIntermediate] + paths[minIntermediate][end]
+                        paths[end][start] = (paths[start][end].dropLast(1).reversed() + start).toIntArray()
                         changed = true
                     }
                 }
+
+                if (start % 200 == 0 && start != 0)
+                    yield(true)
             }
 
-            if (start % (nodes / 5) == 0 && start != 0)
-                yield(iterations)
+            yield(true)
         }
+    }
 
-        yield(iterations)
+    private fun initializeMinDistances() = Array(numberOfNodes) { IntArray(numberOfNodes) { Int.MAX_VALUE } }.apply {
+        for (it in 0 until numberOfNodes) this[it][it] = 0
+
+        edges.forEach { (l, r) ->
+            this[l][r] = 1
+            this[r][l] = 1
+        }
+    }
+
+    private fun initializePaths() = Array(numberOfNodes) { Array(numberOfNodes) { EMPTY } }.apply {
+        edges.forEach { (l, r) ->
+            this[l][r] = intArrayOf(r)
+            this[r][l] = intArrayOf(l)
+        }
     }
 }
+
+private fun sortedIndices(left: Int, right: Int) = min(left, right) to max(left, right)

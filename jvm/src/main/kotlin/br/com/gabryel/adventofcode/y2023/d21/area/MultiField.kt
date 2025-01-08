@@ -1,11 +1,10 @@
 package br.com.gabryel.adventofcode.y2023.d21.area
 
 import br.com.gabryel.adventofcode.util.*
+import br.com.gabryel.adventofcode.util.Direction.*
 import br.com.gabryel.adventofcode.y2023.d21.area.Area.Context
 import java.util.*
-import java.util.Comparator.comparingLong
-import kotlin.math.absoluteValue
-import kotlin.math.max
+import java.util.Comparator.comparingInt
 
 class MultiField(
     override val context: Context,
@@ -16,8 +15,8 @@ class MultiField(
     override val stepsToEnd = matrix.getAll().filterNotNull().maxOf { (k, v) -> k + v.stepsToEnd }
 
     private val signalsCache = EnumMap<Direction, List<StepState>>(Direction::class.java)
-    private val signalTimesCache = EnumMap<Direction, Long>(Direction::class.java)
-    private val stepsCache = mutableMapOf<Long, Long>()
+    private val signalTimesCache = EnumMap<Direction, Int>(Direction::class.java)
+    private val stepsCache = mutableMapOf<Int, Long>()
     private val parityCache = longArrayOf(getPossiblePerParity(0), getPossiblePerParity(1))
 
     override val firstSignal = Direction.entries.minOf(::getTimeToSignal)
@@ -29,7 +28,7 @@ class MultiField(
 
             val matrix = Array(context.levelFactor) { y -> Array(context.levelFactor) { x -> areas[x to y] } }
 
-            val toVisit = PriorityQueue(comparingLong(VisitKey::distance))
+            val toVisit = PriorityQueue(comparingInt(VisitKey::distance))
 
             toVisit += Direction.entries.flatMap { dir ->
                 areas.map { (coord, info) ->
@@ -46,7 +45,14 @@ class MultiField(
                     val next = prevArea.expand(dir)
                     matrix[tile] = distance to next
 
-                    toVisit += Direction.entries.map { VisitKey(distance + next.getTimeToSignal(it), tile + it, it, next) }
+                    toVisit += Direction.entries.map {
+                        VisitKey(
+                            distance + next.getTimeToSignal(it),
+                            tile + it,
+                            it,
+                            next
+                        )
+                    }
                 }
             }
 
@@ -76,24 +82,24 @@ class MultiField(
         growFrom(filterAreas(direction).associate { (coord, value) -> coord + (direction.inverse().vector * context.levelFactor) to value })
     }
 
-    override fun countPossibleAtStep(steps: Long) =
+    override fun countPossibleAtStep(steps: Int) =
         if (steps < 0) 0
-        else if (steps >= stepsToEnd) parityCache[(steps % 2).toInt()]
-        else countPossibleCache(steps)
+        else if (steps < stepsToEnd) countPossibleCache(steps)
+        else parityCache[steps % 2]
 
-    private fun getPossiblePerParity(parity: Long) =
+    private fun getPossiblePerParity(parity: Int) =
         countPossibleCache(stepsToEnd - if (stepsToEnd % 2 == parity) 2 else 1)
 
-    private fun countPossibleCache(steps: Long) = stepsCache.getOrPut(steps) {
+    private fun countPossibleCache(steps: Int) = stepsCache.getOrPut(steps) {
         matrix.getAll().filterNotNull().sumOf { (start, cell) -> cell.countPossibleAtStep(steps - start) }
     }
 
     private fun filterAreas(direction: Direction) = matrix.getAllEntries().filter { (coord) ->
         when (direction) {
-            Direction.RIGHT -> coord.x() == context.levelFactor - 1
-            Direction.LEFT -> coord.x() == 0
-            Direction.DOWN -> coord.y() == context.levelFactor - 1
-            Direction.UP -> coord.y() == 0
+            RIGHT -> coord.x() == context.levelFactor - 1
+            LEFT -> coord.x() == 0
+            DOWN -> coord.y() == context.levelFactor - 1
+            UP -> coord.y() == 0
         }
     }
 
@@ -101,7 +107,7 @@ class MultiField(
 }
 
 private data class VisitKey(
-    val distance: Long,
+    val distance: Int,
     val position: Coordinate,
     val fromDir: Direction,
     val fromArea: Area

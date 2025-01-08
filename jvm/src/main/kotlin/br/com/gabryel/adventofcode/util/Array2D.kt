@@ -20,6 +20,11 @@ fun CharArray2D.findAdjacent(coordinate: Coordinate) = Direction.entries.mapNotN
     Adjacency(newPosition, content, dir)
 }
 
+fun CharArray2D.findAdjacentWithNulls(coordinate: Coordinate) = Direction.entries.map { dir ->
+    val newPosition = coordinate + dir.vector
+    Adjacency(newPosition, this.getOrNull(newPosition), dir)
+}
+
 fun IntArray2D.findAdjacent(coordinate: Coordinate) = Direction.entries.mapNotNull { dir ->
     val newPosition = coordinate + dir.vector
     val content = this.getOrNull(newPosition)
@@ -74,6 +79,8 @@ fun <T> Array2D<T>.getAllEntries() = asSequence().flatMapIndexed { y, row ->
 
 fun LongArray2D.getAll() = asSequence().flatMap { it.asSequence() }
 
+fun IntArray2D.getAll() = asSequence().flatMap { it.asSequence() }
+
 fun CharArray2D.findFirst(content: Char) = asSequence().withIndex().firstNotNullOf { (y, item) ->
     item.withIndex().firstOrNull { (_, value) -> value == content }?.let { (x) -> x to y }
 }
@@ -81,3 +88,5 @@ fun CharArray2D.findFirst(content: Char) = asSequence().withIndex().firstNotNull
 fun CharArray2D.findFirstOrNull(content: Char) = asSequence().withIndex().firstNotNullOfOrNull { (y, item) ->
     item.withIndex().firstOrNull { (_, value) -> value == content }?.let { (x) -> x to y }
 }
+
+inline fun <reified T> array2D(width: Int, height: Int) = Array(height) { arrayOfNulls<T?>(width) }

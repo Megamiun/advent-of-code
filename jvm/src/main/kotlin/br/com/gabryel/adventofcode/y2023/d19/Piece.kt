@@ -9,3 +9,8 @@ data class Piece(val x: Int, val m: Int, val a: Int, val s: Int) {
         else -> throw IllegalArgumentException("No attribute named '$attribute'")
     }
 }
+
+fun parsePieces(lines: List<String>) = lines.map {
+    val (x, m, a, s) = pieceBreaker.findAll(it).map { it.value.toInt() }.toList()
+    Piece(x, m, a, s)
+}

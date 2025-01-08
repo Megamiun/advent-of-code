@@ -1,20 +1,10 @@
 package br.com.gabryel.adventofcode.y2023.d20
 
 import br.com.gabryel.adventofcode.util.leastCommonMultiplier
-import br.com.gabryel.adventofcode.util.readLines
 import java.util.concurrent.atomic.AtomicInteger
 
-fun main() {
-    listOf("sample", "sample-2", "input").forEach { file ->
-        val spec = readLines(2023, 20, file)
-
-        println("[Signal Multiplication][$file] ${spec.getSignalMultiplication()}")
-        println("[RX Button Press      ][$file] ${spec.getFirstCallToRx()}")
-    }
-}
-
-private fun List<String>.getSignalMultiplication(): Int {
-    val connectors = this
+fun getSignalMultiplication(lines: List<String>): Int {
+    val connectors = lines
         .plus("button -> broadcaster")
         .associate(Connection::from)
     connectors.registerOnConjunction()
@@ -27,8 +17,8 @@ private fun List<String>.getSignalMultiplication(): Int {
     return signalsSent.first * signalsSent.second
 }
 
-private fun List<String>.getFirstCallToRx(): Long {
-    val connectors = associate(Connection::from)
+fun getFirstCallToRx(lines: List<String>): Long {
+    val connectors = lines.associate(Connection::from)
     connectors.registerOnConjunction()
 
     val rxPointing = connectors.entries.firstOrNull { "rx" in it.value.outputs }

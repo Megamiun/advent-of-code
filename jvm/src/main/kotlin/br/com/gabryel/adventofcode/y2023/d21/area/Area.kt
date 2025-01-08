@@ -3,8 +3,8 @@ package br.com.gabryel.adventofcode.y2023.d21.area
 import br.com.gabryel.adventofcode.util.*
 import kotlin.math.pow
 
-typealias StepState = Pair<Long, Coordinate>
-typealias AreaState = Pair<Long, Area>
+typealias StepState = Pair<Int, Coordinate>
+typealias AreaState = Pair<Int, Area>
 
 interface Area {
     class Context(val map: CharArray2D, private val known: MutableMap<Pair<Int, List<StepState>>, Area> = mutableMapOf()) {
@@ -26,19 +26,19 @@ interface Area {
 
     val context: Context
 
-    val stepsToEnd: Long
+    val stepsToEnd: Int
 
-    val firstSignal: Long
+    val firstSignal: Int
 
     val level: Int
 
     fun getSignals(direction: Direction): List<StepState>
 
-    fun getTimeToSignal(direction: Direction): Long
+    fun getTimeToSignal(direction: Direction): Int
 
-    fun countPossibleAtStep(steps: Long): Long
+    fun countPossibleAtStep(steps: Int): Long
 
     fun expand(direction: Direction): Area
 
-    fun grow() = MultiField.growFrom(mapOf((context.multiDimensions / 2) to (0L to this)))
+    fun grow() = MultiField.growFrom(mapOf((context.multiDimensions / 2) to (0 to this)))
 }

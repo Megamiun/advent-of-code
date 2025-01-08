@@ -2,27 +2,22 @@ package br.com.gabryel.adventofcode.y2023.d22
 
 import br.com.gabryel.adventofcode.util.displace
 import br.com.gabryel.adventofcode.util.intersects
-import br.com.gabryel.adventofcode.util.readLines
 
+fun findNonSingleSupporting(lines: List<String>) =
+    SandSlab(lines.map { line -> line.toSlab() }).findNonSingleSupporting()
 
-fun main() {
-    listOf("sample", "input").forEach { file ->
-        val slabs = readLines(2023, 22, file).map { line -> line.toSlab() }
-
-        val slabsStats = SandSlab(slabs)
-
-        println("[Destructable Slabs ][$file] ${slabsStats.findNonSingleSupporting()}")
-        println("[Sum of Caused Falls][$file] ${slabsStats.findSumOfCausedFalls()}")
-    }
-}
+fun findSumOfCausedFalls(lines: List<String>) = SandSlab(lines.map { line -> line.toSlab() }).findSumOfCausedFalls()
 
 private class SandSlab(lines: List<Slab>) {
     private val fallen = dropAll(lines.sortedBy { it.height.first })
 
-    private val supporterToSupported = fallen.associateWith { slab -> fallen.filter { other -> other.isSupportedBy(slab) } }
-    private val supportedToSupporter = fallen.associateWith { slab -> fallen.filter { other -> slab.isSupportedBy(other) } }
+    private val supporterToSupported =
+        fallen.associateWith { slab -> fallen.filter { other -> other.isSupportedBy(slab) } }
 
-    val singleSupporters = supportedToSupporter
+    private val supportedToSupporter =
+        fallen.associateWith { slab -> fallen.filter { other -> slab.isSupportedBy(other) } }
+
+    private val singleSupporters = supportedToSupporter
         .filterValues { it.size == 1 }
         .values.flatten().distinct()
 
@@ -60,8 +55,7 @@ private class SandSlab(lines: List<Slab>) {
         val biggestHeightBelow = fallen
             .filter { it.height.last < current.height.first }
             .filter(current::intersectsXY)
-            .maxOfOrNull { it.height.last }
-            ?: 0
+            .maxOfOrNull { it.height.last } ?: 0
 
         val displacement = (biggestHeightBelow - current.height.first) + 1
         val fallenBlock = current.copy(height = current.height.displace(displacement))
@@ -81,9 +75,9 @@ private data class Slab(val width: IntRange, val depth: IntRange, val height: In
 private fun String.toSlab(): Slab {
     val coordinates = split("~")
 
-    val (start, end) = coordinates.map { it.split(",").map { it.toInt() } }
+    val (start, end) = coordinates.map { it.split(",").map(String::toInt) }
     val (startX, startY, startZ) = start
     val (endX, endY, endZ) = end
 
-    return Slab(startX .. endX, startY .. endY, startZ .. endZ)
+    return Slab(startX..endX, startY..endY, startZ..endZ)
 }
