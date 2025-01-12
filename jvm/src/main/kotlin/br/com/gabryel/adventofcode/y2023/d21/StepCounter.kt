@@ -1,6 +1,6 @@
 package br.com.gabryel.adventofcode.y2023.d21
 
-import br.com.gabryel.adventofcode.util.*
+import br.com.gabryel.adventofcode.util.findFirst
 import br.com.gabryel.adventofcode.y2023.d21.area.Area
 import br.com.gabryel.adventofcode.y2023.d21.area.Area.Context
 import br.com.gabryel.adventofcode.y2023.d21.area.SingleField
@@ -17,17 +17,15 @@ interface StepCounter {
 }
 
 class SingleStepCounter(private val map: List<String>) : StepCounter {
-    override fun getPossibleTilesOn(steps: Int): Long {
-        return map.getCentral().countPossibleAtStep(steps)
-    }
+    override fun getPossibleTilesOn(steps: Int) =
+        map.getCentral().countPossibleAtStep(steps)
 }
 
 class BigStepCounter(private val map: List<String>) : StepCounter {
-    override fun getPossibleTilesOn(steps: Int): Long {
-        return generateSequence<Area>(map.getCentral()) { it.grow() }
+    override fun getPossibleTilesOn(steps: Int) =
+        generateSequence<Area>(map.getCentral()) { it.grow() }
             .first { steps <= it.firstSignal }
             .countPossibleAtStep(steps)
-    }
 }
 
 private fun List<String>.getCentral(): SingleField {

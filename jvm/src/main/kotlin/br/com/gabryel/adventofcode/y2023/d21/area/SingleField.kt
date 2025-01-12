@@ -6,7 +6,7 @@ import br.com.gabryel.adventofcode.y2023.d21.area.CellType.*
 import java.util.*
 import kotlin.collections.ArrayDeque
 
-private const val UNFILLED = -1
+private const val UNFILLED = Int.MAX_VALUE
 
 class SingleField(
     override val context: Context,
@@ -16,7 +16,7 @@ class SingleField(
 
     override val level = 1
 
-    override val stepsToEnd = stepsMap.size
+    override val stepsToEnd = stepsMap.lastIndex
 
     override val firstSignal = signals.values.minOf { it.minOf { it.first } }
 
@@ -34,7 +34,7 @@ class SingleField(
         else getPossiblePerParity(steps % 2 == 0)
 
     private fun getPossiblePerParity(even: Boolean) =
-        stepsMap[stepsMap.size - if (stepsToEnd % 2 == 0 == even) 2 else 1]
+        stepsMap[stepsToEnd - if (stepsToEnd % 2 == 0 == even) 0 else 1]
 
     companion object {
         fun from(context: Context, starts: List<StepState>): SingleField {
@@ -50,7 +50,7 @@ class SingleField(
             while (toVisit.isNotEmpty()) {
                 val (distance, tile) = toVisit.removeFirst()
 
-                if (tile !in context.dimensions || distances[tile] != UNFILLED)
+                if (tile !in context.dimensions || distances[tile] <= distance)
                     continue
 
                 distances[tile] = distance
@@ -72,12 +72,13 @@ class SingleField(
 
         private fun IntArray2D.createStepCounter(): LongArray {
             val stepsMap = getAll().filter { it != UNFILLED }.groupingBy { it }.eachCount()
+            val size = stepsMap.keys.max()
 
-            return (0..stepsMap.keys.max())
+            return (0..size)
                 .map { stepsMap[it] ?: 0 }.chunked(2)
                 .scan(listOf(0L, 0L)) { (acc1, acc2), result ->
                     listOf(acc1 + result[0], acc2 + (result.getOrNull(1) ?: 0))
-                }.drop(1).flatten().toList().toLongArray()
+                }.drop(1).flatten().take(size + 1).toList().toLongArray()
         }
 
         private fun Char?.getType(): CellType {

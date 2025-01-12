@@ -4,7 +4,6 @@ import br.com.gabryel.adventofcode.util.*
 import br.com.gabryel.adventofcode.util.Direction.*
 import br.com.gabryel.adventofcode.y2023.d21.area.Area.Context
 import java.util.*
-import java.util.Comparator.comparingInt
 
 class MultiField(
     override val context: Context,
@@ -28,7 +27,7 @@ class MultiField(
 
             val matrix = Array(context.levelFactor) { y -> Array(context.levelFactor) { x -> areas[x to y] } }
 
-            val toVisit = PriorityQueue(comparingInt(VisitKey::distance))
+            val toVisit = PriorityQueue<VisitKey>()
 
             toVisit += Direction.entries.flatMap { dir ->
                 areas.map { (coord, info) ->
@@ -88,7 +87,7 @@ class MultiField(
         else parityCache[steps % 2]
 
     private fun getPossiblePerParity(parity: Int) =
-        countPossibleCache(stepsToEnd - if (stepsToEnd % 2 == parity) 2 else 1)
+        countPossibleCache(stepsToEnd - if (stepsToEnd % 2 == parity) 0 else 1)
 
     private fun countPossibleCache(steps: Int) = stepsCache.getOrPut(steps) {
         matrix.getAll().filterNotNull().sumOf { (start, cell) -> cell.countPossibleAtStep(steps - start) }
@@ -111,4 +110,6 @@ private data class VisitKey(
     val position: Coordinate,
     val fromDir: Direction,
     val fromArea: Area
-)
+) : Comparable<VisitKey> {
+    override fun compareTo(other: VisitKey) = distance.compareTo(other.distance)
+}

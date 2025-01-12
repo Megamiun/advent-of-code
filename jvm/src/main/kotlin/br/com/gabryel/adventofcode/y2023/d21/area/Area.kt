@@ -8,7 +8,7 @@ typealias AreaState = Pair<Int, Area>
 
 interface Area {
     class Context(val map: CharArray2D, private val known: MutableMap<Pair<Int, List<StepState>>, Area> = mutableMapOf()) {
-        val levelFactor = 4
+        val levelFactor = 3
 
         private val levelFactorFloat = levelFactor.toFloat()
 

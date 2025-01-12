@@ -1,31 +1,17 @@
 package br.com.gabryel.adventofcode.y2024.d12
 
-import br.com.gabryel.adventofcode.util.readLines
-import br.com.gabryel.adventofcode.util.Coordinate
-import br.com.gabryel.adventofcode.util.plus
-import br.com.gabryel.adventofcode.util.x
-import br.com.gabryel.adventofcode.util.y
+import br.com.gabryel.adventofcode.util.*
 import java.util.*
 
-fun main() {
-    listOf("sample-small", "sample", "input").forEach { file ->
-        val lines = readLines(2024, 12, file)
-            .map { it.toCharArray().toList() }
+fun findGardenPricePerSides(lines: List<String>) = lines.toCharArray2D()
+    .findRegions()
+    .sumOf { region -> region.contained.size * region.findSides().size }
 
-        println("[Price per perimeter][$file] ${lines.findPriceByPerimeter()}")
-        println("[Price per side     ][$file] ${lines.findPriceBySides()}")
-    }
-}
+fun findGardenPricePerPerimeter(lines: List<String>) = lines.toCharArray2D()
+    .findRegions()
+    .sumOf<Region> { (contained, barriers) -> contained.size * barriers.size }
 
-private fun List<List<Char>>.findPriceByPerimeter() =
-    findRegions()
-        .sumOf { (contained, barriers) -> contained.size * barriers.size }
-
-private fun List<List<Char>>.findPriceBySides() =
-    findRegions()
-        .sumOf { region -> region.contained.size * region.findSides().size }
-
-private fun List<List<Char>>.findRegions(): List<Region> {
+private fun CharArray2D.findRegions(): List<Region> {
     val regions = mutableListOf<Region>()
     val allCoords = withIndex().flatMap { (y, line) -> line.indices.map { x -> (x to y) } }
 
@@ -36,7 +22,7 @@ private fun List<List<Char>>.findRegions(): List<Region> {
     return regions
 }
 
-private fun List<List<Char>>.captureRegion(coord: Coordinate): Region {
+private fun CharArray2D.captureRegion(coord: Coordinate): Region {
     val contained = mutableSetOf(coord)
     val barriers = mutableSetOf<Barrier>()
 
@@ -61,7 +47,7 @@ private fun List<List<Char>>.captureRegion(coord: Coordinate): Region {
     return Region(contained, barriers)
 }
 
-private fun List<List<Char>>.getAt(position: Coordinate) =
+private fun CharArray2D.getAt(position: Coordinate) =
     getOrNull(position.y())?.getOrNull(position.x())
 
 enum class Direction(val diff: Coordinate, val parallel: () -> List<Direction>) {

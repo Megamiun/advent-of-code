@@ -3,15 +3,9 @@ package br.com.gabryel.adventofcode.y2024.d06
 import br.com.gabryel.adventofcode.util.*
 import br.com.gabryel.adventofcode.util.Direction.*
 
-fun main() {
-    listOf("sample", "input").forEach { file ->
-        val lines = readLines(2024, 6, file)
-            .map { it.toCharArray() }.toTypedArray()
+fun getGuardLoopsAfterObstacle(lines: List<String>) = lines.toCharArray2D().getLoopsAfterObstacle()
 
-        println("[Visited][$file] ${lines.getVisitedCount()}")
-        println("[Loops  ][$file] ${lines.getLoopsAfterObstacle()}")
-    }
-}
+fun getGuardVisitedCount(lines: List<String>) = lines.toCharArray2D().getVisitedCount()
 
 fun CharArray2D.getVisitedCount(): Int {
     val guard = Direction.entries
