@@ -114,3 +114,9 @@ fun CharArray2D.findFirstOrNull(content: Char) = asSequence().withIndex().firstN
 }
 
 inline fun <reified T> array2D(width: Int, height: Int) = Array(height) { arrayOfNulls<T?>(width) }
+
+fun <T> Adjacency<T>.next() = first
+
+fun Adjacency<*>.content() = second
+
+fun Adjacency<*>.direction() = third

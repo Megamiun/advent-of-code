@@ -41,9 +41,9 @@ private class LongWalk(lines: List<String>, private val canClimbSlopes: Boolean)
         if (start in this) return
 
         val adjacent = start.getAdjacentMovable()
-            .mapNotNull { (position, direction) -> position.findNextIntersection(direction) }
-        this[start] = adjacent
+            .map { (position, _, direction) -> position.findNextIntersection(direction) }
 
+        this[start] = adjacent
         for ((next) in adjacent)
             populate(next)
     }
@@ -51,34 +51,26 @@ private class LongWalk(lines: List<String>, private val canClimbSlopes: Boolean)
     private tailrec fun Coordinate.findNextIntersection(
         direction: Direction,
         distance: Int = 1
-    ): Pair<Coordinate, Int>? {
+    ): Pair<Coordinate, Int> {
         val inverse = direction.inverse()
-        val movable = getAdjacentMovable().filter { it.second != inverse }
+        val movable = getAdjacentMovable().filter { it.direction() != inverse }
 
         if (movable.size == 1) {
-            val (curr, dir) = movable.single()
+            val (curr, _, dir) = movable.single()
             return curr.findNextIntersection(dir, distance + 1)
         }
 
         return this to distance
     }
 
-    private fun Coordinate.getAdjacentMovable() = Direction.entries.mapNotNull { dir ->
-        val next = this.inDirectionIfMovable(dir) ?: return@mapNotNull null
-        next to dir
+    private fun Coordinate.getAdjacentMovable() =
+        map.findAdjacent(this).filter { it.isMovableFrom() }
+
+    private fun Adjacency<Char>.isMovableFrom(): Boolean {
+        val content = content()
+        if (content == '#') return false
+        return content == '.' || canClimbSlopes || content == direction().slope()
     }
-
-    private fun Coordinate.inDirectionIfMovable(direction: Direction): Coordinate? {
-        val next = this + direction
-        val content = getSafeTile(next)
-
-        if (content == '#') return null
-        if (content == '.' || content == direction.slope() || canClimbSlopes) return next
-
-        return null
-    }
-
-    private fun getSafeTile(position: Coordinate) = map.getOrNull(position) ?: '#'
 }
 
 private fun Direction.slope() = when (this) {
