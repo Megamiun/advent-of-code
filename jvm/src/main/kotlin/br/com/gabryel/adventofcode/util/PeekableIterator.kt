@@ -26,10 +26,16 @@ class PeekableIterator<T>(private val iterator: Iterator<T>) : Iterator<T> by it
     }
 
     fun peek(): T {
+        if (cached != null)
+            return cached ?: throw IllegalStateException("Cached result was lost on reading")
+
         val next = iterator.next()
         cached = next
         return next
     }
+
+    inline fun nextIfMatches(matches: (T) -> Boolean) =
+        if (hasNext() && matches(peek())) next() else null
 }
 
 fun <T> Iterable<T>.peekingIterator() = PeekableIterator(this.iterator())
