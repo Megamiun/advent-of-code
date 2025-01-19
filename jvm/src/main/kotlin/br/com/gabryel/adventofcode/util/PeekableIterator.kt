@@ -34,8 +34,23 @@ class PeekableIterator<T>(private val iterator: Iterator<T>) : Iterator<T> by it
         return next
     }
 
-    inline fun nextIfMatches(matches: (T) -> Boolean) =
-        if (hasNext() && matches(peek())) next() else null
+    inline fun hasNextMatches(matches: (T) -> Boolean) =
+        hasNext() && matches(peek())
 }
 
 fun <T> Iterable<T>.peekingIterator() = PeekableIterator(this.iterator())
+
+fun <T> Iterable<T>.takeWhileInclusive(predicate: (T) -> Boolean) =
+    peekingIterator().takeWhileInclusive(predicate)
+
+fun <T> PeekableIterator<T>.takeWhileInclusive(predicate: (T) -> Boolean) = sequence {
+    yieldAll(takeWhile(predicate))
+
+    if (hasNext()) yield(next())
+}
+
+fun <T> PeekableIterator<T>.takeWhile(predicate: (T) -> Boolean) = sequence {
+    while (hasNextMatches(predicate)) {
+        yield(next())
+    }
+}

@@ -70,7 +70,5 @@ private fun List<IntRange>.mergeIntersections() = sequence {
 private fun List<String>.parseLines() = map {
     val (_, direction, steps, color) = extractor.find(it)!!.groupValues
 
-    Triple(findByDirectionInitial(direction), steps.toInt(), color)
+    Triple(Direction.findByInitial(direction), steps.toInt(), color)
 }
-
-private fun findByDirectionInitial(initial: String) = Direction.entries.first { it.name.startsWith(initial) }

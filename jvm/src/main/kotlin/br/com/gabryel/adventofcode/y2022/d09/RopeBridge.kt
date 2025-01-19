@@ -1,34 +1,24 @@
-package br.com.gabryel.adventofcode.y2022
+package br.com.gabryel.adventofcode.y2022.d09
 
 import br.com.gabryel.adventofcode.util.*
-import java.util.concurrent.TimeUnit.NANOSECONDS
 import kotlin.math.absoluteValue
-import kotlin.system.measureNanoTime
 
 private val moveCache = mutableMapOf<Pair<Coordinate, Coordinate>, Coordinate>()
 
-fun main() {
-    val commands = getCommands()
-    val unwrappedCommands = commands.flatMap { (direction, steps) -> (0 until steps).map { direction } }
+fun getMotionsForKnots(lines: List<String>, size: Int) =
+    lines.getCommands()
+        .flatMap { (direction, steps) -> (0 until steps).map { direction } }
+        .runWithSize(size)
 
-    unwrappedCommands.runWithSize(2)
-    unwrappedCommands.runWithSize(10)
+private fun List<Direction>.runWithSize(size: Int): Int {
+    val rope = fold(Rope.withSize(size)) { current, direction -> current + direction.vector }
+    return rope.getLast().visited.size
 }
 
-private fun List<Direction>.runWithSize(size: Int) {
-    val nano = measureNanoTime {
-        val rope = fold(Rope.withSize(size)) { current, direction -> current + direction.vector }
-        println("Spaces the rope #$size passed through: ${rope.getLast().headSpaces.size}")
-    }
-
-    println("It took ${NANOSECONDS.toMillis(nano)}ms to run with $size nodes")
-    println()
-}
-
-private fun getCommands() = getLinesFromSystemIn {
+private fun List<String>.getCommands() = map {
     val (direction, steps) = it.split(" ")
-    Direction.valueOf(direction) to steps.toInt()
-}.toList()
+    Direction.findByInitial(direction) to steps.toInt()
+}
 
 private sealed class Rope {
     abstract fun follow(previous: Coordinate): Rope
@@ -40,15 +30,15 @@ private sealed class Rope {
     }
 }
 
-private data object EmptyRope: Rope() {
+private data object EmptyRope : Rope() {
     override fun follow(previous: Coordinate) = this
 }
 
 private data class KnotRope(
     val head: Coordinate = ZERO,
     val tail: Rope,
-    val headSpaces: Set<Coordinate> = setOf(ZERO)
-): Rope() {
+    val visited: Set<Coordinate> = setOf(ZERO)
+) : Rope() {
 
     override fun follow(previous: Coordinate) = this + vectorTo(previous)
 
@@ -57,8 +47,8 @@ private data class KnotRope(
     operator fun plus(vector: Coordinate): KnotRope {
         if (vector == ZERO) return this
 
-        val newHead = head + vector
-        return copy(head = newHead, tail = tail.follow(newHead), headSpaces = headSpaces + newHead)
+        val newPosition = head + vector
+        return copy(head = newPosition, tail = tail.follow(newPosition), visited = visited + newPosition)
     }
 
     private fun vectorTo(previous: Coordinate) = moveCache.computeIfAbsent(previous to head) {

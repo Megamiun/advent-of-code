@@ -10,5 +10,9 @@ enum class Direction(
     RIGHT(1 to 0, { LEFT }, { DOWN }, { UP }, true),
     DOWN(0 to 1, { UP }, { LEFT }, { RIGHT }, false),
     LEFT(-1 to 0, { RIGHT }, { UP }, { DOWN }, true),
-    UP(0 to -1, { DOWN }, { RIGHT }, { LEFT }, false)
+    UP(0 to -1, { DOWN }, { RIGHT }, { LEFT }, false);
+
+    companion object {
+        fun findByInitial(initial: String) = Direction.entries.first { it.name.startsWith(initial) }
+    }
 }

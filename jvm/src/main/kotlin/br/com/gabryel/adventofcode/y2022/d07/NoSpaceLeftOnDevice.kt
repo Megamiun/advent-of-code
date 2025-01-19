@@ -2,6 +2,7 @@ package br.com.gabryel.adventofcode.y2022.d07
 
 import br.com.gabryel.adventofcode.util.PeekableIterator
 import br.com.gabryel.adventofcode.util.peekingIterator
+import br.com.gabryel.adventofcode.util.takeWhile
 
 private val REMOVE_LAST = "(.*/).+?/".toRegex()
 
@@ -43,9 +44,8 @@ private fun FileSystem.executeCommand(current: String, iterator: PeekableIterato
     if (current.startsWith("cd"))
         return cd(current.removePrefix("cd "))
 
-    return generateSequence {
-        iterator.nextIfMatches { !it.startsWith("$") }
-    }.fold(this) { acc, line -> acc.with(line) }
+    return iterator.takeWhile { !it.startsWith("$") }
+        .fold(this) { acc, line -> acc.with(line) }
 }
 
 data class FileSystem(
