@@ -16,6 +16,7 @@ use std::time::Instant;
 
 mod y2023;
 mod y2024;
+mod y2025;
 pub mod util;
 pub mod testing;
 
