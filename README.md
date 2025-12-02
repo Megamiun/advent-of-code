@@ -17,6 +17,7 @@ Possibly out of date at the moment you look at it, but at the best effort basis:
 ### 2025
 
 - ★★ d01 - [Rust](rust/src/y2025/d01)
+- ★★ d02 - [Rust](rust/src/y2025/d02)
 
 ### 2024
 
