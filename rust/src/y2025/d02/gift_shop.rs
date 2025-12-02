@@ -39,14 +39,14 @@ fn is_number_repeated(num: u64, num_length: u32, fragments: u32) -> bool {
     expected == num
 }
 
+fn get_decimal_length(number: u64) -> u32 {
+    1 + number.ilog10()
+}
+
 fn get_ranges(lines: &[String]) -> Vec<(u64, u64)> {
     lines
         .iter()
         .flat_map(|line| line.split(',').collect_vec())
         .map(|range| range.splitn(2, '-').map(|num| parse_u64(num)).next_tuple().unwrap())
         .collect_vec()
-}
-
-fn get_decimal_length(number: u64) -> u32 {
-    1 + number.ilog10()
 }
