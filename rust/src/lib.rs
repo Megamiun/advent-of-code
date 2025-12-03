@@ -5,7 +5,7 @@ extern crate ibig;
 extern crate itertools;
 extern crate paste;
 extern crate regex;
-#[cfg(test)] 
+#[cfg(test)]
 extern crate rstest;
 extern crate rustc_hash;
 

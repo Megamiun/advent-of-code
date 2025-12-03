@@ -1,7 +1,7 @@
 use crate::y2024::d09::helper::get_files_and_blanks;
 use derive_more::Display;
 use itertools::Itertools;
-use std::fmt::{Debug, Formatter};
+use std::fmt::{Debug, Display, Formatter};
 use std::ptr::null_mut;
 
 #[allow(dead_code)]

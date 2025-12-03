@@ -112,7 +112,7 @@ impl<T: PartialEq> Bounded<T> {
         })
     }
 
-    pub fn find_adjacent_iter<'a>(&'a self, index: &'a Index2D) -> impl Iterator<Item=Index2D> + '_ {
+    pub fn find_adjacent_iter<'a>(&'a self, index: &'a Index2D) -> impl Iterator<Item=Index2D> + 'a {
         Direction::VALUES
             .iter()
             .filter_map(|dir| *index + dir)
