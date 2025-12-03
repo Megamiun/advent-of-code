@@ -17,7 +17,7 @@ pub fn get_max_joltage(bank: &[u64], batteries_left: usize) -> u64 {
     let next_batteries_left = batteries_left - 1;
     let biggest_position = bank.iter()
         .dropping_back(next_batteries_left)
-        .position_max_by(|lhs, rhs| equal_is_greater_compare(lhs, rhs))
+        .position_max_by(|&lhs, &rhs| equal_is_greater_compare(lhs, rhs))
         .unwrap();
 
     let bank_after_biggest = &bank[biggest_position + 1..bank.len()];
@@ -28,8 +28,8 @@ pub fn get_max_joltage(bank: &[u64], batteries_left: usize) -> u64 {
 
 
 // This is done so position_max_by gives us the first biggest, not the last
-fn equal_is_greater_compare(lhs: &&u64, rhs: &&u64) -> Ordering {
-    let comp = (*lhs).cmp(rhs);
+fn equal_is_greater_compare(lhs: &u64, rhs: &u64) -> Ordering {
+    let comp = lhs.cmp(rhs);
     match comp {
         Equal => Greater,
         _ => comp
