@@ -3,9 +3,7 @@ use itertools::Itertools;
 
 #[allow(dead_code)]
 pub fn get_numbers_with_repeated_digits(lines: &[String]) -> u64 {
-    let ranges = get_ranges(lines);
-
-    ranges.iter().flat_map(|range|
+    get_ranges(lines).iter().flat_map(|range|
         (range.0..=range.1)
             .filter(|&num| is_number_repeated(num, get_decimal_length(num), 2))
     ).sum()
@@ -13,9 +11,7 @@ pub fn get_numbers_with_repeated_digits(lines: &[String]) -> u64 {
 
 #[allow(dead_code)]
 pub fn get_numbers_with_repeated_digits_boundless(lines: &[String]) -> u64 {
-    let ranges = get_ranges(lines);
-
-    ranges.iter().flat_map(|range|
+    get_ranges(lines).iter().flat_map(|range|
         (range.0..=range.1).filter(|&num| {
             let num_length = get_decimal_length(num);
 
@@ -44,8 +40,7 @@ fn get_decimal_length(number: u64) -> u32 {
 }
 
 fn get_ranges(lines: &[String]) -> Vec<(u64, u64)> {
-    lines
-        .iter()
+    lines.iter()
         .flat_map(|line| line.split(',').collect_vec())
         .map(|range| range.splitn(2, '-').map(|num| parse_u64(num)).next_tuple().unwrap())
         .collect_vec()

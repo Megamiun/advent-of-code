@@ -4,18 +4,17 @@ use std::cmp::Ordering::{Equal, Greater};
 
 #[allow(dead_code)]
 pub fn get_sum_of_joltage(lines: &[String], batteries: usize) -> u64 {
-    let banks = get_banks(lines);
-
-    banks.iter().map(|bank| get_max_joltage(bank, batteries)).sum()
+    get_banks(lines).iter()
+        .map(|bank| get_max_joltage(bank, batteries))
+        .sum()
 }
 
-#[allow(dead_code)]
 pub fn get_max_joltage(bank: &[u64], batteries_left: usize) -> u64 {
     if batteries_left == 0 {
         return 0;
     }
-    let next_batteries_left = batteries_left - 1;
 
+    let next_batteries_left = batteries_left - 1;
     let biggest_position = bank.iter()
         .dropping_back(next_batteries_left)
         .position_max_by(|lhs, rhs| equal_is_greater_compare(lhs, rhs))
