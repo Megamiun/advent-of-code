@@ -16,7 +16,7 @@ mod tests {
 
     #[rstest]
     #[case::sample("sample", 43)]
-    #[case::input("input", 1480)]
+    #[case::input("input", 8899)]
     fn part_2(#[case] file: &str, #[case] expected: usize) {
         let result = run_for_file(2025, 4, "Part 2", file, get_all_accessible_rolls);
         assert_aoc!(result, expected)
