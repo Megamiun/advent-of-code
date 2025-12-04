@@ -1,9 +1,12 @@
-use crate::util::coordinates::Index2D;
+use crate::util::coordinates::{Diff, Index2D};
 use crate::util::direction::Direction;
 use itertools::Itertools;
 use std::collections::HashMap;
 use std::hash::BuildHasher;
 use std::ops::{Index, IndexMut};
+
+pub const ADJACENCY_WITH_DIAGONALS: [Diff; 8] =
+    [Diff(0, -1), Diff(1, 0), Diff(0, 1), Diff(-1, 0), Diff(-1, -1), Diff(1, 1), Diff(-1, 1), Diff(1, -1)];
 
 #[derive(Clone)]
 pub struct Bounded<T> {
@@ -60,6 +63,13 @@ impl<T: Copy> Bounded<T> {
 
         Bounded { content: new_content, height, width }
     }
+
+    // TODO Impl later
+    // pub fn map<V>(&self, mapper: &dyn for<'a> FnMut(&T) -> V) -> Bounded<T> {
+    //     self.content.iter()
+    //         .map(|outer| outer.iter().map(*mapper).collect_vec())
+    //         .collect_vec()
+    // }
 }
 
 impl<T: PartialEq + Copy> Bounded<Option<T>> {
@@ -121,6 +131,12 @@ impl<T: PartialEq> Bounded<T> {
 
     pub fn find_adjacent_with_content<'a>(&'a self, index: &'a Index2D) -> impl Iterator<Item=(Index2D, &'a T)> {
         Direction::VALUES.iter()
+            .filter_map(|dir| *index + dir)
+            .filter_map(|adj| Some((adj, self.find(&adj)?)))
+    }
+
+    pub fn find_adjacent_and_diagonal_with_content<'a>(&'a self, index: &'a Index2D) -> impl Iterator<Item=(Index2D, &'a T)> {
+        ADJACENCY_WITH_DIAGONALS.iter()
             .filter_map(|dir| *index + dir)
             .filter_map(|adj| Some((adj, self.find(&adj)?)))
     }
