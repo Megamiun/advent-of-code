@@ -1,6 +1,7 @@
 use crate::util::parse_num::parse_u64;
 use itertools::Itertools;
 use std::cmp::max;
+use std::iter::once;
 use std::ops::RangeInclusive;
 
 #[allow(dead_code)]
@@ -25,15 +26,16 @@ fn merge_intersections(ranges: Vec<RangeInclusive<u64>>) -> Vec<RangeInclusive<u
         .collect_vec();
 
     let result = sorted_ranges.iter()
-        .fold(((*sorted_ranges[0]).clone(), vec![]), |(curr_range, acc), range| {
+        .fold((sorted_ranges[0].clone(), vec![]), |(curr_range, acc), range| {
             if curr_range.end() >= range.start() {
-                (*curr_range.start()..=*(max(range.end(), curr_range.end())), acc)
+                let new_max = max(range.end(), curr_range.end());
+                (*curr_range.start()..=*new_max, acc)
             } else {
-                ((*range).clone(), vec![acc, vec![curr_range]].concat())
+                ((*range).clone(), add_to_end(acc, curr_range))
             }
         });
 
-    vec![result.1, vec![result.0]].concat()
+    add_to_end(result.1, result.0)
 }
 
 fn get_ingredients(lines: &[String]) -> Vec<u64> {
@@ -45,4 +47,8 @@ fn get_ranges(lines: &[String]) -> Vec<RangeInclusive<u64>> {
         .map(|line| line.split("-").map(|num| parse_u64(num)).collect_vec())
         .map(|range| range[0]..=range[1])
         .collect_vec()
+}
+
+fn add_to_end(acc: Vec<RangeInclusive<u64>>, curr_range: RangeInclusive<u64>) -> Vec<RangeInclusive<u64>> {
+    acc.into_iter().chain(once(curr_range)).collect_vec()
 }
