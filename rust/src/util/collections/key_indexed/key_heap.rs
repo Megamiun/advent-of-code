@@ -1,4 +1,5 @@
 use crate::util::collections::key_indexed::keyable::Keyable;
+use std::fmt::Debug;
 
 pub struct KeyHeap<V: Keyable + Copy> where V::Key: Eq + Copy {
     delegate: Vec<(V::Key, Vec<V>)>,
@@ -89,5 +90,26 @@ impl<V> KeyHeap<V> where
             self.delegate.swap(parent, node);
             self.sift_down(node)
         }
+    }
+
+
+    pub const fn iter(&'_ mut self) -> Iter<'_, V> {
+        Iter(self)
+    }
+}
+
+pub struct Iter<'a, V>(&'a mut KeyHeap<V>)
+where
+    V: Keyable + Copy,
+    V::Key: Ord + Copy;
+
+impl<'a, V> Iterator for Iter<'a, V>
+where
+    V: Keyable + Copy,
+    V::Key: Ord + Copy + Debug {
+    type Item = V;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        self.0.pop()
     }
 }

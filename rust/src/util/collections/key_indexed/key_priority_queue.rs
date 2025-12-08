@@ -4,8 +4,8 @@ use std::fmt::Debug;
 #[derive(Debug)]
 pub struct KeyPriorityQueue<V>
 where
-    V: Keyable,
-    V::Key: Ord + Copy,
+    V: Keyable + Copy,
+    V::Key: Ord + Copy + Debug,
 {
     delegate: Vec<(V::Key, Vec<V>)>,
 }
@@ -57,5 +57,25 @@ where
                 self.push_ordered(key, item, half + 1, end);
             }
         }
+    }
+
+    pub const fn iter(&'_ mut self) -> Iter<'_, V> {
+        Iter(self)
+    }
+}
+
+pub struct Iter<'a, V>(&'a mut KeyPriorityQueue<V>)
+where
+    V: Keyable + Copy,
+    V::Key: Ord + Copy + Debug;
+
+impl<'a, V> Iterator for Iter<'a, V>
+where
+    V: Keyable + Copy,
+    V::Key: Ord + Copy + Debug {
+    type Item = V;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        self.0.pop()
     }
 }
