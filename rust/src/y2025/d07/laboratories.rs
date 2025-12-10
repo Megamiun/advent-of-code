@@ -32,7 +32,7 @@ impl Bounded<char> {
         match self.find(&current) {
             Some('^') => {
                 if splitters.contains_key(&current) {
-                    return splitters[&origin];
+                    return splitters[&current];
                 }
 
                 let left = self.visit(splitters, current, Left);
