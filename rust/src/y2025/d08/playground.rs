@@ -1,4 +1,3 @@
-use crate::util::collections::key_indexed::key_priority_queue::KeyPriorityQueue;
 use crate::util::collections::key_indexed::keyable::Keyable;
 use crate::util::parse_num::parse_u64;
 use itertools::Itertools;
@@ -21,15 +20,18 @@ impl<'a> Keyable for Entry<'a> {
 pub fn get_sum_of_group_sizes(lines: &[String], connections: usize) -> usize {
     let positions = get_positions(lines);
 
-    let mut queue = KeyPriorityQueue::<Entry>::new();
+    // TODO Check later why KeyPriorityQueue is so much slower
+    let mut queue = Vec::<Entry>::new();
     let mut clusters = FxHashMap::<XYZ, usize>::default();
 
     for (lhs_index, lhs_pos) in positions.iter().enumerate() {
         clusters.insert(*lhs_pos, lhs_index);
         for rhs_pos in positions.iter().dropping(lhs_index + 1) {
-            queue.push(&Entry(lhs_pos, rhs_pos))
+            queue.push(Entry(lhs_pos, rhs_pos))
         }
     }
+
+    queue.sort_by_cached_key(Entry::get_key);
 
     for Entry(lhs, rhs) in queue.iter().take(connections) {
         let lhs_cluster = clusters.get(lhs).unwrap();
